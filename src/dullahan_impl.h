@@ -23,8 +23,8 @@ class dullahan_browser_client;
 class dullahan_context_handler;
 class dullahan_callback_manager;
 
-static const int DULLAHAN_VERSION_MAJOR = 0;
-static const int DULLAHAN_VERSION_MINOR = 2;
+static const int DULLAHAN_VERSION_MAJOR = 1;
+static const int DULLAHAN_VERSION_MINOR = 0;
 
 class dullahan_impl :
     public CefApp,
