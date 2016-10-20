@@ -1,0 +1,287 @@
+/*
+    @brief Dullahan - a headless browser rendering engine
+           based around the Chromium Embedded Framework
+    @author Callum Prentice 2015
+
+    LICENSE FILE TO GO HERE
+*/
+
+#include "cef_browser.h"
+#include "wrapper/cef_helpers.h"
+
+#include "dullahan_render_handler.h"
+#include "dullahan_browser_client.h"
+#include "dullahan_callback_manager.h"
+
+#include "dullahan_impl.h"
+
+dullahan_browser_client::dullahan_browser_client(dullahan_impl* parent,
+        dullahan_render_handler* render_handler) :
+    mParent(parent),
+    mRenderHandler(render_handler)
+{
+    DLNOUT("dullahan_browser_client::dullahan_browser_client - parent ptr = " <<
+           parent);
+}
+
+// CefClient override
+CefRefPtr<CefRenderHandler> dullahan_browser_client::GetRenderHandler()
+{
+    return mRenderHandler;
+}
+
+// CefLifeSpanHandler override
+bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
+        const CefString& target_url, const CefString& target_frame_name,
+        CefLifeSpanHandler::WindowOpenDisposition target_disposition,
+        bool user_gesture, const CefPopupFeatures& popupFeatures,
+        CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client,
+        CefBrowserSettings& settings, bool* no_javascript_access)
+{
+    CEF_REQUIRE_IO_THREAD();
+
+    std::string url = std::string(target_url);
+    std::string target = std::string(target_frame_name);
+    if (url.length() && target.length())
+    {
+        mParent->getCallbackManager()->onNavigateURL(url, target);
+        return true;
+    }
+
+    browser->GetMainFrame()->LoadURL(target_url);
+
+    return true;
+}
+
+// CefLifeSpanHandler override
+void dullahan_browser_client::OnAfterCreated(CefRefPtr<CefBrowser> browser)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    mBrowserList.push_back(browser);
+}
+
+// CefLifeSpanHandler override
+void dullahan_browser_client::OnBeforeClose(CefRefPtr<CefBrowser> browser)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    BrowserList::iterator bit = mBrowserList.begin();
+    for (; bit != mBrowserList.end(); ++bit)
+    {
+        if ((*bit)->IsSame(browser))
+        {
+            mBrowserList.erase(bit);
+            break;
+        }
+    }
+
+    if (mBrowserList.empty())
+    {
+        // TODO: mark this call as only needed if using CEFs message loop and not CefDoMessageLoopWork()
+        CefQuitMessageLoop();
+
+        mParent->getCallbackManager()->onRequestExit();
+    }
+}
+
+// CefLifeSpanHandler override
+bool dullahan_browser_client::DoClose(CefRefPtr<CefBrowser> browser)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    return false;
+}
+
+// CefDisplayhandler override
+void dullahan_browser_client::OnAddressChange(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame, const CefString& url)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    mParent->getCallbackManager()->onAddressChange(std::string(url));
+}
+
+// CefDisplayhandler override
+bool dullahan_browser_client::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
+        const CefString& message, const CefString& source, int line)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    mParent->getCallbackManager()->onConsoleMessage(std::string(message),
+            std::string(source), line);
+
+    return true;
+}
+
+// CefDisplayhandler override
+void dullahan_browser_client::OnStatusMessage(CefRefPtr<CefBrowser> browser,
+        const CefString& value)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    mParent->getCallbackManager()->onStatusMessage(std::string(value));
+}
+
+// CefDisplayhandler overrides
+void dullahan_browser_client::OnTitleChange(CefRefPtr<CefBrowser> browser,
+        const CefString& title)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    mParent->getCallbackManager()->onTitleChange(std::string(title));
+}
+
+// CefLoadHandler override
+void dullahan_browser_client::OnLoadStart(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    if (frame->IsMain())
+    {
+        mParent->getCallbackManager()->onLoadStart();
+    }
+}
+
+// CefLoadHandler override
+void dullahan_browser_client::OnLoadEnd(CefRefPtr<CefBrowser> browser,
+                                        CefRefPtr<CefFrame> frame, int httpStatusCode)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    if (frame->IsMain())
+    {
+        mParent->getCallbackManager()->onLoadEnd(httpStatusCode);
+    }
+}
+
+// CefLoadHandler override
+void dullahan_browser_client::OnLoadError(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame, ErrorCode errorCode,
+        const CefString& errorText, const CefString& failedUrl)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    if (errorCode == ERR_ABORTED)
+    {
+        return;
+    }
+
+    if (frame->IsMain())
+    {
+        mParent->getCallbackManager()->onLoadError(errorCode, std::string(errorText));
+    }
+}
+
+// CefRequestHandler override
+bool dullahan_browser_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
+        CefRefPtr<CefRequest> request, bool isRedirect)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    std::string url = request->GetURL();
+
+    // for conmparison
+    std::transform(url.begin(), url.end(), url.begin(), ::tolower);
+
+    std::vector<std::string>::iterator iter = mParent->getCustomSchemes().begin();
+    while (iter != mParent->getCustomSchemes().end())
+    {
+        if (url.substr(0, (*iter).length()) == (*iter))
+        {
+            // get URL again since we lower cased it for comparison
+            url = request->GetURL();
+            mParent->getCallbackManager()->onCustomSchemeURL(url);
+
+            // don't continue with navigation
+            return true;
+        }
+
+        ++iter;
+    }
+
+    return false;
+}
+
+// CefRequestHandler override
+bool dullahan_browser_client::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
+        bool isProxy, const CefString& host, int port, const CefString& realm,
+        const CefString& scheme, CefRefPtr<CefAuthCallback> callback)
+{
+    CEF_REQUIRE_IO_THREAD();
+
+    std::string host_str = host;
+    std::string realm_str = realm;
+    std::string scheme_str = scheme;
+
+    std::string username = "";
+    std::string password = "";
+    bool proceed = mParent->getCallbackManager()->onHTTPAuth(host_str, realm_str,
+                   username, password);
+
+    if (proceed)
+    {
+        callback->Continue(username.c_str(), password.c_str());
+        return true; // continue with request
+    }
+    else
+    {
+        callback->Cancel();
+        return false; // cancel request
+    }
+}
+
+// CefRequestHandler override
+bool dullahan_browser_client::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
+        const CefString& origin_url,
+        int64 new_size,
+        CefRefPtr<CefRequestCallback> callback)
+{
+    CEF_REQUIRE_IO_THREAD();
+
+    // 10MB hard coded for now
+    static const int64 max_size = 1024 * 1024 * 10;
+
+    callback->Continue(new_size <= max_size);
+    return true;
+}
+
+// CefDownloadHandler overrides
+void dullahan_browser_client::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefDownloadItem> download_item,
+        const CefString& suggested_name,
+        CefRefPtr<CefBeforeDownloadCallback> callback)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    mParent->getCallbackManager()->onFileDownload(std::string(suggested_name));
+}
+
+// CefDialogHandler orerrides
+bool dullahan_browser_client::OnFileDialog(CefRefPtr<CefBrowser> browser, FileDialogMode mode, const CefString& title,
+        const CefString& default_file_path, const std::vector<CefString>& accept_filters, int selected_accept_filter,
+        CefRefPtr<CefFileDialogCallback> callback)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    const CefString file_path = mParent->getCallbackManager()->onFileDialog();
+    if (file_path.length())
+    {
+        std::vector<CefString> file_paths;
+        file_paths.push_back(CefString(file_path));
+
+        const int file_path_index = 0;
+
+        callback->Continue(file_path_index, file_paths);
+    }
+    else
+    {
+        callback->Cancel();
+    }
+
+    return true;
+}
