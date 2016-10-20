@@ -6,6 +6,8 @@
 Debug/
 Release/
 
+glob:*.wwdb
+
 # misc files
 dullahan.sdf
 dullahan.v12.suo
