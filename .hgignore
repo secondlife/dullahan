@@ -1,0 +1,39 @@
+# OS files
+.DS_Store
+.DS_Store?
+
+# Build/output folders
+Debug/
+Release/
+
+# misc files
+dullahan.sdf
+dullahan.v12.suo
+dullahan.opensdf
+
+src/dullahan_src_hash.hpp
+
+# test apps crud
+examples/console/cookies/Cookies-journal
+examples/console/cookies/Cookies
+examples/console/output.bmp
+
+examples/webcube/cookies/Cookies-journal
+examples/webcube/cookies/Cookies
+examples/webcube/cache/*
+examples/webcube/dullahan_test_urls.html
+examples/webcube/*.pdf
+
+examples/simplegl/cookies/Cookies-journal
+examples/simplegl/cookies/Cookies
+examples/simplegl/cache/*
+examples/simplegl/dullahan_test_urls.html
+
+# Astyle crud
+glob:*.orig
+
+# Windows RC crud
+glob:*.aps
+
+# CEF Builds folder
+cef/
