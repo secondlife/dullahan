@@ -4,7 +4,7 @@
 
 A headless browser SDK that uses the [Chromium Embedded Framework](https://en.wikipedia.org/wiki/Chromium_Embedded_Framework) (CEF). It is designed to make it easier to write applications that render modern web content directly to a memory buffer, inject synthesized mouse and keyboard events and interact with web based features like JavaScript or cookies.
 
-###### <font color="red">Important note</font>: 
+###### **Important note**: 
 This is __very__ much an alpha release / first code drop. I have high hopes this will develop into something useful but there is still a lot of work to do first.
 
 #### What could I use it for?
@@ -42,48 +42,48 @@ For the moment yes. The 32bit version for macOS is no longer supported by CEF. O
 
 #### Which version of the C++ runtime library does it use?
 
-For historical reasons, both it and the version of CEF in this repository are built with the C++ runtime library set to <tt>Multi-threaded DLL</tt> /  <tt>Multi-threaded Debug DLL</tt>. 
+For historical reasons, both it and the version of CEF in this repository are built with the C++ runtime library set to `Multi-threaded DLL` /  `Multi-threaded Debug DLL`. 
 
 #### How do I build Dullahan?
 
 * Download or clone the source code here
 * Build or grab the version of CEF you want to use (See below)
 * Ensure Microsoft Visual Studio 2013 (update 4) is installed (it might work with other versions but that is untested)
-* Open <tt>dullahan.sln</tt>. 
+* Open `dullahan.sln`. 
 * Select the Release or Debug configuration and build the solution in the normal fashion. 
 * If all goes well, you can set one of the example applications as the startup project and try it.
 
 #### Binary distribution of example applications
 
-If you would like to try the Dullahan example applications without having to build them, thee is a zipped binary distribution in the <tt>bin</tt> folder. It contains all the CEF/Chromium runtime files as well as the example executables. 
+If you would like to try the Dullahan example applications without having to build them, thee is a zipped binary distribution in the `bin` folder. It contains all the CEF/Chromium runtime files as well as the example executables. 
 
 #### Which files do I need in my own project?
 
-The main benefit of using Dullahan vs raw CEF is that you simply include the <tt>dullahan.h</tt> header file in your application and link against the <tt>dullahan.lib</tt> library along with two small CEF ones. Then, copy over the various CEF/Chromium runtime files along side your application - see the post-build step for the examples in Visual Studio for a list - and you are ready to go.
+The main benefit of using Dullahan vs raw CEF is that you simply include the `dullahan.h` header file in your application and link against the `dullahan.lib` library along with two small CEF ones. Then, copy over the various CEF/Chromium runtime files along side your application - see the post-build step for the examples in Visual Studio for a list - and you are ready to go.
 
 #### How do I use it?
 
-The short answer is look at the code in the <tt>examples</tt> folder and <tt>dullahan.h</tt>. Generally speaking, you create an instance of the library, call <tt>init()</tt> and either (a) regularly call the <tt>update()</tt> function in your own message loop or the <tt>run()</tt> function if you don't have a message loop and want to use CEFs (e.g. a console application to save a web page as a bitmap). You can hook up a callback to be notified when the contents of the page changes and get access to the raw pixels. You can synthesize mouse and keyboard events and send them into the page. Finally, when you want to exit, make sure the <tt>onRequestExit</tt> callback is hooked up and call the <tt>requestExit()</tt> method. When the library and CEF have cleaned everything up, your callback will be triggered and you can call <tt>shutdown()</tt> before exiting normally.
+The short answer is look at the code in the `examples` folder and `dullahan.h`. Generally speaking, you create an instance of the library, call `init()` and either (a) regularly call the `update()` function in your own message loop or the `run()` function if you don't have a message loop and want to use CEFs (e.g. a console application to save a web page as a bitmap). You can hook up a callback to be notified when the contents of the page changes and get access to the raw pixels. You can synthesize mouse and keyboard events and send them into the page. Finally, when you want to exit, make sure the `onRequestExit` callback is hooked up and call the `requestExit()` method. When the library and CEF have cleaned everything up, your callback will be triggered and you can call `shutdown()` before exiting normally.
 
 #### Grabbing CEF
 
 *   Make sure [CMake](https://cmake.org/) is installed on your system
 *   Grab a Windows 32-bit build of CEF from [http://cefbuilds.com](http://cefbuilds.com)
 *   Extract the 7Zip archive to a folder in an easy to find place - I use the desktop
-*   Edit the <tt>tools/make_dullahan_cef_pkg.bat</tt> batch file - specifically, the lines at the top of the file that set the CEF folder you just unpacked and the destination folder of the Dullahan compatible package.
+*   Edit the `tools/make_dullahan_cef_pkg.bat` batch file - specifically, the lines at the top of the file that set the CEF folder you just unpacked and the destination folder of the Dullahan compatible package.
 * Run the batch file
-* If all goes well, you will end up with a Dullahan CEF package in the <tt>DST_DIR</tt> folder you set
-* Move that to the <tt>cef</tt> folder in this project, edit the <tt>src/dullahan.props</tt> file and update the <tt>CEF_DIR</tt> variable to point to the folder
+* If all goes well, you will end up with a Dullahan CEF package in the `DST_DIR` folder you set
+* Move that to the `cef` folder in this project, edit the `src/dullahan.props` file and update the `CEF_DIR` variable to point to the folder
 * Build Dullahan
 
 If this step failed then you will have to inspect the batch file. Generally speaking, this is what it does:
 
 * Run CMake to generate the solution and projects files for LibCEF DLL wrapper
-* Change the <tt>libcef_dll_wrapper -> Properties C++ -> Code Generation</tt> settings to <tt>Multi-threaded DLL</tt> (Release configuration) and <tt>Multi-threaded Debug DLL</tt> (Debug configuration) 
+* Change the `libcef_dll_wrapper -> Properties C++ -> Code Generation` settings to `Multi-threaded DLL` (Release configuration) and `Multi-threaded Debug DLL` (Debug configuration) 
 * Build everything
 * Copy files to the right place
 
-Another option is to build the whole thing from scratch. This is necessary if you want to make changes to the Chromium code or perhaps turn on the proprietary media codecs support which is not available in the [CEF Builds](http://cefbuilds.com) versions. For more information on how to do this, look online or inspect the <tt>tools/build_cef.bat</tt> batch file.
+Another option is to build the whole thing from scratch. This is necessary if you want to make changes to the Chromium code or perhaps turn on the proprietary media codecs support which is not available in the [CEF Builds](http://cefbuilds.com) versions. For more information on how to do this, look online or inspect the `tools/build_cef.bat` batch file.
 
 #### What is left to do before the first real release?
 
@@ -97,9 +97,9 @@ Another option is to build the whole thing from scratch. This is necessary if yo
 *   Add support for different pages on each side of the Web Cube example
 *   Lots and lots more... please help if you can.
 
-#### What is <tt>dullahan_src_hash.hpp</tt>
+#### What is `dullahan_src_hash.hpp`
 
-In an effort to come up with a way to uniquely identify a version, I experimented with taking an MD5 hash of all the source code and using part of that in the version number string. A Pre-Build in the Visual Studio Project file step does this and writes out <tt>dullahan_src_hash.hpp</tt>. The hash in this header file is then combined with the CEF version, the Chrome version it represents as well as a Dullahan version into a single string that uniquely identifies the build. I'm still not sure this is a good idea but I'll leave in there until someone explains to me how stupid it is.
+In an effort to come up with a way to uniquely identify a version, I experimented with taking an MD5 hash of all the source code and using part of that in the version number string. A Pre-Build in the Visual Studio Project file step does this and writes out `dullahan_src_hash.hpp`. The hash in this header file is then combined with the CEF version, the Chrome version it represents as well as a Dullahan version into a single string that uniquely identifies the build. I'm still not sure this is a good idea but I'll leave in there until someone explains to me how stupid it is.
 
 #### Why the name?
 
