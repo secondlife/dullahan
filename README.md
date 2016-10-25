@@ -21,7 +21,7 @@ It might be useful in a number of situations - for example:
 * Web page capture to an image or a PDF file
 * Lots more I haven't thought of yet
 
-There is a short description and a screenshot for each example [here](examples.README.md). 
+There is a short description and a screenshot for each example [here](./examples/README.md). 
 
 ## What is CEF?
 
