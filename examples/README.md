@@ -31,6 +31,7 @@ Slightly more complex OpenGL application using native Win32 because some of the 
 ![Screen shot:](../docs/webcube.png?raw=true "Optional title")
 
 Notes:
+
 * Displays same URL on each side of a cube
   * It would be easy to add a different one to each side but make the code longer
   * Start page is a local HTML page in <tt>tools</tt> folder
