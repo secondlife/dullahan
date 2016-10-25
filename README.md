@@ -21,6 +21,8 @@ It might be useful in a number of situations - for example:
 * Web page capture to an image or a PDF file
 * Lots more I haven't thought of yet
 
+There is a short description and a screenshot for each example [here](examples.README.md). 
+
 ## What is CEF?
 
 From the [CEF Wiki](https://en.wikipedia.org/wiki/Chromium_Embedded_Framework) page: The Chromium Embedded Framework (CEF) is an open source framework for embedding a web browser engine based on the Chromium core. 
