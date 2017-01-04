@@ -186,8 +186,36 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "webcube")
 endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
+
+################################################################################
+## console test application
+
+# add source file to application
+add_executable(
+    console
+    examples/console/console.cpp
+)
+
+# define which include directories to pull in
+target_include_directories(
+    console
+    PUBLIC
+    src
+)
+
+# define which libs to link against
+target_link_libraries(
+    console
+    dullahan
+    ${CEF_LIBRARY}
+    ${CEF_DLL_LIBRARY}
+)
+
+
+################################################################################
+# generic commands that have to go after everything else
+
 ###### set only a Release configuration
 if(CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 endif()
-

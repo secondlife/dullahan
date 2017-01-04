@@ -8,27 +8,17 @@ Contributions showing off different features or ideas would be much appreciated.
 
 Command line application to render a given URL to a bitmap and save it as a file called  `output.bmp` in the current directory when the page finishes loading.
 
-![Screen shot:](../docs/console.png?raw=true "Optional title")
+![Screen shot:](../docs/console.png?raw=true "Console example")
 
 Notes:
 * Pass a URL as command line parameter to render it
 * Some sites are not fully complete when they complete loading (when the application saves the bitmap)
 
-## SimpleGL
-
-Super simple OpenGL (via [FreeGLUT](http://freeglut.sourceforge.net/)) application to render URLs to a full screen graphics texture.
-
-![Screen shot:](../docs/simplegl.png?raw=true "Optional title")
-
-Notes:
-* Mouse clicks work - keyboard does not
-* FreeGLUT doesn't allow us to hook up required Dullahan exit steps so not implemented at all
-
 ## Web Cube
 
 Slightly more complex OpenGL application using native Win32 because some of the calls to CEF (and therefore Dullahan) require native Windows messages.
 
-![Screen shot:](../docs/webcube.png?raw=true "Optional title")
+![Screen shot:](../docs/webcube.png?raw=true "Web Cube example")
 
 Notes:
 
