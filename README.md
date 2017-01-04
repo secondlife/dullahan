@@ -10,6 +10,7 @@ This is __very__ much an alpha release / first code drop. I have high hopes this
 ## What could I use it for?
 
 It might be useful in a number of situations - for example:
+
 * Anywhere you want to render web content in a graphics application - e.g. help pages in an OpenGL based game
 * VR based video chat and shared environments (I'm working on an app like this now)
 * HTML/JavaScript based user interfaces E.G. a tablet based paradigm for VR
@@ -19,6 +20,8 @@ It might be useful in a number of situations - for example:
   * Capture a Google Maps traffic map of your commute for 24 hours and see how bad it is :)
 * Web page capture to an image or a PDF file
 * Lots more I haven't thought of yet
+
+There are some examples included in this repository and there is a description and a screenshot for each [here](./examples/README.md). 
 
 ## What is CEF?
 

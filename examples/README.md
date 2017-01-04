@@ -6,7 +6,7 @@ Contributions showing off different features or ideas would be much appreciated.
 
 ## Console
 
-Command line application to render a given URL to a bitmap and save it as a file called  <tt>output.bmp</tt> in the current directory when the page finishes loading.
+Command line application to render a given URL to a bitmap and save it as a file called  `output.bmp` in the current directory when the page finishes loading.
 
 ![Screen shot:](../docs/console.png?raw=true "Optional title")
 
@@ -31,9 +31,10 @@ Slightly more complex OpenGL application using native Win32 because some of the 
 ![Screen shot:](../docs/webcube.png?raw=true "Optional title")
 
 Notes:
+
 * Displays same URL on each side of a cube
   * It would be easy to add a different one to each side but make the code longer
-  * Start page is a local HTML page in <tt>tools</tt> folder
+  * Start page is a local HTML page in `tools` folder
 * Move the cube by holding down SHIFT key and using mouse and mouse wheel
 * Interact with pages via mouse and keyboard (somewhat) normally
 * Press ESC key to exit
