@@ -1,12 +1,3 @@
-#
-#	TODOS
-#	deal with code generation DLL thing?
-#	update docs to reflect cmake
-#	run astyle over souce
-#	64 bit version
-#	move cef definition to command line for cmake
-
-
 ################################################################################
 ## minimum version required - 3.6.3+ needed to set startup project
 cmake_minimum_required(VERSION 3.6.3)
