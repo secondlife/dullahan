@@ -3,8 +3,8 @@
 .DS_Store?
 
 # Build/output folders
-Debug/
-Release/
+build/
+build64/
 
 glob:*.wwdb
 
@@ -12,8 +12,6 @@ glob:*.wwdb
 dullahan.sdf
 dullahan.v12.suo
 dullahan.opensdf
-
-src/dullahan_src_hash.hpp
 
 # test apps crud
 examples/console/cookies/Cookies-journal
@@ -36,6 +34,3 @@ glob:*.orig
 
 # Windows RC crud
 glob:*.aps
-
-# CEF Builds folder
-cef/

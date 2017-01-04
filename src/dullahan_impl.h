@@ -5,17 +5,17 @@
     @author Callum Prentice - September 2016
 
     Copyright (c) 2016, Linden Research, Inc.
-    
+
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
     furnished to do so, subject to the following conditions:
-    
+
     The above copyright notice and this permission notice shall be included in
     all copies or substantial portions of the Software.
-    
+
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,8 @@ class dullahan_context_handler;
 class dullahan_callback_manager;
 
 static const int DULLAHAN_VERSION_MAJOR = 1;
-static const int DULLAHAN_VERSION_MINOR = 0;
+static const int DULLAHAN_VERSION_MINOR = 1;
+static const int DULLAHAN_VERSION_BUILD = 507;
 
 class dullahan_impl :
     public CefApp,
@@ -109,9 +110,10 @@ class dullahan_impl :
 
         void showBrowserMessage(const std::string msg);
 
-        const std::string dullahan_cef_version();
-        const std::string dullahan_chrome_version();
-        const std::string dullahan_version();
+        const std::string append_bitwidth_string(std::ostringstream& stream, bool show_bitwidth);
+        const std::string dullahan_cef_version(bool show_bitwidth);
+        const std::string dullahan_chrome_version(bool show_bitwidth);
+        const std::string dullahan_version(bool show_bitwidth);
         const std::string composite_version();
 
         // CefPdfPrintCallback overrides

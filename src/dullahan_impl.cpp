@@ -5,17 +5,17 @@
     @author Callum Prentice - September 2016
 
     Copyright (c) 2016, Linden Research, Inc.
-    
+
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
     furnished to do so, subject to the following conditions:
-    
+
     The above copyright notice and this permission notice shall be included in
     all copies or substantial portions of the Software.
-    
+
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,8 +30,6 @@
 #include "dullahan_browser_client.h"
 #include "dullahan_callback_manager.h"
 #include "dullahan_context_handler.h"
-
-#include "dullahan_src_hash.hpp"
 
 #include <iostream>
 
@@ -316,13 +314,13 @@ std::string dullahan_impl::makeCompatibleUserAgentString(const std::string base)
     frag += "(";
     frag += "Dullahan";
     frag += ":";
-    frag += dullahan_version();
+    frag += dullahan_version(true);
     frag += " - ";
     frag += base;
     frag += ")";
     frag += "  ";
     frag += "Chrome/";
-    frag += dullahan_chrome_version();
+    frag += dullahan_chrome_version(true);
 
     return frag;
 }
@@ -516,12 +514,30 @@ void dullahan_impl::showBrowserMessage(const std::string msg)
     navigate(url.str());
 }
 
-const std::string dullahan_impl::dullahan_cef_version()
+const std::string dullahan_impl::append_bitwidth_string(std::ostringstream& stream, bool show_bitwidth)
 {
-    return CEF_VERSION;
+    if (show_bitwidth)
+    {
+        size_t bit_width = sizeof(void*) * 8;
+        stream << " ";
+        stream << "[";
+        stream << bit_width;
+        stream << "bit";
+        stream << "]";
+    }
+
+    return stream.str();
 }
 
-const std::string dullahan_impl::dullahan_chrome_version()
+const std::string dullahan_impl::dullahan_cef_version(bool show_bitwidth)
+{
+    std::ostringstream s;
+    s << CEF_VERSION;
+
+    return append_bitwidth_string(s, show_bitwidth);
+}
+
+const std::string dullahan_impl::dullahan_chrome_version(bool show_bitwidth)
 {
     std::ostringstream s;
     s << CHROME_VERSION_MAJOR;
@@ -532,10 +548,10 @@ const std::string dullahan_impl::dullahan_chrome_version()
     s << ".";
     s << CHROME_VERSION_PATCH;
 
-    return s.str();
+    return append_bitwidth_string(s, show_bitwidth);
 }
 
-const std::string dullahan_impl::dullahan_version()
+const std::string dullahan_impl::dullahan_version(bool show_bitwidth)
 {
     std::ostringstream s;
 
@@ -543,9 +559,9 @@ const std::string dullahan_impl::dullahan_version()
     s << ".";
     s << DULLAHAN_VERSION_MINOR;
     s << ".";
-    s << SRC_HASH_VAL;
+    s << DULLAHAN_VERSION_BUILD;
 
-    return s.str();
+    return append_bitwidth_string(s, show_bitwidth);
 }
 
 const std::string dullahan_impl::composite_version()
@@ -553,12 +569,12 @@ const std::string dullahan_impl::composite_version()
     std::ostringstream version;
 
     version << "Dullahan: ";
-    version << dullahan_version();
+    version << dullahan_version(false);
     version << " (CEF: ";
-    version << dullahan_cef_version();
+    version << dullahan_cef_version(false);
     version << " - Chrome: ";
-    version << dullahan_chrome_version();
+    version << dullahan_chrome_version(false);
     version << ")";
 
-    return version.str();
+    return append_bitwidth_string(version, true);
 }
