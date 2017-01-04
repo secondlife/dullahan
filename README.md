@@ -59,8 +59,8 @@ For historical reasons, both it and the version of CEF in this repository are bu
 * Note: For 64 bit builds, invoke CMake like this `cmake -G "Visual Studio 12 2013 Win64" -DCEF_DIR="c:\work\cef_builds\cef_2704.1434.win64" ..`
 * Either open the resulting `dullahan.sln` in Visual Studio as normal or build everything on the command line using `msbuild dullahan.sln /p:Configuration=Release`
 * Switch to the output directory `cd Release` and run the example `.\webcube`
-* The Dullahan header you need can be found in `src` directory
-* The Dullahan library file you need can be found in `build\Release | Debug` directory
+* The Dullahan header you need (`dullahan.h`) can be found in `src` directory
+* The Dullahan library file you need (`dullahan.lib`) can be found in `build\Release | Debug` directory
 
 ## Which files do I need in my own project?
 
