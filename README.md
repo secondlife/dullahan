@@ -49,7 +49,7 @@ For historical reasons, both it and the version of CEF in this repository are bu
 
 ## Is there a binary version I can download? ##
 
-I packaged up a Win32 version of the examples along with the necessary runtimes. It is built against CEF revision 2704 so it's similar to Chrome 51.0. You can download it [here from my Dropbox](https://dl.dropboxusercontent.com/u/1109/dullahan_bin_examples-1.1.507-win32.zip) for now - permanent location to follow.
+I packaged up a Win32 version of the examples along with the necessary runtimes. It is built against CEF revision 2704 so it's similar to Chrome 51.0. You can download it [here from my Dropbox](https://dl.dropboxusercontent.com/u/1109/dullahan_bin_examples-1.1.507-win32.zip) for now - permanent location to follow. Download, unzip into a directory and run `webcube.exe` or `console.exe <URL>`.
 
 ## How do I build Dullahan?
 
