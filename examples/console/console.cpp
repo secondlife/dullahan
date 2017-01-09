@@ -154,7 +154,9 @@ int main(int argc, char* argv[])
 
     std::cout << "Dullahan console test" << std::endl << std::endl;
     std::cout << "Capturing: " << url << std::endl << std::endl;
-    std::cout << "Dullahan version: " << headless_browser->dullahan_version(true) << std::endl << std::endl;
+	std::cout << "CEF Version: " << headless_browser->dullahan_cef_version(true) << std::endl;
+	std::cout << "Chrome Version: " << headless_browser->dullahan_chrome_version(true) << std::endl;
+	std::cout << "Dullahan version: " << headless_browser->dullahan_version(true) << std::endl << std::endl;
 
     headless_browser->setOnPageChangedCallback(std::bind(onPageChanged,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
