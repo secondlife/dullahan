@@ -932,8 +932,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     SetForegroundWindow(hWnd);
     SetFocus(hWnd);
 
-    //HWND hWndURL = create_url_entry_ui(hWnd);
-
     gApp->init();
 
     gApp->resize_window(gApp->mAppWindowWidth, gApp->mAppWindowHeight);

@@ -30,7 +30,11 @@
 #include <iostream>
 #include <functional>
 #include <string>
+#include <ctime>
+
 #include <fstream>
+#include <windows.h>
+
 
 #include "dullahan.h"
 
@@ -39,12 +43,14 @@ dullahan* headless_browser;
 unsigned char* gPixels = 0;
 int gWidth = 0;
 int gHeight = 0;
+time_t gPageFinishLoadTime = time(nullptr);
+time_t gLastChangeTime = time(nullptr);
 
 void writeBMPImage(const std::string& filename,
                    unsigned char* pixels,
                    int image_width, int image_height)
 {
-    std::cout << "Writing output image (BMP) (" << image_width << " x " << image_height << ") to " << filename << std::endl;
+    std::cout << std::endl << "Writing output image (BMP) (" << image_width << " x " << image_height << ") to " << filename << std::endl;
 
     std::ofstream img_stream(filename.c_str(), std::ios::binary | std::ios::out);
     if (img_stream)
@@ -102,33 +108,38 @@ void writeBMPImage(const std::string& filename,
 void onPageChanged(const unsigned char* pixels, int x, int y, int width,
                    int height, bool is_popup)
 {
-    std::cout << "Page changed" << std::endl;
+    std::cout << "# ";
 
-    gPixels = (unsigned char*)pixels;
-    gWidth = width;
-    gHeight = height;
+    if (width != gWidth || height != gHeight)
+    {
+        delete gPixels;
+        gPixels = new unsigned char[width * height * 4];
+        gWidth = width;
+        gHeight = height;
+    }
+
+    memcpy(gPixels, (unsigned char*)pixels, gWidth * 4 * gHeight);
+
+    gLastChangeTime = time(nullptr);
 }
 
 void onLoadStart()
 {
-    std::cout << "Page load started" << std::endl;
+    std::cout << std::endl << "Page load started" << std::endl;
+    gLastChangeTime = time(nullptr);
 }
 
 void onLoadEnd(int code)
 {
-    std::cout << "Page load ended with code " << code << std::endl;
-
-    if (code == 200)
-    {
-        writeBMPImage("output.bmp", gPixels, gWidth, gHeight);
-    }
-
-    headless_browser->requestExit();
+    std::cout << std::endl << "Page load ended with code " << code << std::endl;
+    gLastChangeTime = time(nullptr);
+    gPageFinishLoadTime = time(nullptr);
 }
 
 void onRequestExit()
 {
-    std::cout << "Exit requested - shutting down and exiting" << std::endl;
+    std::cout << std::endl << "Exit requested - shutting down and exiting" << std::endl;
+    PostQuitMessage(0L);
 }
 
 int main(int argc, char* argv[])
@@ -155,7 +166,7 @@ int main(int argc, char* argv[])
 
     dullahan::dullahan_settings settings;
     settings.initial_width = 1024;
-    settings.initial_height = 3072;
+    settings.initial_height = 1024;
     settings.javascript_enabled = true;
     settings.cookies_enabled = true;
     settings.user_agent_substring = "Console Test";
@@ -165,7 +176,34 @@ int main(int argc, char* argv[])
 
     headless_browser->navigate(url);
 
-    headless_browser->run();
+    MSG msg;
+    do
+    {
+        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        else
+        {
+            headless_browser->update();
+
+            const time_t max_elapsed_change_seconds = 2;
+            if (time(nullptr) - gLastChangeTime > max_elapsed_change_seconds)
+            {
+                headless_browser->requestExit();
+            }
+
+            const time_t max_elapsed_since_loaded_seconds = 10;
+            if (time(nullptr) - gPageFinishLoadTime > max_elapsed_since_loaded_seconds)
+            {
+                headless_browser->requestExit();
+            }
+        }
+    }
+    while (msg.message != WM_QUIT);
+
+    writeBMPImage("output.bmp", gPixels, gWidth, gHeight);
 
     headless_browser->shutdown();
 }
