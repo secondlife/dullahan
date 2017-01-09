@@ -32,3 +32,11 @@ Notes:
 * Pass a URL as command line parameter to render it
 * Some sites are not fully complete when they complete loading (when the application saves the bitmap)
 
+Example output from the `console` example:
+
+![Screen shot:](../docs/googlenews.png?raw=true "http://news.google.com")
+
+* Google News
+
+
+
