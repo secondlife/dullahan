@@ -35,8 +35,7 @@ Notes:
 Example output from the `console` example:
 
 ![Screen shot:](../docs/googlenews.png?raw=true "http://news.google.com")
-
-* Google News
+Google News. [Original: ](../docs/googlenews.png)
 
 
 
