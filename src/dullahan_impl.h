@@ -43,7 +43,7 @@ class dullahan_callback_manager;
 
 static const int DULLAHAN_VERSION_MAJOR = 1;
 static const int DULLAHAN_VERSION_MINOR = 1;
-static const int DULLAHAN_VERSION_BUILD = 507;
+static const int DULLAHAN_VERSION_BUILD = 508;
 
 class dullahan_impl :
     public CefApp,
