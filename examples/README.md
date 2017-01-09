@@ -4,16 +4,6 @@ Some examples of how you might Dullahan. None of them are meant to be full featu
 
 Contributions showing off different features or ideas would be much appreciated.
 
-## Console
-
-Command line application to render a given URL to a bitmap and save it as a file called  `output.bmp` in the current directory when the page finishes loading.
-
-![Screen shot:](../docs/console.png?raw=true "Console example")
-
-Notes:
-* Pass a URL as command line parameter to render it
-* Some sites are not fully complete when they complete loading (when the application saves the bitmap)
-
 ## Web Cube
 
 Slightly more complex OpenGL application using native Win32 because some of the calls to CEF (and therefore Dullahan) require native Windows messages.
@@ -30,3 +20,15 @@ Notes:
 * Press ESC key to exit
 * Enter any URL into the top edit control
 * Expose some features via menu - e.g. Print to PDF
+
+## Console
+
+Command line application to render a given URL to a bitmap and save it as a file called  `output.bmp` in the current directory when the page finishes loading.
+
+![Screen shot:](../docs/console.png?raw=true "Console example")
+
+Notes:
+
+* Pass a URL as command line parameter to render it
+* Some sites are not fully complete when they complete loading (when the application saves the bitmap)
+
