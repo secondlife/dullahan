@@ -38,5 +38,28 @@ Google News. [(Original output)](../docs/googlenews.png)
 
 ![Screen shot:](../docs/googlenews_thumb.png?raw=true "http://news.google.com")
 
+Hacker News. [(Original output)](../docs/hackernews.png)
+
+![Screen shot:](../docs/hackernews_thumb.png?raw=true "http://news.ycombinator.com")
+
+HTML5 Test. [(Original output)](../docs/html5test.png)
+
+![Screen shot:](../docs/html5test_thumb.png?raw=true "http://html5test.com")
+
+PDR renderer. [(Original output)](../docs/pdf.png)
+
+![Screen shot:](../docs/pdf_thumb.png?raw=true "https://www.irs.gov/pub/irs-pdf/fw4.pdf")
+
+Google Streetview. [(Original output)](../docs/streetview.png)
+
+![Screen shot:](../docs/streetview_thumb.png?raw=true "https://www.google.com/maps/place/La+Rambla,+08002+Barcelona,+Spain/@41.3852695,2.1700326,3a,75y,129.04h,84.9t/data=!3m7!1e1!3m5!1sUD8PPXaeTUpTf8LKBXPcMQ!2e0!6s%2F%2Fgeo0.ggpht.com%2Fcbk%3Fpanoid%3DUD8PPXaeTUpTf8LKBXPcMQ%26output%3Dthumbnail%26cb_client%3Dsearch.TACTILE.gps%26thumb%3D2%26w%3D392%26h%3D106%26yaw%3D335.08578%26pitch%3D0!7i13312!8i6656!4m5!3m4!1s0x12a4a258081714c9:0x24bef7ac8842bdc4!8m2!3d41.3806562!4d2.1738529")
+
+WebGL. [(Original output)](../docs/webgl.png)
+
+![Screen shot:](../docs/webgl_thumb.png?raw=true "http://alteredqualia.com/xg/examples/car_zastava.html")
+
+YouTube. [(Original output)](../docs/youtube.png)
+
+![Screen shot:](../docs/youtube_thumb.png?raw=true "https://www.youtube.com/watch?v=79DijItQXMM")
 
 
