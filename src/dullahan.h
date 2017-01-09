@@ -142,6 +142,7 @@ class dullahan
             bool cookies_enabled = true;            // cookies
             bool cache_enabled = true;              // local cache
             bool begin_frame_scheduling = false;    // fixes issue when onPaint not called
+            bool force_wave_audio = false;          // forces Windows WaveOut/In audio
 
             // path to browser cache
             std::string cache_path = "";

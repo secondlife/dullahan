@@ -40,7 +40,8 @@ dullahan_impl::dullahan_impl() :
     mBrowser(0),
     mSystemFlashEnabled(false),
     mMediaStreamEnabled(false),
-    mBeginFrameScheduling(false)
+    mBeginFrameScheduling(false),
+    mForceWaveAudio(false)
 {
     DLNOUT("dullahan_impl::dullahan_impl()");
 }
@@ -72,6 +73,12 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         {
             command_line->AppendSwitch("enable-begin-frame-scheduling");
         }
+
+        if (mForceWaveAudio == true)
+        {
+            command_line->AppendSwitch("force-wave-audio");
+        }
+
     }
 
     // add this switch or pages with videos - e.g. YouTube stutter
@@ -128,6 +135,9 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     // this flag needed for some video cards to force onPaints to work - off by default
     mBeginFrameScheduling = user_settings.begin_frame_scheduling;
+
+    // this flag forces Windows WaveOut/In audio API even if Core Audio is supported
+    mForceWaveAudio = user_settings.force_wave_audio;
 
     // initiaize CEF
     bool result = CefInitialize(args, settings, this, NULL);

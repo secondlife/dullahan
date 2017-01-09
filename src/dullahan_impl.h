@@ -131,7 +131,7 @@ class dullahan_impl :
         bool mSystemFlashEnabled;
         bool mMediaStreamEnabled;
         bool mBeginFrameScheduling;
-
+        bool mForceWaveAudio;
         IMPLEMENT_REFCOUNTING(dullahan_impl);
 };
 
