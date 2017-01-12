@@ -25,6 +25,10 @@
     THE SOFTWARE.
 */
 
+#ifdef __APPLE__
+#import <Cocoa/Cocoa.h>
+#endif
+
 #include "dullahan_impl.h"
 #include "dullahan_render_handler.h"
 #include "dullahan_browser_client.h"
@@ -89,11 +93,21 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 {
     DLNOUT("dullahan_impl::init()");
 
+#ifdef WIN32
     CefMainArgs args(GetModuleHandle(NULL));
+#elif __APPLE__
+    CefMainArgs args(0, NULL);
+#endif
+
     CefSettings settings;
 
     // point to host application
+#ifdef WIN32
     CefString(&settings.browser_subprocess_path) = "dullahan_host.exe";
+#elif __APPLE__
+    NSString* appBundlePath = [[NSBundle mainBundle] bundlePath];
+    CefString(&settings.browser_subprocess_path) = [[NSString stringWithFormat: @"%@/Contents/Frameworks/Dullahan Helper.app/Contents/MacOS/Dullahan Helper", appBundlePath] UTF8String];
+#endif
 
     // turn on only for Windows 7+
     CefEnableHighDPISupport();
@@ -226,9 +240,10 @@ void dullahan_impl::setSize(int width, int height)
     if (mBrowser.get() && mBrowser->GetHost())
     {
         // This is how you are supposed to change embeded browser window size but not quite working
-        HWND hwnd = mBrowser->GetHost()->GetWindowHandle();
-        SetWindowPos(hwnd, 0, 0, 0, mViewWidth, mViewHeight,
-                     SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW);
+        // TODO: fix me for windows and mac
+        // HWND hwnd = mBrowser->GetHost()->GetWindowHandle();
+        // SetWindowPos(hwnd, 0, 0, 0, mViewWidth, mViewHeight,
+        //              SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW);
 
         mBrowser->GetHost()->WasResized();
     }
@@ -368,7 +383,11 @@ void dullahan_impl::showDevTools()
         window_info.y = 0;
         window_info.width = 400;
         window_info.height = 400;
+#ifdef WIN32
         window_info.SetAsPopup(NULL, "Dullahan Dev Tools");
+#elif __APPLE__
+        // TODO: need Apple equivalent
+#endif
         CefRefPtr<CefClient> client = mBrowserClient;
         CefBrowserSettings browser_settings;
         CefPoint inspect_element_at;

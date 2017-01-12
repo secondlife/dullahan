@@ -25,30 +25,23 @@
     THE SOFTWARE.
 */
 
-#include "cef_app.h"
-
-#ifdef WIN32
-#include <windows.h>
-
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                     LPSTR lpCmdLine, int nCmdShow)
-{
-    CefMainArgs args(GetModuleHandle(NULL));
-
-    return CefExecuteProcess(args, nullptr, nullptr);
-}
-#endif
-
-// OS X Helper executable, we can probably share this between Win & Mac
 #ifdef __APPLE__
-
-// Entry point function for sub-processes.
-int main(int argc, char* argv[])
-{
-    // Provide CEF with command-line arguments.
-    CefMainArgs args(argc, argv);
-
-    // Execute the sub-process.
-    return CefExecuteProcess(args, nullptr, nullptr);
-}
+#import <Cocoa/Cocoa.h>
 #endif
+
+#include "dullahan_impl.h"
+
+bool isKeyDown()
+{
+    return false;
+}
+
+int GetCefKeyboardModifiers()
+{
+    return 0;
+}
+
+void dullahan_impl::nativeKeyboardEvent(uint32_t msg, uint32_t wparam,
+                                        uint64_t lparam)
+{
+}

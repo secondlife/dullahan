@@ -121,17 +121,17 @@ class dullahan_impl :
 
     private:
         CefRefPtr<dullahan_browser_client> mBrowserClient;
-        CefRefPtr<CefBrowser> mBrowser;
-        CefRefPtr<dullahan_context_handler> mContextHandler;
         dullahan_callback_manager* mCallbackManager;
         int mViewWidth;
         int mViewHeight;
-        const int mViewDepth = 4;
-        std::vector<std::string> mCustomSchemes;
+        CefRefPtr<CefBrowser> mBrowser;
         bool mSystemFlashEnabled;
         bool mMediaStreamEnabled;
         bool mBeginFrameScheduling;
-        bool mForceWaveAudio;
+        CefRefPtr<dullahan_context_handler> mContextHandler;
+        const int mViewDepth = 4;
+        std::vector<std::string> mCustomSchemes;
+
         IMPLEMENT_REFCOUNTING(dullahan_impl);
 };
 

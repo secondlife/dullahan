@@ -28,6 +28,7 @@
 #define _DULLAHAN
 
 #include <memory>
+#include <string>
 #include <functional>
 
 class dullahan_impl;
