@@ -128,6 +128,7 @@ class dullahan_impl :
         bool mSystemFlashEnabled;
         bool mMediaStreamEnabled;
         bool mBeginFrameScheduling;
+        bool mForceWaveAudio;
         CefRefPtr<dullahan_context_handler> mContextHandler;
         const int mViewDepth = 4;
         std::vector<std::string> mCustomSchemes;
