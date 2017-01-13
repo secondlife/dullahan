@@ -135,40 +135,47 @@ target_include_directories(
 
 # add source files to the application
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-add_executable(
-    dullahan_host
-    src/host/dullahan_host.cpp
-)
+    add_executable(
+        dullahan_host
+        src/host/dullahan_host.cpp
+    )
+
+    # define which include directories to pull in
+    target_include_directories(
+        dullahan_host
+        PUBLIC
+        ${CEF_DIR}
+        ${CEF_DIR}/include
+    )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-add_executable(
-    dullahan_host
-    MACOSX_BUNDLE
-    src/host/dullahan_host.cpp
-)
+    add_executable(
+        DullahanHelper
+        MACOSX_BUNDLE
+        src/host/dullahan_host.cpp
+    )
+    # define which include directories to pull in
+    target_include_directories(
+        DullahanHelper
+        PUBLIC
+        ${CEF_DIR}
+        ${CEF_DIR}/include
+    )
 endif()
 
 
-# define which include directories to pull in
-target_include_directories(
-    dullahan_host
-    PUBLIC
-    ${CEF_DIR}
-    ${CEF_DIR}/include
-)
-
 # define which libs to link against
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-target_link_libraries(
+    target_link_libraries(
         dullahan_host
         ${CEF_LIBRARY}
         ${CEF_DLL_LIBRARY}
-)
+    )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-target_link_libraries(
-        dullahan_host
+    target_link_libraries(
+        DullahanHelper
         ${CEF_DLL_LIBRARY}
         ${CEF_FRAMEWORK}
-)
+    )
 endif()
 
 # we are building Windows executable, not a console app (default)
@@ -176,10 +183,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-
-# dullahan host doesn't really depend on dullahan but we
-# want to force it to be rebuilt as part of the whole project
-add_dependencies(dullahan dullahan_host)
 
 ################################################################################
 ## examples
@@ -313,7 +316,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     )
 
     add_dependencies(osxgl dullahan)
-    add_dependencies(osxgl dullahan_host)
+    add_dependencies(osxgl DullahanHelper)
 endif()
 
 ################################################################################
