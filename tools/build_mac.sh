@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-# todo update info.plist with real info
-# make a real menu.nib
-# wtf is osx helper ?
-# use symlink for second framework
-
+# repoint where to find framework
 install_name_tool -id "@executable_path/../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework" ~/Work/cef_builds/cef_bin-3.2704-mac64/bin/release/Chromium\ Embedded\ Framework.framework/Chromium\ Embedded\ Framework
 
 rm -rf ./build
@@ -17,19 +13,26 @@ xcodebuild -project dullahan.xcodeproj -target DullahanHelper -configuration 'Re
 xcodebuild -project dullahan.xcodeproj -target osxgl -configuration 'Release'
 
 mkdir Release/osxgl.app/Contents/Frameworks
-cp -r ~/Work/cef_builds/cef_bin-3.2704-mac64/bin/release/Chromium\ Embedded\ Framework.framework Release/osxgl.app/Contents/Frameworks/Chromium\ Embedded\ Framework.framework
 
+# copy helper app to right place
 cp -r Release/DullahanHelper.app Release/osxgl.app/Contents/Frameworks/DullahanHelper.app
 
-#todo replace this with a symlink
-mkdir Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks
-cp -r ~/Work/cef_builds/cef_bin-3.2704-mac64/bin/release/Chromium\ Embedded\ Framework.framework Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks/Chromium\ Embedded\ Framework.framework
+# copy framework to right place
+cp -r ~/Work/cef_builds/cef_bin-3.2704-mac64/bin/release/Chromium\ Embedded\ Framework.framework Release/osxgl.app/Contents/Frameworks/Chromium\ Embedded\ Framework.framework
 
+# helper app needs the framework too so make a symbolic link to existing one
+pushd .
+mkdir  Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks
+cd Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks
+ln -s '../../../../Frameworks/Chromium Embedded Framework.framework' 'Chromium Embedded Framework.framework'
+popd
+
+# copy meta data
 cp ../src/host/Info.plist Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents
-
-# todo generate from cmake
 cp ../examples/osxgl/Info.plist Release/osxgl.app/Contents
 
-# todo generate if possible
+# copy nib file
 mkdir Release/osxgl.app/Contents/Resources
 cp -r ../examples/osxgl/Resources/* Release/osxgl.app/Contents/Resources
+
+
