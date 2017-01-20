@@ -25,10 +25,11 @@ cp -r Release/DullahanHelper.app Release/osxgl.app/Contents/Frameworks/DullahanH
 mkdir Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks
 cp -r ~/Work/cef_builds/cef_bin-3.2704-mac64/bin/release/Chromium\ Embedded\ Framework.framework Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks/Chromium\ Embedded\ Framework.framework
 
+cp ../src/host/Info.plist Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents
+
 # todo generate from cmake
-cp ~/Desktop/Info.plist Release/osxgl.app/Contents
-cp ~/Desktop/Info.plist Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents
+cp ../examples/osxgl/Info.plist Release/osxgl.app/Contents
 
 # todo generate if possible
 mkdir Release/osxgl.app/Contents/Resources
-cp -r ~/Desktop/Resources/* Release/osxgl.app/Contents/Resources
+cp -r ../examples/osxgl/Resources/* Release/osxgl.app/Contents/Resources
