@@ -35,15 +35,12 @@
 #include "cef_version.h"
 
 #include "dullahan.h"
+#include "dullahan_version.h"
 #include "dullahan_debug.h"
 
 class dullahan_browser_client;
 class dullahan_context_handler;
 class dullahan_callback_manager;
-
-static const int DULLAHAN_VERSION_MAJOR = 1;
-static const int DULLAHAN_VERSION_MINOR = 1;
-static const int DULLAHAN_VERSION_BUILD = 508;
 
 class dullahan_impl :
     public CefApp,
