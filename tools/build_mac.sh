@@ -6,7 +6,13 @@ install_name_tool -id "@executable_path/../Frameworks/Chromium Embedded Framewor
 rm -rf ./build
 mkdir build
 cd build
-cmake -G "Xcode" cmake -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCEF_DIR="~/work/cef_builds/cef_bin-3.2704-mac64" ..
+cmake -G "Xcode" \
+    -DCMAKE_OSX_ARCHITECTURES="x86_64" \
+    -DCEF_INCLUDE_DIR="~/work/cef_builds/cef_bin-3.2704-mac64/include" \
+    -DCEF_LIB_DIR="~/work/cef_builds/cef_bin-3.2704-mac64/lib" \
+    -DCEF_BIN_DIR="~/work/cef_builds/cef_bin-3.2704-mac64/bin" \
+    -DCEF_RESOURCE_DIR="~/work/cef_builds/cef_bin-3.2704-mac64/resources" \
+    ..
 
 xcodebuild -project dullahan.xcodeproj -target dullahan -configuration 'Release'
 xcodebuild -project dullahan.xcodeproj -target DullahanHelper -configuration 'Release'

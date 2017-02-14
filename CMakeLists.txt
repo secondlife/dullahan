@@ -10,8 +10,17 @@ project(dullahan)
 ## generics
 
 # ensure location of CEF files is set at command line
-if (CEF_DIR STREQUAL "")
-    MESSAGE("CEF_DIR not set" FATAL)
+if (CEF_INCLUDE_DIR STREQUAL "")
+    MESSAGE("CEF_INCLUDE_DIR not set" FATAL)
+endif()
+if (CEF_LIB_DIR STREQUAL "")
+    MESSAGE("CEF_LIB_DIR not set" FATAL)
+endif()
+if (CEF_BIN_DIR STREQUAL "")
+    MESSAGE("CEF_BIN_DIR not set" FATAL)
+endif()
+if (CEF_RESOURCE_DIR STREQUAL "")
+    MESSAGE("CEF_RESOURCE_DIR not set" FATAL)
 endif()
 
 # location of CEF libraries we link against
@@ -19,50 +28,50 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     find_library(
         CEF_LIBRARY_DEBUG
         NAMES libcef.lib
-        PATHS ${CEF_DIR}/lib
+        PATHS ${CEF_LIB_DIR}
         PATH_SUFFIXES debug
     )
     find_library(
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.lib
-        PATHS ${CEF_DIR}/lib
+        PATHS ${CEF_LIB_DIR}
         PATH_SUFFIXES debug
     )
     find_library(
         CEF_LIBRARY_RELEASE
         NAMES libcef.lib
-        PATHS ${CEF_DIR}/lib
+        PATHS ${CEF_LIB_DIR}
         PATH_SUFFIXES release
     )
     find_library(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.lib
-        PATHS ${CEF_DIR}/lib
+        PATHS ${CEF_LIB_DIR}
         PATH_SUFFIXES release
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     find_library(
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.a
-        PATHS ${CEF_DIR}/lib
+        PATHS ${CEF_LIB_DIR}
         PATH_SUFFIXES debug
     )
     find_library(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.a
-        PATHS ${CEF_DIR}/lib
+        PATHS ${CEF_LIB_DIR}
         PATH_SUFFIXES release
     )
     find_library(
         CEF_FRAMEWORK_DEBUG
         NAMES "Chromium Embedded Framework"
-        PATHS ${CEF_DIR}/bin
+        PATHS ${CEF_BIN_DIR}
         PATH_SUFFIXES debug
     )
     find_library(
         CEF_FRAMEWORK_RELEASE
         NAMES "Chromium Embedded Framework"
-        PATHS ${CEF_DIR}/bin/release
+        PATHS ${CEF_BIN_DIR}/release
         PATH_SUFFIXES release
     )
     set(CEF_FRAMEWORK
@@ -126,8 +135,8 @@ add_library(
 target_include_directories(
     dullahan
     PUBLIC
-    ${CEF_DIR}
-    ${CEF_DIR}/include
+    ${CEF_INCLUDE_DIR}
+    ${CEF_INCLUDE_DIR}/..
 )
 
 ################################################################################
@@ -144,8 +153,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_include_directories(
         dullahan_host
         PUBLIC
-        ${CEF_DIR}
-        ${CEF_DIR}/include
+        ${CEF_INCLUDE_DIR}
+        ${CEF_INCLUDE_DIR}/..
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_executable(
@@ -157,11 +166,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_include_directories(
         DullahanHelper
         PUBLIC
-        ${CEF_DIR}
-        ${CEF_DIR}/include
+        ${CEF_INCLUDE_DIR}
+        ${CEF_INCLUDE_DIR}/..
     )
 endif()
-
 
 # define which libs to link against
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -228,7 +236,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_custom_command(
         TARGET webcube POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy_directory
-                "${CEF_DIR}/bin/$<CONFIGURATION>"
+                "${CEF_BIN_DIR}/$<CONFIGURATION>"
                 "$<TARGET_FILE_DIR:webcube>"
         COMMENT "Copying runtime files to executable directory")
 
@@ -236,7 +244,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_custom_command(
         TARGET webcube POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy_directory
-                "${CEF_DIR}/resources"
+                "${CEF_RESOURCE_DIR}"
                 "$<TARGET_FILE_DIR:webcube>"
         COMMENT "Copying resource files to executable directory")
 
