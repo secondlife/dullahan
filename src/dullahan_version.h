@@ -30,6 +30,6 @@
 
 static const int DULLAHAN_VERSION_MAJOR = 1;
 static const int DULLAHAN_VERSION_MINOR = 1;
-static const int DULLAHAN_VERSION_BUILD = 600;
+static const int DULLAHAN_VERSION_BUILD = 601;
 
 #endif // _DULLAHAN_VERSION
