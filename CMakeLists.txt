@@ -1,6 +1,5 @@
 ################################################################################
-## minimum version required - 3.6.3+ needed to set startup project
-cmake_minimum_required(VERSION 3.6.3)
+cmake_minimum_required(VERSION 3.4.3)
 
 ################################################################################
 ## Dullahan main project/solution
@@ -261,10 +260,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_dependencies(webcube dullahan_host)
 
     # set the web cube example as the default startup project in Visual Studio
-    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "webcube")
-    endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-
+    if("${CMAKE_VERSION}" VERSION_GREATER 3.6.2)
+        if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+            set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "webcube")
+        endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    endif()
 
     ################################################################################
     ## console example application
