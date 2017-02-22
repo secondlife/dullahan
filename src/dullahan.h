@@ -157,6 +157,12 @@ class dullahan
 
             // background color displayed before first page loaded (RRGGBB)
             unsigned int background_color = 0xffffff;
+
+            // flip pixel buffer in Y direction
+            bool flip_pixels_y = false;
+
+            // flip mouse input in Y direction
+            bool flip_mouse_y = false;
         };
 
     public:

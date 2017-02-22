@@ -107,6 +107,9 @@ class dullahan_impl :
 
         dullahan_callback_manager* getCallbackManager();
 
+        bool getFlipPixelsY();
+        bool getFlipMouseY();
+
         void setCustomSchemes(std::vector<std::string> custom_schemes);
         std::vector<std::string>& getCustomSchemes();
 
@@ -134,6 +137,8 @@ class dullahan_impl :
         bool mMediaStreamEnabled;
         bool mBeginFrameScheduling;
         bool mForceWaveAudio;
+        bool mFlipPixelsY;
+        bool mFlipMouseY;
         CefRefPtr<dullahan_context_handler> mContextHandler;
         const int mViewDepth = 4;
         std::vector<std::string> mCustomSchemes;

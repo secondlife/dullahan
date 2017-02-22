@@ -45,7 +45,9 @@ dullahan_impl::dullahan_impl() :
     mSystemFlashEnabled(false),
     mMediaStreamEnabled(false),
     mBeginFrameScheduling(false),
-    mForceWaveAudio(false)
+    mForceWaveAudio(false),
+    mFlipPixelsY(false),
+    mFlipMouseY(false)
 {
     DLNOUT("dullahan_impl::dullahan_impl()");
 }
@@ -82,7 +84,6 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         {
             command_line->AppendSwitch("force-wave-audio");
         }
-
     }
 
     // add this switch or pages with videos - e.g. YouTube stutter
@@ -154,6 +155,14 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     // this flag forces Windows WaveOut/In audio API even if Core Audio is supported
     mForceWaveAudio = user_settings.force_wave_audio;
+
+    // if true, this setting inverts the pixels in Y direction - useful if your texture
+    // coords are upside down compared to default for Dullahan
+    mFlipPixelsY = user_settings.flip_pixels_y;
+
+    // if true, this setting inverts the injected mouse coordinates in Y direction
+    // useful for matching the setting for flipPixelsY
+    mFlipMouseY = user_settings.flip_mouse_y;
 
     // initiaize CEF
     bool result = CefInitialize(args, settings, this, NULL);
@@ -246,7 +255,6 @@ void dullahan_impl::setSize(int width, int height)
         // HWND hwnd = mBrowser->GetHost()->GetWindowHandle();
         // SetWindowPos(hwnd, 0, 0, 0, mViewWidth, mViewHeight,
         //              SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW);
-
         mBrowser->GetHost()->WasResized();
     }
 }
@@ -254,6 +262,16 @@ void dullahan_impl::setSize(int width, int height)
 int dullahan_impl::getDepth()
 {
     return mViewDepth;
+}
+
+bool dullahan_impl::getFlipPixelsY()
+{
+    return mFlipPixelsY;
+}
+
+bool dullahan_impl::getFlipMouseY()
+{
+    return mFlipMouseY;
 }
 
 void dullahan_impl::run()

@@ -36,6 +36,7 @@ class dullahan_render_handler :
 {
     public:
         dullahan_render_handler(dullahan_impl* parent);
+        ~dullahan_render_handler();
 
         // CefRenderHandler interface
         bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) OVERRIDE;
@@ -55,7 +56,14 @@ class dullahan_render_handler :
         IMPLEMENT_REFCOUNTING(dullahan_render_handler);
 
     private:
+        void resizeFlipBuffer(int width, int height);
+
         CefRect mPopupRect;
+        bool mFlipYPixels;
+        unsigned char* mFlipBuffer;
+        int mFlipBufferWidth;
+        int mFlipBufferHeight;
+        int mFlipBufferDepth;
         dullahan_impl* mParent;
 };
 

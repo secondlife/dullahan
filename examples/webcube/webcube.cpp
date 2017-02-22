@@ -110,6 +110,8 @@ void app::init_dullahan()
     settings.cookie_store_path = ".\\cookies";
     settings.cookies_enabled = true;
     settings.flash_enabled = true;
+    settings.flip_mouse_y = false;
+    settings.flip_pixels_y = false;
     settings.frame_rate = 60;
     settings.initial_height = mTextureWidth;
     settings.initial_width = mTextureHeight;
