@@ -183,6 +183,36 @@ void dullahan::setPageZoom(const double zoom_val)
     mImpl->setPageZoom(zoom_val);
 }
 
+bool dullahan::editCanCopy()
+{
+    return mImpl->editCanCopy();
+}
+
+bool dullahan::editCanCut()
+{
+    return mImpl->editCanCut();
+}
+
+bool dullahan::editCanPaste()
+{
+    return mImpl->editCanPaste();
+}
+
+void dullahan::editCopy()
+{
+    mImpl->editCopy();
+}
+
+void dullahan::editCut()
+{
+    mImpl->editCut();
+}
+
+void dullahan::editPaste()
+{
+    mImpl->editPaste();
+}
+
 void dullahan::showDevTools()
 {
     mImpl->showDevTools();

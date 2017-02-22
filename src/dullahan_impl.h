@@ -85,6 +85,14 @@ class dullahan_impl :
         void navigate(const std::string url);
         void setFocus();
         void setPageZoom(const double zoom_val);
+
+        bool editCanCopy();
+        bool editCanCut();
+        bool editCanPaste();
+        void editCopy();
+        void editCut();
+        void editPaste();
+
         void showDevTools();
         void closeDevTools();
         void printToPDF(const std::string path);

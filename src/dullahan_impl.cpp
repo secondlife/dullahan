@@ -368,6 +368,48 @@ void dullahan_impl::setFocus()
     }
 }
 
+bool dullahan_impl::editCanCopy()
+{
+    // TODO: ask CEF if we can do this
+    return true;
+}
+
+bool dullahan_impl::editCanCut()
+{
+    // TODO: ask CEF if we can do this
+    return true;
+}
+
+bool dullahan_impl::editCanPaste()
+{
+    // TODO: ask CEF if we can do this
+    return true;
+}
+
+void dullahan_impl::editCopy()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->Copy();
+    }
+}
+
+void dullahan_impl::editCut()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->Cut();
+    }
+}
+
+void dullahan_impl::editPaste()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->Paste();
+    }
+}
+
 void dullahan_impl::setPageZoom(const double zoom_val)
 {
     if (mBrowser.get() && mBrowser->GetHost())

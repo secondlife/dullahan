@@ -226,6 +226,15 @@ class dullahan
         // set the page zoom
         void setPageZoom(const double zoom_val);
 
+        // indicates if there is something available to be copy/cut/pasted
+        // (for UI purposes) and if so, provides methods to do so
+        bool editCanCopy();
+        bool editCanCut();
+        bool editCanPaste();
+        void editCopy();
+        void editCut();
+        void editPaste();
+
         // show/hide the dev tools
         void showDevTools();
         void closeDevTools();
