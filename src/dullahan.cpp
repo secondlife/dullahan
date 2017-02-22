@@ -29,6 +29,9 @@
 #include "dullahan_impl.h"
 #include "dullahan_debug.h"
 #include "dullahan_callback_manager.h"
+#include "dullahan_version.h"
+
+#include "cef_version.h"
 
 dullahan::dullahan() :
     mImpl(new dullahan_impl())
@@ -134,6 +137,32 @@ const std::string dullahan::dullahan_version(bool show_bitwidth)
 const std::string dullahan::composite_version()
 {
     return mImpl->composite_version();
+}
+
+const std::string dullahan::version_str()
+{
+    // TODO: use this form instead of instanced versions
+    std::ostringstream version;
+
+    version << "Dullahan: ";
+    version << DULLAHAN_VERSION_MAJOR;
+    version << ".";
+    version << DULLAHAN_VERSION_MINOR;
+    version << ".";
+    version << DULLAHAN_VERSION_BUILD;
+    version << " (CEF: ";
+    version << CEF_VERSION;
+    version << " - Chrome: ";
+    version << CHROME_VERSION_MAJOR;
+    version << ".";
+    version << CHROME_VERSION_MINOR;
+    version << ".";
+    version << CHROME_VERSION_BUILD;
+    version << ".";
+    version << CHROME_VERSION_PATCH;
+    version << ")";
+
+    return version.str();
 }
 
 std::string dullahan::makeCompatibleUserAgentString(const std::string base)

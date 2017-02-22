@@ -108,7 +108,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     NSString* appBundlePath = [[NSBundle mainBundle] bundlePath];
     CefString(&settings.browser_subprocess_path) =
         [[NSString stringWithFormat:
-            @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
+          @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
 #endif
 
     // turn on only for Windows 7+

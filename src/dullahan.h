@@ -202,6 +202,7 @@ class dullahan
         const std::string dullahan_chrome_version(bool show_bitwidth);
         const std::string dullahan_version(bool show_bitwidth);
         const std::string composite_version();
+        static const std::string version_str();
 
         // returns a user agent string based off of passed in string that
         // is "more" compatible with sites that look for a specific string
