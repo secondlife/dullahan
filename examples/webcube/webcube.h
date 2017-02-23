@@ -120,7 +120,7 @@ class app
 
         void onAddressChange(const std::string url);
         void onConsoleMessage(const std::string message, const std::string source, int line);
-        void onCursorChanged(dullahan::ECursorType type, const unsigned int cursor);
+        void onCursorChanged(dullahan::ECursorType type);
         void onCustomSchemeURL(const std::string url);
         const std::string onFileDialog();
         void onFileDownload(const std::string filename);

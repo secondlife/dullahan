@@ -271,7 +271,7 @@ void dullahan::setOnConsoleMessageCallback(
 }
 
 void dullahan::setOnCursorChangedCallback(
-    std::function<void(const ECursorType type, const unsigned int cursor)> callback)
+    std::function<void(const ECursorType type)> callback)
 {
     mImpl->getCallbackManager()->setOnCursorChangedCallback(callback);
 }

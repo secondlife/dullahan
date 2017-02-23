@@ -56,16 +56,16 @@ void dullahan_callback_manager::onConsoleMessage(const std::string message, cons
 }
 
 void dullahan_callback_manager::setOnCursorChangedCallback(
-    std::function<void(const dullahan::ECursorType type, const unsigned int cursor)> callback)
+    std::function<void(const dullahan::ECursorType type)> callback)
 {
     mOnCursorChangedCallbackFunc = callback;
 }
 
-void dullahan_callback_manager::onCursorChanged(const dullahan::ECursorType type, const unsigned int cursor)
+void dullahan_callback_manager::onCursorChanged(const dullahan::ECursorType type)
 {
     if (mOnCursorChangedCallbackFunc)
     {
-        mOnCursorChangedCallbackFunc(type, cursor);
+        mOnCursorChangedCallbackFunc(type);
     }
 }
 

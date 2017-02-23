@@ -125,7 +125,7 @@ void dullahan_render_handler::OnCursorChange(CefRefPtr<CefBrowser> browser,
 {
     DLNOUT("OnCursorChange called cursor: " << cursor << " and type " << type);
 
-    mParent->getCallbackManager()->onCursorChanged((dullahan::ECursorType)type, (unsigned int)cursor);
+    mParent->getCallbackManager()->onCursorChanged((dullahan::ECursorType)type);
 }
 
 // CefRenderHandler override

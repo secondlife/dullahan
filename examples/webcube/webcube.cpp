@@ -87,7 +87,7 @@ void app::init_dullahan()
 
     mDullahan->setOnAddressChangeCallback(std::bind(&app::onAddressChange, this, std::placeholders::_1));;
     mDullahan->setOnConsoleMessageCallback(std::bind(&app::onConsoleMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-    mDullahan->setOnCursorChangedCallback(std::bind(&app::onCursorChanged, this, std::placeholders::_1, std::placeholders::_2));
+    mDullahan->setOnCursorChangedCallback(std::bind(&app::onCursorChanged, this, std::placeholders::_1));
     mDullahan->setOnCustomSchemeURLCallback(std::bind(&app::onCustomSchemeURL, this, std::placeholders::_1));
     mDullahan->setOnFileDialogCallback(std::bind(&app::onFileDialog, this));
     mDullahan->setOnFileDownloadCallback(std::bind(&app::onFileDownload, this, std::placeholders::_1));
@@ -418,7 +418,7 @@ void app::onConsoleMessage(const std::string message, const std::string source, 
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-void app::onCursorChanged(dullahan::ECursorType type, const unsigned int cursor)
+void app::onCursorChanged(dullahan::ECursorType type)
 {
     std::cout << "onCursorChanged: " << type << std::endl;
 

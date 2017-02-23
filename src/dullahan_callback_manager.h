@@ -41,9 +41,9 @@ class dullahan_callback_manager
                                          callback);
         void onConsoleMessage(const std::string messgae, const std::string source, int line);
 
-        void setOnCursorChangedCallback(std::function<void(const dullahan::ECursorType type, const unsigned int cursor)>
+        void setOnCursorChangedCallback(std::function<void(const dullahan::ECursorType type)>
                                         callback);
-        void onCursorChanged(const dullahan::ECursorType type, const unsigned int cursor);
+        void onCursorChanged(const dullahan::ECursorType type);
 
         void setOnCustomSchemeURLCallback(std::function<void(const std::string url)> callback);
         void onCustomSchemeURL(const std::string url);
@@ -90,7 +90,7 @@ class dullahan_callback_manager
     private:
         std::function<void(const std::string)> mOnAddressChangeCallbackFunc;
         std::function<void(const std::string, const std::string, int)> mOnConsoleMessageCallbackFunc;
-        std::function<void(const dullahan::ECursorType type, const unsigned int cursor)> mOnCursorChangedCallbackFunc;
+        std::function<void(const dullahan::ECursorType type)> mOnCursorChangedCallbackFunc;
         std::function<void(const std::string)> mOnCustomSchemeURLCallbackFunc;
         std::function<bool(const std::string, const std::string, std::string&, std::string&)> mOnHTTPAuthCallbackFunc;
         std::function<void(int)> mOnLoadEndCallbackFunc;

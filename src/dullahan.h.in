@@ -295,8 +295,7 @@ class dullahan
                                          const std::string source, int line)> callback);
 
         // cursor changes - e.g. as passed over hyperlink or entered text field
-        void setOnCursorChangedCallback(std::function<void(const ECursorType type,
-                                        const unsigned int cursor)> callback);
+        void setOnCursorChangedCallback(std::function<void(const ECursorType type)> callback);
 
         // custom URL scheme link is clicked (see setCustomSchemes(..))
         void setOnCustomSchemeURLCallback(std::function<void(const std::string url)> callback);
