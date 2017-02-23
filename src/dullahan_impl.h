@@ -35,7 +35,6 @@
 #include "cef_version.h"
 
 #include "dullahan.h"
-#include "dullahan_version.h"
 #include "dullahan_debug.h"
 
 class dullahan_browser_client;

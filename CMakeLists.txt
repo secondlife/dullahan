@@ -139,6 +139,18 @@ target_include_directories(
 )
 
 ################################################################################
+## parse CEF version header and process into dullahan header
+FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CEF_VERSION_STR REGEX "\#define CEF_VERSION ")
+FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MAJOR_STR REGEX "\#define CHROME_VERSION_MAJOR ")
+FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MINOR_STR REGEX "\#define CHROME_VERSION_MINOR ")
+FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_BUILD_STR REGEX "\#define CHROME_VERSION_BUILD ")
+FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_PATCH_STR REGEX "\#define CHROME_VERSION_PATCH ")
+CONFIGURE_FILE (
+  "${PROJECT_SOURCE_DIR}/src/dullahan.h.in"
+  "${PROJECT_SOURCE_DIR}/src/dullahan.h"
+)
+
+################################################################################
 ## dullahan host executable
 
 # add source files to the application

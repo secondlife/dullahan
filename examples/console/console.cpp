@@ -150,8 +150,6 @@ int main(int argc, char* argv[])
         url = std::string(argv[1]);
     }
 
-    std::cout << "Non-instance version string: " << dullahan::version_str() << std::endl << std::endl;
-
     headless_browser = new dullahan();
 
     std::cout << "Dullahan console test" << std::endl << std::endl;
