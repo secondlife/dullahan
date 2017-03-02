@@ -95,7 +95,6 @@ Another option is to build the whole thing from scratch. This is necessary if yo
 
 ## What is left to do before the first real release?
 
-*   Add support for 64bit macOS
 *   Implement proper Dullahan <--> JavaScript interoperability
 *   Improve the documentation
 *   Try to find a way to grab CEF builds automagically vs that crazy build steps in the docs
