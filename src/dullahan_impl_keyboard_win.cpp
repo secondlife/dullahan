@@ -140,8 +140,7 @@ int GetCefKeyboardModifiers(WPARAM wparam, LPARAM lparam)
     return modifiers;
 }
 
-void dullahan_impl::nativeKeyboardEvent(uint32_t msg, uint32_t wparam,
-                                        uint64_t lparam)
+void dullahan_impl::nativeKeyboardEventWin(uint32_t msg, uint32_t wparam, uint64_t lparam)
 {
     if (mBrowser && mBrowser->GetHost())
     {
@@ -168,4 +167,8 @@ void dullahan_impl::nativeKeyboardEvent(uint32_t msg, uint32_t wparam,
 
         mBrowser->GetHost()->SendKeyEvent(event);
     }
+}
+
+void dullahan_impl::nativeKeyboardEventOSX(void* event)
+{
 }

@@ -56,7 +56,7 @@ class dullahan_impl :
         bool init(dullahan::dullahan_settings& user_settings);
         void shutdown();
         void requestExit();
-
+		
         void getSize(int& width, int& height);
         void setSize(int width, int height);
         int getDepth();
@@ -79,7 +79,8 @@ class dullahan_impl :
         void mouseMove(int x, int y);
         void mouseWheel(int deltaX, int deltaY);
 
-        void nativeKeyboardEvent(uint32_t msg, uint32_t wparam, uint64_t lparam);
+        void nativeKeyboardEventWin(uint32_t msg, uint32_t wparam, uint64_t lparam);
+        void nativeKeyboardEventOSX(void* event);
 
         void navigate(const std::string url);
         void setFocus();

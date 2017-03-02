@@ -158,11 +158,16 @@ void dullahan::mouseWheel(int delta_x, int delta_y)
     mImpl->mouseWheel(delta_x, delta_y);
 }
 
-void dullahan::nativeKeyboardEvent(uint32_t msg,
+void dullahan::nativeKeyboardEventWin(uint32_t msg,
                                    uint32_t wparam,
                                    uint64_t lparam)
 {
-    mImpl->nativeKeyboardEvent(msg, wparam, lparam);
+    mImpl->nativeKeyboardEventWin(msg, wparam, lparam);
+}
+
+void dullahan::nativeKeyboardEventOSX(void* event)
+{
+    mImpl->nativeKeyboardEventOSX(event);
 }
 
 void dullahan::navigate(const std::string url)

@@ -151,19 +151,19 @@ static void onRequestExitCallback() {
 
 - (void)flagsChanged:(NSEvent *)theEvent {
     if (self.mDullahan) {
-        //self.mDullahan->nativeKeyboardEventOSX(theEvent);
+        self.mDullahan->nativeKeyboardEventOSX(theEvent);
     }
 }
 
 - (void)keyDown:(NSEvent *)theEvent {
     if (self.mDullahan) {
-        //self.mDullahan->nativeKeyboardEventOSX(theEvent);
+        self.mDullahan->nativeKeyboardEventOSX(theEvent);
     }
 }
 
 - (void)keyUp:(NSEvent *)theEvent {
     if (self.mDullahan) {
-        //self.mDullahan->nativeKeyboardEventOSX(theEvent);
+        self.mDullahan->nativeKeyboardEventOSX(theEvent);
     }
 }
 

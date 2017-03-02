@@ -241,7 +241,8 @@ class dullahan
         void mouseWheel(int delta_x, int delta_y);
 
         // keyboard input
-        void nativeKeyboardEvent(uint32_t msg, uint32_t wparam, uint64_t lparam);
+        void nativeKeyboardEventWin(uint32_t msg, uint32_t wparam, uint64_t lparam);
+        void nativeKeyboardEventOSX(void* event);
 
         // navigate to a URL
         void navigate(const std::string url);
