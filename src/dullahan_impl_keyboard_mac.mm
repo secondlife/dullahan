@@ -25,13 +25,11 @@
     THE SOFTWARE.
 */
 
-#ifdef __APPLE__
 #import <Cocoa/Cocoa.h>
-#endif
 
 #include "dullahan_impl.h"
 
-namespace DullahanImplMacAssist
+namespace dullahanImplMacAssist
 {
     uint32_t modifiersForModifierFlags(uint32_t modifierFlags)
     {
@@ -69,13 +67,13 @@ void dullahan_impl::nativeKeyboardEventOSX(void* event)
     {
         if (mBrowser->GetHost())
         {
-            static uint32_t lastModifiers = DullahanImplMacAssist::modifiersForModifierFlags([NSEvent modifierFlags]);
-            static uint32_t newModifiers = DullahanImplMacAssist::modifiersForModifierFlags([NSEvent modifierFlags]);
+            static uint32_t lastModifiers = dullahanImplMacAssist::modifiersForModifierFlags([NSEvent modifierFlags]);
+            static uint32_t newModifiers = dullahanImplMacAssist::modifiersForModifierFlags([NSEvent modifierFlags]);
 
             NSEvent* ns_event = (NSEvent*)event;
 
             lastModifiers = newModifiers;
-            newModifiers = DullahanImplMacAssist::modifiersForModifierFlags([ns_event modifierFlags]);
+            newModifiers = dullahanImplMacAssist::modifiersForModifierFlags([ns_event modifierFlags]);
 
             if (([ns_event type] == NSKeyDown) || ([ns_event type] == NSKeyUp))
             {
@@ -107,6 +105,50 @@ void dullahan_impl::nativeKeyboardEventOSX(void* event)
                 }
                 else
                 if ([ns_event type] == NSKeyUp)
+                {
+                    keyEvent.type =  KEYEVENT_KEYUP;
+                }
+            }
+        }
+    }
+}
+
+void dullahan_impl::nativeKeyboardEventOSX(dullahan::EKeyEvent event_type,
+                                           uint32_t event_modifiers,
+                                           uint32_t event_keycode,
+                                           uint32_t event_chars,
+                                           uint32_t event_umodchars,
+                                           bool event_isrepeat)
+{
+    if (mBrowser.get())
+    {
+        if (mBrowser->GetHost())
+        {
+            static uint32_t lastModifiers = dullahanImplMacAssist::modifiersForModifierFlags(event_modifiers);
+            static uint32_t newModifiers = dullahanImplMacAssist::modifiersForModifierFlags(event_modifiers);
+
+            lastModifiers = newModifiers;
+            newModifiers = dullahanImplMacAssist::modifiersForModifierFlags(event_modifiers);
+
+            if (event_type == dullahan::KE_KEY_DOWN || event_type == dullahan::KE_KEY_UP)
+            {
+                CefKeyEvent keyEvent;
+                
+                keyEvent.character = event_chars;
+                keyEvent.unmodified_character = event_umodchars;
+                keyEvent.native_key_code = event_keycode;
+                keyEvent.is_system_key = false;
+                keyEvent.modifiers = newModifiers;
+
+                if (event_type == dullahan::KE_KEY_DOWN)
+                {
+                    keyEvent.type =  KEYEVENT_KEYDOWN;
+                    mBrowser->GetHost()->SendKeyEvent(keyEvent);
+
+                    keyEvent.type =  KEYEVENT_CHAR;
+                    mBrowser->GetHost()->SendKeyEvent(keyEvent);
+                }
+                else
                 {
                     keyEvent.type =  KEYEVENT_KEYUP;
                 }

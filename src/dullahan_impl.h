@@ -81,6 +81,8 @@ class dullahan_impl :
 
         void nativeKeyboardEventWin(uint32_t msg, uint32_t wparam, uint64_t lparam);
         void nativeKeyboardEventOSX(void* event);
+        void nativeKeyboardEventOSX(dullahan::EKeyEvent event_type, uint32_t event_modifiers, uint32_t event_keycode,
+                                    uint32_t event_chars, uint32_t event_umodchars, bool event_isrepeat);
 
         void navigate(const std::string url);
         void setFocus();

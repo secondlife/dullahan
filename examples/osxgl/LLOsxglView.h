@@ -25,7 +25,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-class dullahan;
+#include "dullahan.h"
 
 @interface LLOsxglView : NSView <NSWindowDelegate>
 {
@@ -45,5 +45,7 @@ class dullahan;
 + (LLOsxglView*)current;
 
 - (void)onPageChangedCallbackPixels:(const unsigned char*)pixels x:(int)x y:(int)y width:(int)width height:(int)height is_popup:(bool)is_popup;
+
+- (void)sendKeyEvent:(NSEvent*)theEvent;
 
 @end

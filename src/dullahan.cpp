@@ -170,6 +170,18 @@ void dullahan::nativeKeyboardEventOSX(void* event)
     mImpl->nativeKeyboardEventOSX(event);
 }
 
+void dullahan::nativeKeyboardEventOSX(EKeyEvent event_type,
+                                      uint32_t event_modifiers,
+                                      uint32_t event_keycode,
+                                      uint32_t event_chars,
+                                      uint32_t event_umodchars,
+                                      bool event_isrepeat)
+{
+    mImpl->nativeKeyboardEventOSX(event_type, event_modifiers,
+                                  event_keycode, event_chars, 
+                                  event_umodchars, event_isrepeat);
+}
+
 void dullahan::navigate(const std::string url)
 {
     if (url.length() > 0)

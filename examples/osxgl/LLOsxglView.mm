@@ -28,7 +28,6 @@
 
 #import "LLOsxglView.h"
 
-#include "dullahan.h"
 
 #include <OpenGL/gl.h>
 
@@ -155,15 +154,54 @@ static void onRequestExitCallback() {
     }
 }
 
+- (void)sendKeyEvent:(NSEvent*)theEvent
+{
+        dullahan::EKeyEvent event_type;
+        if ([theEvent type] == NSKeyDown)
+            event_type = dullahan::KE_KEY_DOWN;
+        else
+            event_type = dullahan::KE_KEY_UP;
+
+        uint32_t event_modifiers = [theEvent modifierFlags];
+        uint32_t event_keycode = [theEvent keyCode];
+        
+        uint32_t event_chars = 0;
+        NSString* c = [theEvent characters];
+        if ([c length] > 0)
+        {
+            event_chars = (uint32_t)[c characterAtIndex:0];
+        }
+
+        uint32_t event_umodchars = 0;
+        NSString* cim = [theEvent charactersIgnoringModifiers];
+        if ([cim length] > 0)
+        {
+            event_umodchars = (uint32_t)[cim characterAtIndex:0];
+        }
+
+        bool event_isrepeat = [theEvent isARepeat];
+
+        self.mDullahan->nativeKeyboardEventOSX(event_type, event_modifiers, event_keycode, event_chars,
+                                               event_umodchars, event_isrepeat);
+}
+
 - (void)keyDown:(NSEvent *)theEvent {
     if (self.mDullahan) {
-        self.mDullahan->nativeKeyboardEventOSX(theEvent);
+        // version that uses NSEvent (much cleaner but not all consumers have this)
+        // self.mDullahan->nativeKeyboardEventOSX(theEvent);
+
+        // version that uses individual values for testing
+        [self sendKeyEvent:theEvent];
     }
 }
 
 - (void)keyUp:(NSEvent *)theEvent {
     if (self.mDullahan) {
-        self.mDullahan->nativeKeyboardEventOSX(theEvent);
+        // version that uses NSEvent (much cleaner but not all consumers have this)
+        // self.mDullahan->nativeKeyboardEventOSX(theEvent);
+
+        // version that uses individual values for testing
+        [self sendKeyEvent:theEvent];
     }
 }
 
