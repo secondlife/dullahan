@@ -615,9 +615,9 @@ void app::on_mouse_wheel(int delta_x, int delta_y)
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-void app::native_keyboard_event(uint32_t msg, uint32_t wparam, uint64_t lparam)
+void app::native_keyboard_event(uint32_t msg, uint64_t wparam, uint64_t lparam)
 {
-    mDullahan->nativeKeyboardEvent(msg, wparam, lparam);
+    mDullahan->nativeKeyboardEventWin(msg, (uint32_t)wparam, lparam);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -727,7 +727,7 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             else
             {
-                gApp->native_keyboard_event(uMsg, wParam, lParam);
+                gApp->native_keyboard_event(uMsg, (uint32_t)wParam, lParam);
             }
             return 0;
         };

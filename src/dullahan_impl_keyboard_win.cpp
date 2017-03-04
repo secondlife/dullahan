@@ -27,9 +27,9 @@
 
 #include "dullahan_impl.h"
 
-bool isKeyDown(WPARAM wparam)
+bool isKeyDown(int vkey)
 {
-    return (GetKeyState(wparam) & 0x8000) != 0;
+    return (GetKeyState(vkey) & 0x8000) != 0;
 }
 
 int GetCefKeyboardModifiers(WPARAM wparam, LPARAM lparam)
@@ -170,5 +170,11 @@ void dullahan_impl::nativeKeyboardEventWin(uint32_t msg, uint32_t wparam, uint64
 }
 
 void dullahan_impl::nativeKeyboardEventOSX(void* event)
+{
+}
+
+void dullahan_impl::nativeKeyboardEventOSX(dullahan::EKeyEvent event_type, uint32_t event_modifiers, 
+                                           uint32_t event_keycode, uint32_t event_chars, 
+                                           uint32_t event_umodchars, bool event_isrepeat)
 {
 }
