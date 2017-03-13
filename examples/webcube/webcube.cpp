@@ -677,8 +677,6 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             int wmId = LOWORD(wParam);
             int wmEvent = HIWORD(wParam);
 
-            std::cout << "event = " << wmEvent << std::endl;
-
             switch (wmId)
             {
                 case ID_FEATURES_REQUEST_EXIT:

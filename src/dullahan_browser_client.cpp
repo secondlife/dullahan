@@ -152,8 +152,9 @@ void dullahan_browser_client::OnTitleChange(CefRefPtr<CefBrowser> browser,
 }
 
 // CefLoadHandler override
-void dullahan_browser_client::OnLoadStart(CefRefPtr<CefBrowser> browser,
-        CefRefPtr<CefFrame> frame)
+void dullahan_browser_client::OnLoadStart(CefRefPtr<CefBrowser> browser, 
+										  CefRefPtr<CefFrame> frame,
+										  TransitionType transition_type)
 {
     CEF_REQUIRE_UI_THREAD();
 

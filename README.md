@@ -17,7 +17,7 @@ It might be useful in a number of situations - for example:
 * Integration with JavaScript for automated site testing like [PhantomJS](http://phantomjs.org/) - not there at all yet but that's one of the main plans for the future
 * Web page contents analysis - E.G:
   * Capture images the top 500 web pages and count the top 5 colors in each.
-  * Capture a Google Maps traffic map of your commute for 24 hours and see how miserable the commute is :)
+  * Capture a Google Maps traffic map of your commute for 24 hours and see how miserable you are going to be :)
 * Web page capture to an image or a PDF file
 * Lots more I haven't thought of yet
 
@@ -29,11 +29,11 @@ From the [CEF Wiki](https://en.wikipedia.org/wiki/Chromium_Embedded_Framework) p
 
 An essential site to visit when developing a CEF based application is the [CEF forum](http://magpcss.org/ceforum/) started and run by (I believe) the original CEF author Marshall Greenblatt who is very generous with his time and expertise.
 
-Building CEF locally is quite a task so Adobe kindly host builds for all supported platforms [here](http://cefbuilds.com).
+Building CEF locally is quite a task so Adobe kindly host builds for all supported platforms [here](http://opensource.spotify.com/cefbuilds/index.html).
 
 ## Which version of CEF does Dullahan use?
 
-Dullahan been developed against the [CEF 3.2704](https://cefbuilds.com) build of CEF but with some small tweaks to take account of CEF interface changes etc. it should work with slightly older or more recent versions too.
+Dullahan been developed against the [CEF 3.2987 (like Chrome 57)](http://opensource.spotify.com/cefbuilds/index.html) build of CEF but with some small tweaks to take account of CEF interface changes etc. it should work with slightly older or more recent versions too.
 
 ## What are the origins of this project?
 
@@ -49,7 +49,7 @@ For historical reasons, both it and the version of CEF in this repository are bu
 
 ## Is there a binary version I can download? ##
 
-I packaged up a Win32 version of the examples along with the necessary runtimes. It is built against CEF revision 2704 so it's similar to Chrome 51.0. You can download it [here from my Dropbox](https://dl.dropboxusercontent.com/u/1109/dullahan_bin_examples-1.1.507-win32.zip) for now - permanent location to follow. Download, unzip into a directory and run `webcube.exe` or `console.exe <URL>`.
+I packaged up a Win64 version of the examples along with the necessary runtimes. It is built against CEF revision 2987 so it's similar to Chrome 57. You can download it [here from my Dropbox](https://dl.dropboxusercontent.com/u/1109/dullahan_bin_examples-1.1.631-2987.1591.win64.zip) for now - permanent location to follow. Download, unzip into a directory and run `webcube.exe` or `console.exe <URL>`.
 
 ## How do I build Dullahan?
 
@@ -59,8 +59,8 @@ I packaged up a Win32 version of the examples along with the necessary runtimes.
 * Make sure [CMake](https://cmake.org/) version 3.6.3 or later is installed on your system
 * Note: a rudimentary batch file that runs these steps automatically can be found in `tools\build_win.bat` - otherwise, follow the manual steps below
 * Create a new directory off of the project root `mkdir build` and switch to it `cd build`
-* Use CMake to generate project files `cmake -G "Visual Studio 12 2013" -DCEF_DIR="c:\work\cef_builds\cef_2704.1434.win32" ..` where `CEF_DIR` points to the absolute path of a version of CEF that you built or downloaded
-* Note: For 64 bit builds, invoke CMake like this `cmake -G "Visual Studio 12 2013 Win64" -DCEF_DIR="c:\work\cef_builds\cef_2704.1434.win64" ..`
+* Use CMake to generate project files `cmake -G "Visual Studio 12 2013" -DCEF_DIR="c:\work\cef_builds\cef_2987.1591.win32" ..` where `CEF_DIR` points to the absolute path of a version of CEF that you built or downloaded
+* Note: For 64 bit builds, invoke CMake like this `cmake -G "Visual Studio 12 2013 Win64" -DCEF_DIR="c:\work\cef_builds\cef_2987.1591.win64" ..`
 * Either open the resulting `dullahan.sln` in Visual Studio as normal or build everything on the command line using `msbuild dullahan.sln /p:Configuration=Release`
 * Switch to the output directory `cd Release` and run the example `.\webcube`
 * The Dullahan header you need (`dullahan.h`) can be found in `src` directory
@@ -77,7 +77,7 @@ The short answer is look at the code in the `examples` folder and `dullahan.h`. 
 ## Grabbing CEF
 
 * Make sure [CMake](https://cmake.org/) version 3.6.3 or later is installed on your system
-* Grab a Windows 32 or 64 bit build of CEF from [http://cefbuilds.com](http://cefbuilds.com)
+* Grab a Windows 32 or 64 bit build of CEF from [http://opensource.spotify.com/cefbuilds/index.html](http://opensource.spotify.com/cefbuilds/index.html)
 * Extract the 7Zip archive to a folder in an easy to find place - I use the desktop
 * Edit the `tools/make_dullahan_cef_pkg.bat` batch file - specifically, the lines at the top of the file that set the bit width, the CEF folder you just unpacked and the destination folder of the Dullahan compatible package.
 * Run the batch file
@@ -91,7 +91,7 @@ If this step failed then you will have to inspect the batch file. Generally spea
 * Build everything
 * Copy files to the right place
 
-Another option is to build the whole thing from scratch. This is necessary if you want to make changes to the Chromium code or perhaps turn on the proprietary media codec support which is not available in the [CEF Builds](http://cefbuilds.com) versions. For more information on how to do this, look online or inspect the `tools/build_cef.bat` batch file.
+Another option is to build the whole thing from scratch. This is necessary if you want to make changes to the Chromium code or perhaps turn on the proprietary media codec support which is not available in the [Spotify CEF Builds](http://opensource.spotify.com/cefbuilds/index.html) versions. For more information on how to do this, look online or inspect the `tools/build_cef.bat` batch file.
 
 ## What is left to do before the first real release?
 

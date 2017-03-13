@@ -73,10 +73,12 @@ class dullahan_browser_client :
         void OnTitleChange(CefRefPtr<CefBrowser> browser,
                            const CefString& title) OVERRIDE;
 
-        // LCefLoadHandler overrides
+        // CefLoadHandler overrides
         CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE { return this; }
-        void OnLoadStart(CefRefPtr<CefBrowser> browser,
-                         CefRefPtr<CefFrame> frame) OVERRIDE;
+		void OnLoadStart(CefRefPtr<CefBrowser> browser,
+						 CefRefPtr<CefFrame> frame,
+						 TransitionType transition_type) OVERRIDE;
+
         void OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                        int httpStatusCode) OVERRIDE;
         void OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
