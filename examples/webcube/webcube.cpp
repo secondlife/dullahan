@@ -102,6 +102,9 @@ void app::init_dullahan()
     mDullahan->setOnStatusMessageCallback(std::bind(&app::onStatusMessage, this, std::placeholders::_1));
     mDullahan->setOnTitleChangeCallback(std::bind(&app::onTitleChange, this, std::placeholders::_1));
 
+    std::vector<std::string> custom_schemes(1, "secondlife");
+    mDullahan->setCustomSchemes(custom_schemes);
+
     dullahan::dullahan_settings settings;
     settings.accept_language_list = "en-US";
     settings.background_color = 0xffffff;
@@ -444,7 +447,7 @@ void app::onCursorChanged(dullahan::ECursorType type)
 //
 void app::onCustomSchemeURL(const std::string url)
 {
-    std::cout << "onCustomSchemeURL: " << url << std::endl;
+    std::cout << "onCustomSchemeURL triggered in app: " << url << std::endl;
 }
 
 /////////////////////////////////////////////////////////////////////////////////

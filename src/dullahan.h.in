@@ -37,6 +37,7 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include <vector>
 
 class dullahan_impl;
 
@@ -44,7 +45,7 @@ class dullahan_impl;
 // TODO: find a way to set build number directly from hg
 #define DULLAHAN_VERSION_MAJOR 1
 #define DULLAHAN_VERSION_MINOR 1
-#define DULLAHAN_VERSION_BUILD 631
+#define DULLAHAN_VERSION_BUILD 636
 
 // version numbers pulled from CEF build via Cmake
 @CEF_VERSION_STR@
@@ -288,6 +289,10 @@ class dullahan
 
         // display a message page in the browser - e.g. URL cannot be loaded
         void showBrowserMessage(const std::string msg);
+
+        // set/gate the schemes to intercept, halt browsing and trigger callback
+        void setCustomSchemes(std::vector<std::string> custom_schemes);
+        std::vector<std::string>& getCustomSchemes();
 
         //////////// callback setters ////////////
         // URL changes - e.g. redirect

@@ -56,7 +56,7 @@ class dullahan_impl :
         bool init(dullahan::dullahan_settings& user_settings);
         void shutdown();
         void requestExit();
-		
+
         void getSize(int& width, int& height);
         void setSize(int width, int height);
         int getDepth();

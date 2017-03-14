@@ -159,8 +159,8 @@ void dullahan::mouseWheel(int delta_x, int delta_y)
 }
 
 void dullahan::nativeKeyboardEventWin(uint32_t msg,
-                                   uint32_t wparam,
-                                   uint64_t lparam)
+                                      uint32_t wparam,
+                                      uint64_t lparam)
 {
     mImpl->nativeKeyboardEventWin(msg, wparam, lparam);
 }
@@ -178,7 +178,7 @@ void dullahan::nativeKeyboardEventOSX(EKeyEvent event_type,
                                       bool event_isrepeat)
 {
     mImpl->nativeKeyboardEventOSX(event_type, event_modifiers,
-                                  event_keycode, event_chars, 
+                                  event_keycode, event_chars,
                                   event_umodchars, event_isrepeat);
 }
 
@@ -272,6 +272,16 @@ bool dullahan::executeJavaScript(const std::string cmd)
 void dullahan::showBrowserMessage(const std::string msg)
 {
     mImpl->showBrowserMessage(msg);
+}
+
+void dullahan::setCustomSchemes(std::vector<std::string> custom_schemes)
+{
+    mImpl->setCustomSchemes(custom_schemes);
+}
+
+std::vector<std::string>& dullahan::getCustomSchemes()
+{
+    return mImpl->getCustomSchemes();
 }
 
 void dullahan::setOnAddressChangeCallback(

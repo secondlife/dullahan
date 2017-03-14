@@ -173,8 +173,8 @@ void dullahan_impl::nativeKeyboardEventOSX(void* event)
 {
 }
 
-void dullahan_impl::nativeKeyboardEventOSX(dullahan::EKeyEvent event_type, uint32_t event_modifiers, 
-                                           uint32_t event_keycode, uint32_t event_chars, 
-                                           uint32_t event_umodchars, bool event_isrepeat)
+void dullahan_impl::nativeKeyboardEventOSX(dullahan::EKeyEvent event_type, uint32_t event_modifiers,
+        uint32_t event_keycode, uint32_t event_chars,
+        uint32_t event_umodchars, bool event_isrepeat)
 {
 }

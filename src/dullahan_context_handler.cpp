@@ -42,11 +42,11 @@ CefRefPtr<CefCookieManager> dullahan_context_handler::GetCookieManager()
 }
 
 bool dullahan_context_handler::OnBeforePluginLoad(const CefString& mime_type,
-		const CefString& plugin_url,
-		bool is_main_frame,
-		const CefString& top_origin_url,
-		CefRefPtr<CefWebPluginInfo> plugin_info,
-		PluginPolicy* plugin_policy)
+        const CefString& plugin_url,
+        bool is_main_frame,
+        const CefString& top_origin_url,
+        CefRefPtr<CefWebPluginInfo> plugin_info,
+        PluginPolicy* plugin_policy)
 {
     if (*plugin_policy != PLUGIN_POLICY_ALLOW &&
             mime_type == "application/pdf")
