@@ -105,8 +105,7 @@ void writeBMPImage(const std::string& filename,
     }
 }
 
-void onPageChanged(const unsigned char* pixels, int x, int y, int width,
-                   int height, bool is_popup)
+void onPageChanged(const unsigned char* pixels, int x, int y, int width, int height)
 {
     std::cout << "# ";
 
@@ -160,7 +159,7 @@ int main(int argc, char* argv[])
 
     headless_browser->setOnPageChangedCallback(std::bind(onPageChanged,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
-            std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+            std::placeholders::_4, std::placeholders::_5));
     headless_browser->setOnLoadStartCallback(std::bind(onLoadStart));
     headless_browser->setOnLoadEndCallback(std::bind(onLoadEnd,
                                            std::placeholders::_1));

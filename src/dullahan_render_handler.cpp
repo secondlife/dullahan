@@ -35,36 +35,56 @@ dullahan_render_handler::dullahan_render_handler(dullahan_impl* parent) :
 {
     mFlipYPixels = parent->getFlipPixelsY();
 
-    if (mFlipYPixels)
-    {
-        mFlipBufferWidth = 0;
-        mFlipBufferHeight = 0;
-        mFlipBufferDepth = parent->getDepth();
-        mFlipBuffer = 0;
-    }
+    mPixelBuffer = 0;
+    mPixelBufferWidth = 0;
+    mPixelBufferHeight = 0;
+    mPixelBufferDepth = parent->getDepth();
+
+    mPopupBuffer = 0;
+    mPopupBufferWidth = 0;
+    mPopupBufferHeight = 0;
+    mPopupBufferDepth = parent->getDepth();
+    mPopupBufferDrawn = false;
 }
 
 dullahan_render_handler::~dullahan_render_handler()
 {
-    if (mFlipYPixels)
-    {
-        delete[] mFlipBuffer;
-    }
+    delete[] mPixelBuffer;
+
+    delete[] mPopupBuffer;
 }
 
 void dullahan_render_handler::resizeFlipBuffer(int width, int height)
 {
-    if (mFlipYPixels)
+    if (mPixelBufferWidth != width || mPixelBufferHeight != height)
     {
-        if (mFlipBufferWidth != width || mFlipBufferHeight != height)
-        {
-            delete[] mFlipBuffer;
-            mFlipBufferWidth = width;
-            mFlipBufferHeight = height;
-            mFlipBuffer = new unsigned char[mFlipBufferWidth * mFlipBufferHeight * mFlipBufferDepth];
-            memset(mFlipBuffer, 0, mFlipBufferWidth * mFlipBufferHeight * mFlipBufferDepth);
-        }
+        delete[] mPixelBuffer;
+        mPixelBufferWidth = width;
+        mPixelBufferHeight = height;
+        mPixelBuffer = new unsigned char[mPixelBufferWidth * mPixelBufferHeight * mPixelBufferDepth];
+        memset(mPixelBuffer, 0, mPixelBufferWidth * mPixelBufferHeight * mPixelBufferDepth);
     }
+}
+
+void dullahan_render_handler::resizePopupBuffer(int width, int height)
+{
+    if (mPopupBufferWidth != width || mPopupBufferHeight != height)
+    {
+        delete[] mPopupBuffer;
+        mPopupBufferWidth = width;
+        mPopupBufferHeight = height;
+        mPopupBuffer = new unsigned char[mPopupBufferWidth * mPopupBufferHeight * mPopupBufferDepth];
+    }
+}
+
+void dullahan_render_handler::destroyPopupBuffer()
+{
+    delete[] mPopupBuffer;
+
+    mPopupBuffer = 0;
+    mPopupBufferWidth = 0;
+    mPopupBufferHeight = 0;
+    mPopupBufferDrawn = false;
 }
 
 // CefRenderHandler override
@@ -91,71 +111,68 @@ void dullahan_render_handler::OnPaint(CefRefPtr<CefBrowser> browser,
 {
     DLNOUT("onPaint called for size: " << width << " x " << height << " with type: " << type);
 
-    int x = 0;
-    int y = 0;
-    bool is_popup = type == PET_POPUP ? true : false;
-
     if (type == PET_POPUP)
     {
-        x = mPopupRect.x;
-        y = mPopupRect.y;
+        memcpy(mPopupBuffer, buffer, mPopupBufferWidth * mPopupBufferHeight * mPopupBufferDepth);
+        mPopupBufferDrawn = true;
     }
-
-    if (mFlipYPixels)
+    else if (type == PET_VIEW)
     {
-        resizeFlipBuffer(width, height);
-
-        for (int y_line = 0; y_line < height; ++y_line)
+        if (mPopupBufferRect.width > 0 && mPopupBufferRect.height > 0)
         {
-            memcpy(mFlipBuffer + y_line * width * mFlipBufferDepth, (unsigned char*)buffer + (height - y_line - 1) * width * mFlipBufferDepth, width * mFlipBufferDepth);
+            browser->GetHost()->Invalidate(PET_POPUP);
         }
 
-        mParent->getCallbackManager()->onPageChanged(mFlipBuffer, x, y, width, height, is_popup);
+        resizeFlipBuffer(width, height);
+        memcpy(mPixelBuffer, (unsigned char*)buffer, mPixelBufferWidth * mPixelBufferHeight * mPixelBufferDepth);
     }
-    else
+
+    if (mPopupBufferDrawn)
     {
-        mParent->getCallbackManager()->onPageChanged((unsigned char*)(buffer), x, y, width, height, is_popup);
+        int popup_buffer_line_stride = mPopupBufferWidth * mPopupBufferDepth;
+
+        int offset = mPopupBufferRect.y * mPixelBufferWidth * mPixelBufferDepth + mPopupBufferRect.x * mPopupBufferDepth;
+
+        if (offset + (mPopupBufferHeight - 1) * mPixelBufferWidth * mPixelBufferDepth + popup_buffer_line_stride < mPixelBufferWidth * mPixelBufferHeight * mPixelBufferDepth)
+        {
+            for (int line = 0; line < mPopupBufferHeight; ++line)
+            {
+                int src = line * mPopupBufferWidth * mPopupBufferDepth;
+                int dst = offset + line * mPixelBufferWidth * mPixelBufferDepth;
+                memcpy(mPixelBuffer + dst, mPopupBuffer + src, popup_buffer_line_stride);
+            }
+        }
+    }
+
+    if (mPixelBufferWidth > 0 && mPixelBufferHeight > 0)
+    {
+        mParent->getCallbackManager()->onPageChanged(mPixelBuffer, 0, 0, mPixelBufferWidth, mPixelBufferHeight);
     }
 }
 
 // CefRenderHandler override
-void dullahan_render_handler::OnCursorChange(CefRefPtr<CefBrowser> browser,
-        CefCursorHandle cursor,
-        CursorType type, const CefCursorInfo& custom_cursor_info)
+void dullahan_render_handler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor, CursorType type, const CefCursorInfo& custom_cursor_info)
 {
     DLNOUT("OnCursorChange called cursor: " << cursor << " and type " << type);
-
     mParent->getCallbackManager()->onCursorChanged((dullahan::ECursorType)type);
 }
 
 // CefRenderHandler override
-void dullahan_render_handler::OnPopupShow(CefRefPtr<CefBrowser> browser,
-        bool show)
+void dullahan_render_handler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show)
 {
-    DLNOUT("Popup show state changed to " << show);
+    DLNOUT("Popup state set to " << show);
     if (!show)
     {
-        mPopupRect.Set(0, 0, 0, 0);
-
+        mPopupBufferRect.Set(0, 0, 0, 0);
+        destroyPopupBuffer();
         mParent->getBrowser()->GetHost()->Invalidate(PET_VIEW);
-    }
+    };
 }
 
 // CefRenderHandler override
-void dullahan_render_handler::OnPopupSize(CefRefPtr<CefBrowser> browser,
-        const CefRect& rect)
+void dullahan_render_handler::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect)
 {
-    DLNOUT("Popup sized to " << rect.x << ", " << rect.y << " - " << rect.width <<
-           " x " << rect.height);
-    setPopupLocation(rect);
-}
-
-void dullahan_render_handler::setPopupLocation(const CefRect& rect)
-{
-    mPopupRect = rect;
-}
-
-const CefRect& dullahan_render_handler::getPopupLocation()
-{
-    return mPopupRect;
+    DLNOUT("Popup sized to " << rect.x << ", " << rect.y << " - " << rect.width << " x " << rect.height);
+    mPopupBufferRect = rect;
+    resizePopupBuffer(mPopupBufferRect.width, mPopupBufferRect.height);
 }

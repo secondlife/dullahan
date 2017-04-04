@@ -343,8 +343,7 @@ void dullahan::setOnNavigateURLCallback(
 void dullahan::setOnPageChangedCallback(
     std::function<void(const unsigned char* pixels,
                        int x, int y,
-                       int width, int height,
-                       bool is_popup)> callback)
+                       int width, int height)> callback)
 {
     mImpl->getCallbackManager()->setOnPageChangedCallback(callback);
 }

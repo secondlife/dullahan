@@ -49,21 +49,28 @@ class dullahan_render_handler :
         void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) OVERRIDE;
         void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) OVERRIDE;
 
-        // utility functions
-        void setPopupLocation(const CefRect& rect);
-        const CefRect& getPopupLocation();
-
         IMPLEMENT_REFCOUNTING(dullahan_render_handler);
 
     private:
         void resizeFlipBuffer(int width, int height);
 
-        CefRect mPopupRect;
+        void resizePopupBuffer(int width, int height);
+        void destroyPopupBuffer();
+
         bool mFlipYPixels;
-        unsigned char* mFlipBuffer;
-        int mFlipBufferWidth;
-        int mFlipBufferHeight;
-        int mFlipBufferDepth;
+
+        unsigned char* mPixelBuffer;
+        int mPixelBufferWidth;
+        int mPixelBufferHeight;
+        int mPixelBufferDepth;
+        unsigned char* mPopupBuffer;
+
+        CefRect mPopupBufferRect;
+        int mPopupBufferWidth;
+        int mPopupBufferHeight;
+        int mPopupBufferDepth;
+        bool mPopupBufferDrawn;
+
         dullahan_impl* mParent;
 };
 

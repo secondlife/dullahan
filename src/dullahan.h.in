@@ -45,7 +45,7 @@ class dullahan_impl;
 // TODO: find a way to set build number directly from hg
 #define DULLAHAN_VERSION_MAJOR 1
 #define DULLAHAN_VERSION_MINOR 1
-#define DULLAHAN_VERSION_BUILD 636
+#define DULLAHAN_VERSION_BUILD 642
 
 // version numbers pulled from CEF build via Cmake
 @CEF_VERSION_STR@
@@ -330,8 +330,7 @@ class dullahan
         // contents of the pages changes
         void setOnPageChangedCallback(std::function<void(const unsigned char* pixels,
                                       int x, int y,
-                                      int width, int height,
-                                      bool is_popup)> callback);
+                                      int width, int height)> callback);
 
         // exit app requested
         void setOnRequestExitCallback(std::function<void()> callback);

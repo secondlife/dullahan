@@ -50,10 +50,10 @@ app* gApp = 0;
 //
 app::app()
 {
-    mAppWindowPosX = 680;
+    mAppWindowPosX = 200;
     mAppWindowPosY = 0;
-    mAppWindowWidth = 1000;
-    mAppWindowHeight = 900;
+    mAppWindowWidth = 1500;
+    mAppWindowHeight = 1500;
     mTextureDepth = 4;
     mMouseOffsetX = 0.0;
     mMouseOffsetY = 0.0;
@@ -96,7 +96,7 @@ void app::init_dullahan()
     mDullahan->setOnLoadErrorCallback(std::bind(&app::onLoadError, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnLoadStartCallback(std::bind(&app::onLoadStart, this));
     mDullahan->setOnNavigateURLCallback(std::bind(&app::onNavigateURL, this, std::placeholders::_1, std::placeholders::_2));
-    mDullahan->setOnPageChangedCallback(std::bind(&app::onPageChangedCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, std::placeholders::_6));
+    mDullahan->setOnPageChangedCallback(std::bind(&app::onPageChangedCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
     mDullahan->setOnPdfPrintFinishedCallback(std::bind(&app::onPdfPrintFinished, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnRequestExitCallback(std::bind(&app::onRequestExitCallback, this));
     mDullahan->setOnStatusMessageCallback(std::bind(&app::onStatusMessage, this, std::placeholders::_1));
@@ -535,7 +535,7 @@ void app::onNavigateURL(const std::string url, const std::string target)
 /////////////////////////////////////////////////////////////////////////////////
 //
 void app::onPageChangedCallback(const unsigned char* pixels, int x, int y,
-                                const int width, const int height, bool is_popup)
+                                const int width, const int height)
 
 {
     for (int face = 0; face < mMaxFaces; ++face)
