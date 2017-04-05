@@ -46,6 +46,7 @@ dullahan_impl::dullahan_impl() :
     mMediaStreamEnabled(false),
     mBeginFrameScheduling(false),
     mForceWaveAudio(false),
+    mDisableGPU(true),
     mFlipPixelsY(false),
     mFlipMouseY(false)
 {
@@ -84,10 +85,13 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         {
             command_line->AppendSwitch("force-wave-audio");
         }
-    }
 
-    // add this switch or pages with videos - e.g. YouTube stutter
-    command_line->AppendSwitch("disable-gpu-compositing");
+        if (mDisableGPU == true)
+        {
+            command_line->AppendSwitch("disable-gpu");
+            command_line->AppendSwitch("disable-gpu-compositing");
+        }
+    }
 }
 
 bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
@@ -156,6 +160,12 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     // this flag forces Windows WaveOut/In audio API even if Core Audio is supported
     mForceWaveAudio = user_settings.force_wave_audio;
 
+    // this flag if set, adds command line options to disable the GPU and GPU compositing.
+    // Appears to be needed to make sites like Google Maps work now. The GPU compositing
+    // needs to be off to allow videos to play back without stutter. For the moment, it is
+    // recommended that this option always be enabled.
+    mDisableGPU = user_settings.disable_gpu;
+
     // if true, this setting inverts the pixels in Y direction - useful if your texture
     // coords are upside down compared to default for Dullahan
     mFlipPixelsY = user_settings.flip_pixels_y;
@@ -180,15 +190,11 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     CefBrowserSettings browser_settings;
     browser_settings.windowless_frame_rate = user_settings.frame_rate;
-    browser_settings.webgl = user_settings.webgl_enabled ? STATE_ENABLED :
-                             STATE_DISABLED;
-    browser_settings.javascript = user_settings.javascript_enabled ? STATE_ENABLED :
-                                  STATE_DISABLED;
-    browser_settings.plugins = STATE_ENABLED;
-    //browser_settings.plugins = user_settings.plugins_enabled ? STATE_ENABLED : STATE_DISABLED;
-    browser_settings.application_cache = user_settings.cache_enabled ?
-                                         STATE_ENABLED : STATE_DISABLED;
-    browser_settings.background_color = 0xff000000 | user_settings.background_color;
+    browser_settings.webgl = user_settings.webgl_enabled ? STATE_ENABLED : STATE_DISABLED;
+    browser_settings.javascript = user_settings.javascript_enabled ? STATE_ENABLED : STATE_DISABLED;
+    browser_settings.plugins = user_settings.plugins_enabled ? STATE_ENABLED : STATE_DISABLED;
+    browser_settings.application_cache = user_settings.cache_enabled ? STATE_ENABLED : STATE_DISABLED;
+    browser_settings.background_color = user_settings.background_color;
 
     dullahan_render_handler* render_handler = new dullahan_render_handler(this);
     mBrowserClient = new dullahan_browser_client(this, render_handler);

@@ -112,6 +112,7 @@ void app::init_dullahan()
     settings.cache_path = ".\\cache";
     settings.cookie_store_path = ".\\cookies";
     settings.cookies_enabled = true;
+    settings.disable_gpu = true;
     settings.flash_enabled = true;
     settings.flip_mouse_y = false;
     settings.flip_pixels_y = false;

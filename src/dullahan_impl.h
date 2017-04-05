@@ -139,6 +139,7 @@ class dullahan_impl :
         bool mMediaStreamEnabled;
         bool mBeginFrameScheduling;
         bool mForceWaveAudio;
+        bool mDisableGPU;
         bool mFlipPixelsY;
         bool mFlipMouseY;
         CefRefPtr<dullahan_context_handler> mContextHandler;
