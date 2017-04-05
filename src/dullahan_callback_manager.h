@@ -37,20 +37,16 @@ class dullahan_callback_manager
         void setOnAddressChangeCallback(std::function<void(const std::string url)> callback);
         void onAddressChange(const std::string url);
 
-        void setOnConsoleMessageCallback(std::function<void(const std::string message, const std::string source, int line)>
-                                         callback);
+        void setOnConsoleMessageCallback(std::function<void(const std::string message, const std::string source, int line)> callback);
         void onConsoleMessage(const std::string messgae, const std::string source, int line);
 
-        void setOnCursorChangedCallback(std::function<void(const dullahan::ECursorType type)>
-                                        callback);
+        void setOnCursorChangedCallback(std::function<void(const dullahan::ECursorType type)> callback);
         void onCursorChanged(const dullahan::ECursorType type);
 
         void setOnCustomSchemeURLCallback(std::function<void(const std::string url)> callback);
         void onCustomSchemeURL(const std::string url);
 
-        void setOnHTTPAuthCallback(
-            std::function<bool(const std::string host, const std::string realm, std::string& username, std::string& password)>
-            callback);
+        void setOnHTTPAuthCallback(std::function<bool(const std::string host, const std::string realm, std::string& username, std::string& password)> callback);
         bool onHTTPAuth(const std::string host, const std::string realm, std::string& username, std::string& password);
 
         void setOnLoadEndCallback(std::function<void(int status)> callback);
@@ -65,8 +61,7 @@ class dullahan_callback_manager
         void setOnNavigateURLCallback(std::function<void(const std::string url, const std::string target)> callback);
         void onNavigateURL(const std::string url, const std::string target);
 
-        void setOnPageChangedCallback(
-            std::function<void(const unsigned char* pixels, int x, int y, int width, int height)> callback);
+        void setOnPageChangedCallback(std::function<void(const unsigned char* pixels, int x, int y, int width, int height)> callback);
         void onPageChanged(const unsigned char* pixels, int x, int y, int width, int height);
 
         void setOnStatusMessageCallback(std::function<void(const std::string message)> callback);

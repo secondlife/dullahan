@@ -284,35 +284,30 @@ std::vector<std::string>& dullahan::getCustomSchemes()
     return mImpl->getCustomSchemes();
 }
 
-void dullahan::setOnAddressChangeCallback(
-    std::function<void(const std::string url)> callback)
+void dullahan::setOnAddressChangeCallback(std::function<void(const std::string url)> callback)
 {
     mImpl->getCallbackManager()->setOnAddressChangeCallback(callback);
 }
 
-void dullahan::setOnConsoleMessageCallback(
-    std::function<void(const std::string message,
-                       const std::string source, int line)> callback)
+void dullahan::setOnConsoleMessageCallback(std::function<void(const std::string message,
+                                           const std::string source, int line)> callback)
 {
     mImpl->getCallbackManager()->setOnConsoleMessageCallback(callback);
 }
 
-void dullahan::setOnCursorChangedCallback(
-    std::function<void(const ECursorType type)> callback)
+void dullahan::setOnCursorChangedCallback(std::function<void(const ECursorType type)> callback)
 {
     mImpl->getCallbackManager()->setOnCursorChangedCallback(callback);
 }
 
-void dullahan::setOnCustomSchemeURLCallback(
-    std::function<void(const std::string url)> callback)
+void dullahan::setOnCustomSchemeURLCallback(std::function<void(const std::string url)> callback)
 {
     mImpl->getCallbackManager()->setOnCustomSchemeURLCallback(callback);
 }
 
-void dullahan::setOnHTTPAuthCallback(
-    std::function<bool(const std::string host,
-                       const std::string realm,
-                       std::string& username, std::string& password)> callback)
+void dullahan::setOnHTTPAuthCallback(std::function<bool(const std::string host,
+                                     const std::string realm,
+                                     std::string& username, std::string& password)> callback)
 {
     mImpl->getCallbackManager()->setOnHTTPAuthCallback(callback);
 }
@@ -322,8 +317,7 @@ void dullahan::setOnLoadEndCallback(std::function<void(int status)> callback)
     mImpl->getCallbackManager()->setOnLoadEndCallback(callback);
 }
 
-void dullahan::setOnLoadErrorCallback(
-    std::function<void(int status, const std::string error_text)> callback)
+void dullahan::setOnLoadErrorCallback(std::function<void(int status, const std::string error_text)> callback)
 {
     mImpl->getCallbackManager()->setOnLoadErrorCallback(callback);
 }
@@ -333,17 +327,15 @@ void dullahan::setOnLoadStartCallback(std::function<void()> callback)
     mImpl->getCallbackManager()->setOnLoadStartCallback(callback);
 }
 
-void dullahan::setOnNavigateURLCallback(
-    std::function<void(const std::string url,
-                       const std::string target)> callback)
+void dullahan::setOnNavigateURLCallback(std::function<void(const std::string url,
+                                        const std::string target)> callback)
 {
     mImpl->getCallbackManager()->setOnNavigateURLCallback(callback);
 }
 
-void dullahan::setOnPageChangedCallback(
-    std::function<void(const unsigned char* pixels,
-                       int x, int y,
-                       int width, int height)> callback)
+void dullahan::setOnPageChangedCallback(std::function<void(const unsigned char* pixels,
+                                        int x, int y,
+                                        int width, int height)> callback)
 {
     mImpl->getCallbackManager()->setOnPageChangedCallback(callback);
 }
@@ -353,26 +345,22 @@ void dullahan::setOnRequestExitCallback(std::function<void()> callback)
     mImpl->getCallbackManager()->setOnRequestExitCallback(callback);
 }
 
-void dullahan::setOnStatusMessageCallback(
-    std::function<void(const std::string message)> callback)
+void dullahan::setOnStatusMessageCallback(std::function<void(const std::string message)> callback)
 {
     mImpl->getCallbackManager()->setOnStatusMessageCallback(callback);
 }
 
-void dullahan::setOnTitleChangeCallback(
-    std::function<void(const std::string title)> callback)
+void dullahan::setOnTitleChangeCallback(std::function<void(const std::string title)> callback)
 {
     mImpl->getCallbackManager()->setOnTitleChangeCallback(callback);
 }
 
-void dullahan::setOnPdfPrintFinishedCallback(
-    std::function<void(const std::string path, bool ok)> callback)
+void dullahan::setOnPdfPrintFinishedCallback(std::function<void(const std::string path, bool ok)> callback)
 {
     mImpl->getCallbackManager()->setOnPdfPrintFinishedCallback(callback);
 }
 
-void dullahan::setOnFileDownloadCallback(
-    std::function<void(const std::string filename)> callback)
+void dullahan::setOnFileDownloadCallback(std::function<void(const std::string filename)> callback)
 {
     mImpl->getCallbackManager()->setOnFileDownloadCallback(callback);
 }

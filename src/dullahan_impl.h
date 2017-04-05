@@ -50,8 +50,7 @@ class dullahan_impl :
         ~dullahan_impl();
 
         // CefApp overrides
-        virtual void OnBeforeCommandLineProcessing(const CefString& process_type,
-                CefRefPtr<CefCommandLine> command_line) OVERRIDE;
+        virtual void OnBeforeCommandLineProcessing(const CefString& process_type, CefRefPtr<CefCommandLine> command_line) OVERRIDE;
 
         bool init(dullahan::dullahan_settings& user_settings);
         void shutdown();
