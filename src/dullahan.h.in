@@ -45,7 +45,7 @@ class dullahan_impl;
 // TODO: find a way to set build number directly from hg
 #define DULLAHAN_VERSION_MAJOR 1
 #define DULLAHAN_VERSION_MINOR 1
-#define DULLAHAN_VERSION_BUILD 642
+#define DULLAHAN_VERSION_BUILD 650
 
 // version numbers pulled from CEF build via Cmake
 @CEF_VERSION_STR@
