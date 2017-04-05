@@ -52,7 +52,7 @@ class dullahan_render_handler :
         IMPLEMENT_REFCOUNTING(dullahan_render_handler);
 
     private:
-        void resizeFlipBuffer(int width, int height);
+        void resizePixelBuffer(int width, int height);
 
         void resizePopupBuffer(int width, int height);
         void destroyPopupBuffer();
@@ -64,6 +64,8 @@ class dullahan_render_handler :
         int mPixelBufferHeight;
         int mPixelBufferDepth;
         unsigned char* mPopupBuffer;
+
+        unsigned char* mPixelBufferRow;
 
         CefRect mPopupBufferRect;
         int mPopupBufferWidth;
