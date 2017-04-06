@@ -290,7 +290,7 @@ void dullahan::setOnAddressChangeCallback(std::function<void(const std::string u
 }
 
 void dullahan::setOnConsoleMessageCallback(std::function<void(const std::string message,
-                                           const std::string source, int line)> callback)
+        const std::string source, int line)> callback)
 {
     mImpl->getCallbackManager()->setOnConsoleMessageCallback(callback);
 }

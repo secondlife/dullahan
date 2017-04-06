@@ -38,8 +38,7 @@ dullahan_browser_client::dullahan_browser_client(dullahan_impl* parent,
     mParent(parent),
     mRenderHandler(render_handler)
 {
-    DLNOUT("dullahan_browser_client::dullahan_browser_client - parent ptr = " <<
-           parent);
+    DLNOUT("dullahan_browser_client::dullahan_browser_client - parent ptr = " << parent);
 }
 
 // CefClient override
@@ -149,6 +148,19 @@ void dullahan_browser_client::OnTitleChange(CefRefPtr<CefBrowser> browser,
     CEF_REQUIRE_UI_THREAD();
 
     mParent->getCallbackManager()->onTitleChange(std::string(title));
+}
+
+// CefLoadHandler override
+void dullahan_browser_client::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+        bool isLoading, bool canGoBack, bool canGoForward)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    // Terrible hack but AFAICT, this is the only (and perhaps even official) way to
+    // establish a zoom across the browser - there ought to be a setting at startup to change this.
+    // Each time a page load starts/ends, this will re-request the zoom. The page zoom is reset
+    // between pages so the effect is very jarring but it's the best we can do right now.
+    mParent->requestPageZoom();
 }
 
 // CefLoadHandler override

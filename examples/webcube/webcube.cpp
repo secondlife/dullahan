@@ -129,6 +129,7 @@ void app::init_dullahan()
     bool result = mDullahan->init(settings);
     if (result)
     {
+        mDullahan->setPageZoom(1.2);
         mDullahan->navigate(getStartURL());
     }
 }
@@ -711,8 +712,8 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     gApp->setPageZoom(2.0f);
                     break;
 
-                case ID_FEATURES_ZOOM_8X:
-                    gApp->setPageZoom(8.0f);
+                case ID_FEATURES_ZOOM_5X:
+                    gApp->setPageZoom(5.0f);
                     break;
 
                 default:

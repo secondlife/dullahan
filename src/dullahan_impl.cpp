@@ -48,7 +48,8 @@ dullahan_impl::dullahan_impl() :
     mForceWaveAudio(false),
     mDisableGPU(true),
     mFlipPixelsY(false),
-    mFlipMouseY(false)
+    mFlipMouseY(false),
+    mRequestedPageZoom(1.0)
 {
     DLNOUT("dullahan_impl::dullahan_impl()");
 }
@@ -434,12 +435,39 @@ void dullahan_impl::editPaste()
     }
 }
 
-void dullahan_impl::setPageZoom(const double zoom_val)
+// Internal call to request that zoom level you asked for with setPageZoom() be actioned.
+// We need to do it like this because a plain call to the CEF code SetZoomLevel() can fail
+// if then complex multi-process nature of CEF isn't yet established. This is potentially
+// called multiple times - likely from CefLoadHandler::OnLoadingStateChange(..)
+void dullahan_impl::requestPageZoom()
 {
+    // Convert "Dullahan page zoom" to "CEF/Chromium page zoom"
+    // The value we pass into CEF::SetZoomLevel is not on a linear scale and described here:
+    // http://www.magpcss.org/ceforum/viewtopic.php?f=6&t=11491
+    // Dullahan scale: 1.0 is 1:1 scale, 2.0 is double, 0.5 is half etc.
+    // CEF scale is more complex :) and from that post above, this is the best we can do for now:
+    // note: CEF/Chromium max scale seems to be 5 x normal - values higher than that are ignored
+    double cef_zoom_level = 5.46 * log(mRequestedPageZoom * 100.0) - 25.12;
+
     if (mBrowser.get() && mBrowser->GetHost())
     {
-        mBrowser->GetHost()->SetZoomLevel(zoom_val);
+        // if the zoom has not been established (being careful for floating point issues)
+        if (std::abs(mBrowser->GetHost()->GetZoomLevel() - cef_zoom_level) > 0.001)
+        {
+            mBrowser->GetHost()->SetZoomLevel(cef_zoom_level);
+        }
     }
+}
+
+// Set the page zoom directly.  once the page is loaded and waiting say, this will
+// work as expected but if init() was just called, the CEF setup might still be in
+// progress and this will not do anything - however, requestPageZoom() is called
+// often and the zoom will eventually be actioned.
+void dullahan_impl::setPageZoom(const double zoom_val)
+{
+    mRequestedPageZoom = zoom_val;
+
+    requestPageZoom();
 }
 
 void dullahan_impl::showDevTools()

@@ -85,6 +85,7 @@ class dullahan_impl :
 
         void navigate(const std::string url);
         void setFocus();
+
         void setPageZoom(const double zoom_val);
 
         bool editCanCopy();
@@ -110,6 +111,8 @@ class dullahan_impl :
 
         bool getFlipPixelsY();
         bool getFlipMouseY();
+
+        void requestPageZoom();
 
         void setCustomSchemes(std::vector<std::string> custom_schemes);
         std::vector<std::string>& getCustomSchemes();
@@ -141,6 +144,7 @@ class dullahan_impl :
         bool mDisableGPU;
         bool mFlipPixelsY;
         bool mFlipMouseY;
+        double mRequestedPageZoom;
         CefRefPtr<dullahan_context_handler> mContextHandler;
         const int mViewDepth = 4;
         std::vector<std::string> mCustomSchemes;
