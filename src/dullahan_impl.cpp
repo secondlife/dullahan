@@ -229,6 +229,8 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
 void dullahan_impl::shutdown()
 {
+    mBrowser->Release();
+
     CefShutdown();
 }
 

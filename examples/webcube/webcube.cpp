@@ -651,7 +651,7 @@ void create_url_entry_ui(HWND parent)
 {
     HINSTANCE instance = (HINSTANCE)GetWindowLongPtr(parent, GWLP_HINSTANCE);
 
-    HWND hwnd_control = CreateWindowEx(0, "EDIT", NULL, WS_CHILD | WS_VISIBLE | ES_LEFT | ES_AUTOVSCROLL, 0, 0, 0, 0, parent,
+    HWND hwnd_control = CreateWindowEx(0, "EDIT", NULL, WS_CHILD | WS_VISIBLE | ES_LEFT | ES_AUTOVSCROLL, 0, 0, 0, 40, parent,
                                        (HMENU)NULL, instance, NULL);
 
     SendMessage(hwnd_control, EM_SETMARGINS, EC_LEFTMARGIN, MAKELPARAM(8, 0));
@@ -904,14 +904,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     RegisterClass(&wc);
 
     RECT window_rect;
-    SetRect(&window_rect, 0, 0, gApp->mAppWindowWidth, gApp->mAppWindowHeight + GetSystemMetrics(SM_CYMENU));
+    SetRect(&window_rect, 0, 50, gApp->mAppWindowWidth, gApp->mAppWindowHeight + GetSystemMetrics(SM_CYMENU) + GetSystemMetrics(SM_CYMENU));
 
     DWORD ex_style = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
-    DWORD style = WS_OVERLAPPEDWINDOW;
+    DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
     AdjustWindowRectEx(&window_rect, style, FALSE, ex_style);
 
-    HWND hWnd = CreateWindowEx(ex_style, gApp->gClassName, gApp->get_title().c_str(),
-                               style | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+    HWND hWnd = CreateWindowEx(ex_style,
+                               gApp->gClassName,
+                               gApp->get_title().c_str(),
+                               style,
                                gApp->mAppWindowPosX, gApp->mAppWindowPosY,
                                window_rect.right - window_rect.left,
                                window_rect.bottom - window_rect.top,

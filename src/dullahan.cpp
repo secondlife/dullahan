@@ -33,11 +33,13 @@
 dullahan::dullahan() :
     mImpl(new dullahan_impl())
 {
+    mImpl->AddRef();
     DLNOUT("dullahan::dullahan()");
 }
 
 dullahan::~dullahan()
 {
+    mImpl->Release();
     DLNOUT("dullahan::~dullahan()");
 }
 
