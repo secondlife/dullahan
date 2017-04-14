@@ -34,7 +34,9 @@ cmake -G "Visual Studio 12 2013 Win64" ^
 goto Build
 
 :Build
+msbuild dullahan.sln /p:Configuration=Debug
 msbuild dullahan.sln /p:Configuration=Release
+
 cd Release
 .\webcube.exe
 
