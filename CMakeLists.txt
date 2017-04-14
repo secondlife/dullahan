@@ -203,6 +203,30 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
+# command to copy CEF 'bin' folder to executable dir (needed at runtime)
+add_custom_command(
+    TARGET dullahan_host POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory
+            "${CEF_BIN_DIR}/$<CONFIGURATION>"
+            "$<TARGET_FILE_DIR:dullahan_host>"
+    COMMENT "Copying runtime files to executable directory")
+
+# command to copy CEF 'resources' folder to executable dir (needed at runtime)
+add_custom_command(
+    TARGET dullahan_host POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory
+            "${CEF_RESOURCE_DIR}"
+            "$<TARGET_FILE_DIR:dullahan_host>"
+    COMMENT "Copying resource files to executable directory")
+
+# command to copy CEF start HTML page to executable dir (needed at runtime)
+add_custom_command(
+    TARGET dullahan_host POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/dullahan_test_urls.html"
+            "$<TARGET_FILE_DIR:dullahan_host>"
+    COMMENT "Copying startup HTML page to executable directory")
+
 ################################################################################
 ## examples
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -243,31 +267,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set_target_properties(webcube PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
     endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
-    # command to copy CEF 'bin' folder to executable dir (needed at runtime)
-    add_custom_command(
-        TARGET webcube POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E copy_directory
-                "${CEF_BIN_DIR}/$<CONFIGURATION>"
-                "$<TARGET_FILE_DIR:webcube>"
-        COMMENT "Copying runtime files to executable directory")
-
-    # command to copy CEF 'resources' folder to executable dir (needed at runtime)
-    add_custom_command(
-        TARGET webcube POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E copy_directory
-                "${CEF_RESOURCE_DIR}"
-                "$<TARGET_FILE_DIR:webcube>"
-        COMMENT "Copying resource files to executable directory")
-
-    # command to copy CEF start HTML page to executable dir (needed at runtime)
-    add_custom_command(
-        TARGET webcube POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E copy
-                "${CMAKE_CURRENT_SOURCE_DIR}/tools/dullahan_test_urls.html"
-                "$<TARGET_FILE_DIR:webcube>"
-        COMMENT "Copying startup HTML page to executable directory")
-
-    # webcube example dependes on main library and  host executable
+    # webcube example dependes on main library and host executable
     add_dependencies(webcube dullahan)
     add_dependencies(webcube dullahan_host)
 
@@ -338,6 +338,56 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_dependencies(osxgl dullahan)
     add_dependencies(osxgl DullahanHelper)
 endif()
+
+    ################################################################################
+    ## minimal CEF console example (doesn't use Dullahan)
+
+    # add source files to the application
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        add_executable(
+            cef_minimal
+            examples/cef_minimal/cef_minimal.cpp
+        )
+
+        # define which include directories to pull in
+        target_include_directories(
+            cef_minimal
+            PUBLIC
+            ${CEF_INCLUDE_DIR}
+            ${CEF_INCLUDE_DIR}/..
+        )
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        add_executable(
+            CefMinimal
+            MACOSX_BUNDLE
+            examples/cef_minimal/cef_minimal.cpp
+        )
+        # define which include directories to pull in
+        target_include_directories(
+            CefMinimal
+            PUBLIC
+            ${CEF_INCLUDE_DIR}
+            ${CEF_INCLUDE_DIR}/..
+        )
+    endif()
+
+    # define which libs to link against
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        target_link_libraries(
+            cef_minimal
+            ${CEF_LIBRARY}
+            ${CEF_DLL_LIBRARY}
+        )
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        target_link_libraries(
+            CefMinimal
+            ${CEF_DLL_LIBRARY}
+            ${CEF_FRAMEWORK}
+        )
+    endif()
+
+    # cef_minimal example dependes on host executable
+    add_dependencies(cef_minimal dullahan_host)
 
 ################################################################################
 # generic commands that have to go after everything else
