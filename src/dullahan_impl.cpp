@@ -197,8 +197,8 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     browser_settings.application_cache = user_settings.cache_enabled ? STATE_ENABLED : STATE_DISABLED;
     browser_settings.background_color = user_settings.background_color;
 
-    dullahan_render_handler* render_handler = new dullahan_render_handler(this);
-    mBrowserClient = new dullahan_browser_client(this, render_handler);
+    mRenderHandler = new dullahan_render_handler(this);
+    mBrowserClient = new dullahan_browser_client(this, mRenderHandler);
 
     // if this is NULL for CreateBrowserSync, the global request context will be used
     CefRefPtr<CefRequestContext> request_context = NULL;
@@ -229,7 +229,10 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
 void dullahan_impl::shutdown()
 {
-    mBrowser->Release();
+    mBrowser = NULL;
+    mRenderHandler = NULL;
+    mBrowserClient = NULL;
+    mContextHandler = NULL;
 
     CefShutdown();
 }
@@ -513,6 +516,9 @@ void dullahan_impl::printToPDF(const std::string path)
     if (mBrowser.get() && mBrowser->GetHost())
     {
         CefPdfPrintSettings settings;
+        settings.backgrounds_enabled = true;
+        settings.landscape = true;
+        settings.header_footer_enabled = true;
         CefRefPtr<CefPdfPrintCallback> callback = this;
         mBrowser->GetHost()->PrintToPDF(path, settings, callback);
     }

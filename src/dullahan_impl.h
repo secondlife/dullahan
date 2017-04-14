@@ -38,6 +38,7 @@
 #include "dullahan_debug.h"
 
 class dullahan_browser_client;
+class dullahan_render_handler;
 class dullahan_context_handler;
 class dullahan_callback_manager;
 
@@ -133,10 +134,13 @@ class dullahan_impl :
 
     private:
         CefRefPtr<dullahan_browser_client> mBrowserClient;
+        CefRefPtr<dullahan_render_handler> mRenderHandler;
+        CefRefPtr<CefBrowser> mBrowser;
+        CefRefPtr<dullahan_context_handler> mContextHandler;
         dullahan_callback_manager* mCallbackManager;
+
         int mViewWidth;
         int mViewHeight;
-        CefRefPtr<CefBrowser> mBrowser;
         bool mSystemFlashEnabled;
         bool mMediaStreamEnabled;
         bool mBeginFrameScheduling;
@@ -145,7 +149,6 @@ class dullahan_impl :
         bool mFlipPixelsY;
         bool mFlipMouseY;
         double mRequestedPageZoom;
-        CefRefPtr<dullahan_context_handler> mContextHandler;
         const int mViewDepth = 4;
         std::vector<std::string> mCustomSchemes;
 

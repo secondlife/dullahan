@@ -2,7 +2,7 @@
     @brief Dullahan - a headless browser rendering engine
            based around the Chromium Embedded Framework
 
-           Example: capture a web page to image file with a console app
+           Example: capture a web page to image file and a PDF with a console app
 
     @author Callum Prentice - September 2016
 
@@ -105,6 +105,20 @@ void writeBMPImage(const std::string& filename,
     }
 }
 
+void writePDF(std::string filename)
+{
+    static bool written = false;
+
+    if (!written)
+    {
+        std::cout << std::endl << "Writing output PDF: " << filename << std::endl;
+        headless_browser->printToPDF(filename);
+        headless_browser->update();
+    }
+
+    written = true;
+}
+
 void onPageChanged(const unsigned char* pixels, int x, int y, int width, int height)
 {
     std::cout << "# ";
@@ -138,6 +152,7 @@ void onLoadEnd(int code)
 void onRequestExit()
 {
     std::cout << std::endl << "Exit requested - shutting down and exiting" << std::endl;
+
     PostQuitMessage(0L);
 }
 
@@ -166,8 +181,8 @@ int main(int argc, char* argv[])
     headless_browser->setOnRequestExitCallback(std::bind(onRequestExit));
 
     dullahan::dullahan_settings settings;
-    settings.initial_width = 1024;
-    settings.initial_height = 1024;
+    settings.initial_width = 2048;
+    settings.initial_height = 2048;
     settings.javascript_enabled = true;
     settings.cookies_enabled = true;
     settings.user_agent_substring = "Console Test";
@@ -192,12 +207,16 @@ int main(int argc, char* argv[])
             const time_t max_elapsed_change_seconds = 2;
             if (time(nullptr) - gLastChangeTime > max_elapsed_change_seconds)
             {
+                writePDF("output.pdf");
+
                 headless_browser->requestExit();
             }
 
             const time_t max_elapsed_since_loaded_seconds = 10;
             if (time(nullptr) - gPageFinishLoadTime > max_elapsed_since_loaded_seconds)
             {
+                writePDF("output.pdf");
+
                 headless_browser->requestExit();
             }
         }
