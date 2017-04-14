@@ -1,19 +1,23 @@
-set BIT_WIDTH=32
+@pushd .
 
-if "%BIT_WIDTH%" == "32" goto b32_1
-if "%BIT_WIDTH%" == "64" goto b64_1
-goto end
+@if "%1"=="32" goto BitWidth32
+@if "%1"=="64" goto BitWidth64
 
-:b32_1
-set SRC_DIR="%USERPROFILE%\Desktop\cef_binary_3.2987.1591.gd3e47f5_windows32"
-set DST_DIR="%USERPROFILE%\Desktop\cef_2987.1591.win32"
+:NoBitWidth
+@echo.
+@echo You must specify a bit width of 32 or 64
+@goto End
+
+:BitWidth32
+set SRC_DIR="%USERPROFILE%\Desktop\cef_binary_3.2987.1601.gf035232_windows32"
+set DST_DIR="%USERPROFILE%\Desktop\cef_2987.1601.win32"
 set CMAKE_CMD="Visual Studio 12 2013"
 set PLATFORM_CMD="/property:Platform=x86"
 goto skip_1
 
-:b64_1
-set SRC_DIR="%USERPROFILE%\Desktop\cef_binary_3.2987.1591.gd3e47f5_windows64"
-set DST_DIR="%USERPROFILE%\Desktop\cef_2987.1591.win64"
+:BitWidth64
+set SRC_DIR="%USERPROFILE%\Desktop\cef_binary_3.2987.1601.gf035232_windows64"
+set DST_DIR="%USERPROFILE%\Desktop\cef_2987.1601.win64"
 set CMAKE_CMD="Visual Studio 12 2013 Win64"
 set PLATFORM_CMD="/property:Platform=x64"
 goto skip_1
@@ -86,4 +90,6 @@ copy %SRC_DIR%"\Release\libcef.lib" %DST_DIR%"\lib\release"
 rem ******** resources folder ********
 xcopy %SRC_DIR%"\resources\*" %DST_DIR%"\resources\" /S
 
-:end
+:End
+
+popd
