@@ -46,6 +46,7 @@ class dullahan_browser_client :
     public:
         dullahan_browser_client(dullahan_impl* parent,
                                 dullahan_render_handler* render_handler);
+        ~dullahan_browser_client();
 
         // CefClient override
         CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE;

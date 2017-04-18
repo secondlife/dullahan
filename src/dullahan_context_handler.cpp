@@ -32,8 +32,13 @@ dullahan_context_handler::dullahan_context_handler(const std::string cookieStora
 {
     bool persist_session_cookies = false;
     CefRefPtr<CefCompletionCallback> callback = nullptr;
-    mCookieManager = CefCookieManager::CreateManager(CefString(
-                         cookieStorageDirectory), persist_session_cookies, callback);
+
+    mCookieManager = CefCookieManager::CreateManager(CefString(cookieStorageDirectory), persist_session_cookies, callback);
+};
+
+dullahan_context_handler::~dullahan_context_handler()
+{
+    mCookieManager = NULL;
 };
 
 CefRefPtr<CefCookieManager> dullahan_context_handler::GetCookieManager()

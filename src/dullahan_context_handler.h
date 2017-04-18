@@ -35,7 +35,7 @@ class dullahan_context_handler :
 {
     public:
         dullahan_context_handler(const std::string cookieStorageDirectory);
-        virtual ~dullahan_context_handler() {}
+        ~dullahan_context_handler();
 
         CefRefPtr<CefCookieManager> GetCookieManager() OVERRIDE;
 

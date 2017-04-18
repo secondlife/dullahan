@@ -41,6 +41,11 @@ dullahan_browser_client::dullahan_browser_client(dullahan_impl* parent,
     DLNOUT("dullahan_browser_client::dullahan_browser_client - parent ptr = " << parent);
 }
 
+dullahan_browser_client::~dullahan_browser_client()
+{
+    mRenderHandler = NULL;
+}
+
 // CefClient override
 CefRefPtr<CefRenderHandler> dullahan_browser_client::GetRenderHandler()
 {
