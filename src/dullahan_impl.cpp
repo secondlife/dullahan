@@ -117,6 +117,9 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
           @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
 #endif
 
+    // use a single thread for the message loop
+    settings.multi_threaded_message_loop = false;
+
     // turn on only for Windows 7+
     CefEnableHighDPISupport();
 
