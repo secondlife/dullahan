@@ -203,7 +203,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
-# command to copy CEF 'bin' folder to executable dir (needed at runtime)
+# Windows commands to copy CEF 'bin', 'resources' folders to executable dir (needed at runtime)
+# as well as the local HTML page of test links
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 add_custom_command(
     TARGET dullahan_host POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_directory
@@ -211,7 +213,6 @@ add_custom_command(
             "$<TARGET_FILE_DIR:dullahan_host>"
     COMMENT "Copying runtime files to executable directory")
 
-# command to copy CEF 'resources' folder to executable dir (needed at runtime)
 add_custom_command(
     TARGET dullahan_host POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_directory
@@ -219,13 +220,13 @@ add_custom_command(
             "$<TARGET_FILE_DIR:dullahan_host>"
     COMMENT "Copying resource files to executable directory")
 
-# command to copy CEF start HTML page to executable dir (needed at runtime)
 add_custom_command(
     TARGET dullahan_host POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy
             "${CMAKE_CURRENT_SOURCE_DIR}/tools/dullahan_test_urls.html"
             "$<TARGET_FILE_DIR:dullahan_host>"
     COMMENT "Copying startup HTML page to executable directory")
+endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 ################################################################################
 ## examples
