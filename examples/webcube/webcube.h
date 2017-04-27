@@ -55,6 +55,7 @@ class app
         void showDevTools();
         void printToPDF();
         void setPageZoom(float val);
+        void setPageVolume(float volume);
         void initConsole();
         void closeConsole();
         void request_exit();

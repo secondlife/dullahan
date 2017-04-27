@@ -116,6 +116,7 @@ void app::init_dullahan()
     settings.flash_enabled = true;
     settings.flip_mouse_y = false;
     settings.flip_pixels_y = false;
+    settings.force_wave_audio = true;
     settings.frame_rate = 60;
     settings.initial_height = mTextureWidth;
     settings.initial_width = mTextureHeight;
@@ -404,6 +405,17 @@ void app::printToPDF()
 void app::setPageZoom(float val)
 {
     mDullahan->setPageZoom(val);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Volume is 0.0 to 1.0
+void app::setPageVolume(float volume)
+{
+    DWORD left_channel = (DWORD)(volume * 65535.0f);
+    DWORD right_channel = (DWORD)(volume * 65535.0f);
+    DWORD hw_volume = left_channel << 16 | right_channel;
+
+    ::waveOutSetVolume(NULL, hw_volume);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -714,6 +726,22 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                 case ID_FEATURES_ZOOM_5X:
                     gApp->setPageZoom(5.0f);
+                    break;
+
+                case ID_FEATURES_VOLUME_01X:
+                    gApp->setPageVolume(0.1f);
+                    break;
+
+                case ID_FEATURES_VOLUME_00X:
+                    gApp->setPageVolume(0.0f);
+                    break;
+
+                case ID_FEATURES_VOLUME_05X:
+                    gApp->setPageVolume(0.5f);
+                    break;
+
+                case ID_FEATURES_VOLUME_10X:
+                    gApp->setPageVolume(1.0f);
                     break;
 
                 default:

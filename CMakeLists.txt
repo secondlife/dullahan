@@ -260,6 +260,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         opengl32
         glu32
         comctl32
+        winmm
     )
 
     # we are building Windows executable, not a console app (default)
