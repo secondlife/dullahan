@@ -9,15 +9,15 @@
 @goto End
 
 :BitWidth32
-set SRC_DIR="%USERPROFILE%\Desktop\cef_binary_3.2987.1601.gf035232_windows32"
-set DST_DIR="%USERPROFILE%\Desktop\cef_2987.1601.win32"
+set SRC_DIR="%USERPROFILE%\Desktop\cef_binary_3.3029.1604.g364cd86_windows32"
+set DST_DIR="%USERPROFILE%\Desktop\cef_3029.1604.win32"
 set CMAKE_CMD="Visual Studio 12 2013"
 set PLATFORM_CMD="/property:Platform=x86"
 goto skip_1
 
 :BitWidth64
-set SRC_DIR="%USERPROFILE%\Desktop\cef_binary_3.2987.1601.gf035232_windows64"
-set DST_DIR="%USERPROFILE%\Desktop\cef_2987.1601.win64"
+set SRC_DIR="%USERPROFILE%\Desktop\cef_binary_3.3029.1604.g364cd86_windows64"
+set DST_DIR="%USERPROFILE%\Desktop\cef_3029.1604.win64"
 set CMAKE_CMD="Visual Studio 12 2013 Win64"
 set PLATFORM_CMD="/property:Platform=x64"
 goto skip_1
