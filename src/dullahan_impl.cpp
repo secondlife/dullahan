@@ -38,10 +38,10 @@
 #include <iostream>
 
 dullahan_impl::dullahan_impl() :
+    mBrowser(0),
     mCallbackManager(new dullahan_callback_manager),
     mViewWidth(0),
     mViewHeight(0),
-    mBrowser(0),
     mSystemFlashEnabled(false),
     mMediaStreamEnabled(false),
     mBeginFrameScheduling(false),
@@ -466,7 +466,7 @@ void dullahan_impl::requestPageZoom()
     if (mBrowser.get() && mBrowser->GetHost())
     {
         // if the zoom has not been established (being careful for floating point issues)
-        if (std::abs(mBrowser->GetHost()->GetZoomLevel() - cef_zoom_level) > 0.001)
+        if (fabs(mBrowser->GetHost()->GetZoomLevel() - cef_zoom_level) > 0.001)
         {
             mBrowser->GetHost()->SetZoomLevel(cef_zoom_level);
         }

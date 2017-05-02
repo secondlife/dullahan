@@ -37,9 +37,9 @@ static GLuint textureHandle = 0;
 
 static LLOsxglView *gCurrent = nil;
 
-static void onPageChangedCallback(const unsigned char *pixels, int x, int y, int width, int height, bool is_popup)
+static void onPageChangedCallback(const unsigned char *pixels, int x, int y, int width, int height)
 {
-    [[LLOsxglView current] onPageChangedCallbackPixels:pixels x:x y:y width:width height:height is_popup:is_popup];
+    [[LLOsxglView current] onPageChangedCallbackPixels:pixels x:x y:y width:width height:height];
 }
 
 static void onRequestExitCallback() {
@@ -97,8 +97,7 @@ static void onRequestExitCallback() {
                                                         std::placeholders::_2,
                                                         std::placeholders::_3,
                                                         std::placeholders::_4,
-                                                        std::placeholders::_5,
-                                                        std::placeholders::_6));
+                                                        std::placeholders::_5));
 
     _mDullahan->setOnRequestExitCallback(std::bind(&onRequestExitCallback));
 
@@ -273,7 +272,7 @@ static void onRequestExitCallback() {
     }
 }
 
-- (void)onPageChangedCallbackPixels:(const unsigned char *)pixels x:(int)x y:(int)y width:(int)width height:(int)height is_popup:(bool)is_popup {
+- (void)onPageChangedCallbackPixels:(const unsigned char *)pixels x:(int)x y:(int)y width:(int)width height:(int)height {
     if (width != textureWidth) {
         NSLog(@"onPageChagnedCallback width does not match.");
         return;

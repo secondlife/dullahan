@@ -44,7 +44,7 @@
 
 + (LLOsxglView*)current;
 
-- (void)onPageChangedCallbackPixels:(const unsigned char*)pixels x:(int)x y:(int)y width:(int)width height:(int)height is_popup:(bool)is_popup;
+- (void)onPageChangedCallbackPixels:(const unsigned char*)pixels x:(int)x y:(int)y width:(int)width height:(int)height;
 
 - (void)sendKeyEvent:(NSEvent*)theEvent;
 

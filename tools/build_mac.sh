@@ -1,22 +1,20 @@
 #!/usr/bin/env bash
 
-# point this at your CEF build
-# (some of the script - e.g. CMake header generation needs this form of the
-# folder name vs the ~/blah one - not sure why)
-cef_base_dir="/Users/callum/work/cef_builds/cef_bin-3.2704-mac64"
+# point this at your CEF build you made with make_dullahan_cef_pkg.sh
+cef_base_dir="/Users/callum/Work/cef_builds/cef_binary_3.3029.1611.g44e39a8_macosx64"
 
 # repoint where to find framework
 install_name_tool -id "@executable_path/../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework" ${cef_base_dir}/bin/release/Chromium\ Embedded\ Framework.framework/Chromium\ Embedded\ Framework
 
 # clean build dir
-rm -rf ./build
-mkdir build
-cd build
+rm -rf ./build64
+mkdir build64
+cd build64
 
 # CMake generates Xcode project and populate dullahan.h header
 cmake -G "Xcode" \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCEF_INCLUDE_DIR="${cef_base_dir}/include" \
+    -DCEF_INCLUDE_DIR="${cef_base_dir}/include/" \
     -DCEF_LIB_DIR="${cef_base_dir}/lib" \
     -DCEF_BIN_DIR="${cef_base_dir}/bin" \
     -DCEF_RESOURCE_DIR="${cef_base_dir}/resources" \
@@ -49,5 +47,3 @@ cp ../examples/osxgl/Info.plist Release/osxgl.app/Contents
 # copy nib file
 mkdir Release/osxgl.app/Contents/Resources
 cp -r ../examples/osxgl/Resources/* Release/osxgl.app/Contents/Resources
-
-
