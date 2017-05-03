@@ -16,8 +16,8 @@ It might be useful in a number of situations - for example:
 * HTML/JavaScript based user interfaces E.G. a tablet based paradigm for VR
 * Integration with JavaScript for automated site testing like [PhantomJS](http://phantomjs.org/)
 * Web page contents analysis - E.G:
-  * Capture images the most popular 500 web pages and count the top 5 colors in each.
-  * Capture a Google Maps traffic map of where you live for 24 hours and see how *really* miserable your commute is :)
+    * Capture images the most popular 500 web pages and count the top 5 colors in each.
+    * Capture a Google Maps traffic map of where you live for 24 hours and see how *really* miserable your commute is :)
 * Web page capture to an image or a PDF file
 * Lots more I haven't thought of yet
 
@@ -85,15 +85,15 @@ The easy answer is no - CEF builds against [Chromium](https://www.chromium.org/)
 
 * Download or clone the Dullahan source code
 * Windows
-  * Edit the `tools\build_win.bat` filer and change the `CEF_32_DIR` and `CEF_64_DIR` variables at the top to point to the appropriate build of CEF you just built.
-  * From a command prompt, run `tools/build_win.bat` with a parameter of either 32 or 64 to set the bit-width to build
-  * If Dullahan builds correctly, the example application in `Release/examples/webcube` will start
-  * You can open the Visual Studio 2013 solution file in `build` or `build64` as normal and edit files if you want to experiment 
+    * Edit the `tools\build_win.bat` filer and change the `CEF_32_DIR` and `CEF_64_DIR` variables at the top to point to the appropriate build of CEF you just built.
+    * From a command prompt, run `tools/build_win.bat` with a parameter of either 32 or 64 to set the bit-width to build
+    * If Dullahan builds correctly, the example application in `Release/examples/webcube` will start
+    * You can open the Visual Studio 2013 solution file in `build` or `build64` as normal and edit files if you want to experiment 
 * macOS
-  * Edit the `tools/build_mac.sh` file and edit the `cef_base_dir` variable to point to the version of CEF you just built.
-  * From a terminal prompt, run `tools/build_mac.sh`. 
-  * If it builds correctly, you can try to the run the included macOS example application (`open build64/Release/osxgl.app`)
-  * You can open the Xcode 8 project file `build64/dullahan.xcodeproj` and edit files if you want to experiment
+    * Edit the `tools/build_mac.sh` file and edit the `cef_base_dir` variable to point to the version of CEF you just built.
+    * From a terminal prompt, run `tools/build_mac.sh`. 
+    * If it builds correctly, you can try to the run the included macOS example application (`open build64/Release/osxgl.app`)
+    * You can open the Xcode 8 project file `build64/dullahan.xcodeproj` and edit files if you want to experiment
 
 ## Which files do I need in my own project?
 
