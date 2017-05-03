@@ -68,14 +68,14 @@ Not right now. I used to store a pre-built version on the Windows 64 bit version
 Before you can build Dullahan, you will need to build a version of CEF. There are some scripts to help - a [batch](https://bitbucket.org/lindenlab/dullahan/src/default/tools/make_dullahan_cef_pkg.bat?) file for Windows and a [shell script](https://bitbucket.org/lindenlab/dullahan/src/default/tools/make_dullahan_cef_pkg.sh) for macOS. The macOS version is somewhat automated but the lack of built-in tools in Windows to download and uncompress `.tar.bz2` files means it needs some manual steps up front.
 
 * Windows
-  * Grab a Windows 32 or 64 bit build of CEF from [http://opensource.spotify.com/cefbuilds/index.html](http://opensource.spotify.com/cefbuilds/index.html)
-  * Extract the archive to a local folder - I use the Windows Desktop
-  * Edit the `tools/make_dullahan_cef_pkg.bat` batch file - specifically, the lines at the top of the file that set the `SRC_DIR_32/64` (location of uncompressed CEF package you just downloaded) and `DST_DIR_32/64` (location where you want to generate a build).
-  * From a command prompt, run `tools\make_dullahan_cef_pkg.bat` with a parameter of either 32 or 64 to set the bit-width to build
-  * If all goes well, you will end up with a set of libs, headers and binary files in the `DST_DIR_32/64` folder that you can use to build Dullahan
+  ** Grab a Windows 32 or 64 bit build of CEF from [http://opensource.spotify.com/cefbuilds/index.html](http://opensource.spotify.com/cefbuilds/index.html)
+  ** Extract the archive to a local folder - I use the Windows Desktop
+  ** Edit the `tools/make_dullahan_cef_pkg.bat` batch file - specifically, the lines at the top of the file that set the `SRC_DIR_32/64` (location of uncompressed CEF package you just downloaded) and `DST_DIR_32/64` (location where you want to generate a build).
+  ** From a command prompt, run `tools\make_dullahan_cef_pkg.bat` with a parameter of either 32 or 64 to set the bit-width to build
+  ** If all goes well, you will end up with a set of libs, headers and binary files in the `DST_DIR_32/64` folder that you can use to build Dullahan
 * macOS
-  * Edit the `tools/make_dullahan_cef_pkg.sh` shell script and make sure the `CEF_BUILD` variable is set to the version you want and make sure the `DST_DIR` points to somewhere sensible. This is where the build will be generated.
-  * From a terminal prompt, run `tools/make_dullahan_cef_pkg.sh`. This will download the right version of CEF, build it and create a set of libs, frameworks, headers etc. that you need to build Dullahan
+  ** Edit the `tools/make_dullahan_cef_pkg.sh` shell script and make sure the `CEF_BUILD` variable is set to the version you want and make sure the `DST_DIR` points to somewhere sensible. This is where the build will be generated.
+  ** From a terminal prompt, run `tools/make_dullahan_cef_pkg.sh`. This will download the right version of CEF, build it and create a set of libs, frameworks, headers etc. that you need to build Dullahan
 
 ## Do I need to build Chromium?
 
