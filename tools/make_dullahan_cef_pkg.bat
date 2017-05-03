@@ -1,5 +1,12 @@
 @pushd .
 
+rem Edit these variables to point to the uncompressed CEF source directory and 
+rem the required destination directory for both 32 and 64 bit versions
+set SRC_DIR_32="%USERPROFILE%\Desktop\cef_binary_3.3029.1611.g44e39a8_windows32"
+set DST_DIR_32="%USERPROFILE%\Desktop\cef_3029.1611.g44e39a8_windows32"
+set SRC_DIR_64="%USERPROFILE%\Desktop\cef_binary_3.3029.1611.g44e39a8_windows64"
+set DST_DIR_64="%USERPROFILE%\Desktop\cef_3029.1611.g44e39a8_windows64"
+
 @if "%1"=="32" goto BitWidth32
 @if "%1"=="64" goto BitWidth64
 
@@ -9,15 +16,17 @@
 @goto End
 
 :BitWidth32
-set SRC_DIR="%USERPROFILE%\Desktop\cef_binary_3.3029.1604.g364cd86_windows32"
-set DST_DIR="%USERPROFILE%\Desktop\cef_3029.1604.win32"
+set SRC_DIR="%SRC_DIR_32%"
+set DST_DIR="%DST_DIR_32%"
+set BUILD_DIR="build"
 set CMAKE_CMD="Visual Studio 12 2013"
 set PLATFORM_CMD="/property:Platform=x86"
 goto skip_1
 
 :BitWidth64
-set SRC_DIR="%USERPROFILE%\Desktop\cef_binary_3.3029.1604.g364cd86_windows64"
-set DST_DIR="%USERPROFILE%\Desktop\cef_3029.1604.win64"
+set SRC_DIR="%SRC_DIR_64%"
+set DST_DIR="%DST_DIR_64%"
+set BUILD_DIR="build64"
 set CMAKE_CMD="Visual Studio 12 2013 Win64"
 set PLATFORM_CMD="/property:Platform=x64"
 goto skip_1
@@ -39,11 +48,11 @@ pushd .
 
 cd %SRC_DIR%
 
-if exist build del /s /q build
-if exist build rmdir /s /q build
+if exist %BUILD_DIR% del /s /q %BUILD_DIR%
+if exist %BUILD_DIR% rmdir /s /q %BUILD_DIR%
 
-mkdir build
-cd build 
+mkdir %BUILD_DIR%
+cd %BUILD_DIR% 
 cmake -G %CMAKE_CMD% ..
 cd libcef_dll_wrapper
 
