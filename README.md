@@ -105,6 +105,10 @@ TODO: Create a batch file and shell script that generates a CMake file which cre
 
 The short answer is look at the code in the `examples` folder and `dullahan.h`. Generally speaking, you create an instance of the library, call `init()` and regularly call the `update()` function in your own message loop. You can hook up a callback to be notified when the contents of the page changes and get access to the raw pixels. You can synthesize mouse and keyboard events and send them into the page. Finally, when you want to exit, make sure the `onRequestExit` callback is hooked up and call the `requestExit()` method. When the library and CEF have cleaned everything up, your callback will be triggered and you can call `shutdown()` before exiting normally.
 
+## Are there examples?
+
+Why yes there is - take a look in the `examples` subdirectory of this repo.  There are some screenshots and short descriptions in the [README](https://bitbucket.org/lindenlab/dullahan/src/default/examples/README.md) file too 
+
 ## What is left to do before the first real release?
 
 * Implement proper Dullahan <--> JavaScript interoperability
