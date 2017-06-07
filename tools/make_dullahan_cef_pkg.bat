@@ -2,10 +2,10 @@
 
 rem Edit these variables to point to the uncompressed CEF source directory and 
 rem the required destination directory for both 32 and 64 bit versions
-set SRC_DIR_32="%USERPROFILE%\Desktop\cef_binary_3.3029.1611.g44e39a8_windows32"
-set DST_DIR_32="%USERPROFILE%\Desktop\cef_3029.1611.g44e39a8_windows32"
-set SRC_DIR_64="%USERPROFILE%\Desktop\cef_binary_3.3029.1611.g44e39a8_windows64"
-set DST_DIR_64="%USERPROFILE%\Desktop\cef_3029.1611.g44e39a8_windows64"
+set SRC_DIR_32="%USERPROFILE%\Desktop\cef_binary_3.3071.1634.g9cc59c8_windows32"
+set DST_DIR_32="%USERPROFILE%\Desktop\cef_3071.1634.g9cc59c8_windows32"
+set SRC_DIR_64="%USERPROFILE%\Desktop\cef_binary_3.3071.1634.g9cc59c8_windows64"
+set DST_DIR_64="%USERPROFILE%\Desktop\cef_3071.1634.g9cc59c8_windows64"
 
 @if "%1"=="32" goto BitWidth32
 @if "%1"=="64" goto BitWidth64
