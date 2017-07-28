@@ -1,8 +1,8 @@
 @pushd .
 @if exist build_win.bat cd ..
 
-set CEF_32_DIR="c:\work\cef_builds\cef_3071.1634.g9cc59c8_windows32"
-set CEF_64_DIR="C:\work\cef_builds\cef_3071.1634.g9cc59c8_windows64"
+set CEF_32_DIR="c:\work\cef_builds\cef_3071.1649.g98725e6_windows32"
+set CEF_64_DIR="C:\work\cef_builds\cef_3071.1649.g98725e6_windows64"
 
 @if "%1"=="32" goto BitWidth32
 @if "%1"=="64" goto BitWidth64
