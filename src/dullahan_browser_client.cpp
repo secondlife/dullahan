@@ -65,7 +65,10 @@ bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
 
     std::string url = std::string(target_url);
     std::string target = std::string(target_frame_name);
-    if (url.length() && target.length())
+
+	// note target string is empty if target in HTML is "_blank" so don't test 
+	// for target length - just url which cannot be empty
+    if (url.length())
     {
         mParent->getCallbackManager()->onNavigateURL(url, target);
         return true;
