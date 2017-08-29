@@ -2,8 +2,8 @@
     @brief Dullahan - a headless browser rendering engine
            based around the Chromium Embedded Framework
 
-           Example: minimal CEF example that doesn't use
-           Dullahan- useful for iterating quickly on tricky issues
+           Example: minimal CEF example that doesn't use Dullahan - useful
+                    for iterating quickly on tricky issues
 
     @author Callum Prentice - April 2017
 
@@ -42,7 +42,7 @@ class RenderHandler :
     public CefRenderHandler
 {
     public:
-        bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
+        bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override
         {
             int width = 512;
             int height = 512;
@@ -50,7 +50,11 @@ class RenderHandler :
             return true;
         }
 
-        void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height)
+        void OnPaint(CefRefPtr<CefBrowser> browser, 
+                     PaintElementType type,
+                     const RectList& dirtyRects,
+                     const void* buffer, 
+                     int width, int height) override
         {
             std::cout << "OnPaint() for size: " << width << " x " << height << std::endl;
         }
@@ -68,24 +72,24 @@ class BrowserClient :
         {
         }
 
-        CefRefPtr<CefRenderHandler> BrowserClient::GetRenderHandler() OVERRIDE
+        CefRefPtr<CefRenderHandler> GetRenderHandler() override
         {
             return render_handler_;
         }
 
-        CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE
+        CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override
         {
             return this;
         }
 
-        void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE
+        void OnAfterCreated(CefRefPtr<CefBrowser> browser) override
         {
             CEF_REQUIRE_UI_THREAD();
 
             browser_list_.push_back(browser);
         }
 
-        void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE
+        void OnBeforeClose(CefRefPtr<CefBrowser> browser) override
         {
             CEF_REQUIRE_UI_THREAD();
 
@@ -120,12 +124,21 @@ class CefMinimal : public CefApp
         {
         }
 
-        bool init()
+        bool init(int argc, char* argv[])
         {
-            CefMainArgs args(GetModuleHandle(NULL));
-
             CefSettings settings;
-            CefString(&settings.browser_subprocess_path) = "dullahan_host.exe";
+
+#ifdef WIN32
+
+            CefMainArgs args(GetModuleHandle(NULL));
+            CefString(&settings.browser_subprocess_path) = "cef_host.exe";
+
+#elif __APPLE__
+
+            CefMainArgs args(argc, argv);
+            CefString(&settings.browser_subprocess_path) = "./cef_host";
+            CefString(&settings.framework_dir_path) = "Frameworks/Chromium Embedded Framework.framework";
+#endif
 
             if (CefInitialize(args, settings, this, NULL))
             {
@@ -141,7 +154,7 @@ class CefMinimal : public CefApp
                 CefBrowserSettings browser_settings;
                 browser_settings.windowless_frame_rate = 60;
 
-                CefString url = "http://cnn.com";
+                CefString url = "http://youtube.com";
                 browser_ = CefBrowserHost::CreateBrowserSync(window_info, browser_client_.get(), url, browser_settings, nullptr);
 
                 return true;
@@ -184,11 +197,12 @@ int main(int argc, char* argv[])
 {
     CefRefPtr<CefMinimal> cm = new CefMinimal();
 
-    cm->init();
+    cm->init(argc, argv);
 
     time_t start_time;
     time(&start_time);
 
+#ifdef WIN32
     MSG msg;
     do
     {
@@ -215,6 +229,26 @@ int main(int argc, char* argv[])
         }
     }
     while (msg.message != WM_QUIT);
+
+#elif __APPLE__
+
+    while(true)
+    {
+        cm->update();
+
+        if (gExitFlag == false)
+        {
+            if (time(NULL) > start_time + 3)
+            {
+                cm->requestExit();
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+#endif
 
     cm->shutdown();
 
