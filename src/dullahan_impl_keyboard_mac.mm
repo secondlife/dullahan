@@ -99,14 +99,15 @@ void dullahan_impl::nativeKeyboardEventOSX(void* event)
                 {
                     keyEvent.type =  KEYEVENT_KEYDOWN;
                     mBrowser->GetHost()->SendKeyEvent(keyEvent);
-
-                    keyEvent.type =  KEYEVENT_CHAR;
-                    mBrowser->GetHost()->SendKeyEvent(keyEvent);
                 }
                 else
                 if ([ns_event type] == NSKeyUp)
                 {
                     keyEvent.type =  KEYEVENT_KEYUP;
+                    mBrowser->GetHost()->SendKeyEvent(keyEvent);
+
+                    keyEvent.type =  KEYEVENT_CHAR;
+                    mBrowser->GetHost()->SendKeyEvent(keyEvent);
                 }
             }
         }
@@ -145,12 +146,14 @@ void dullahan_impl::nativeKeyboardEventOSX(dullahan::EKeyEvent event_type,
                     keyEvent.type =  KEYEVENT_KEYDOWN;
                     mBrowser->GetHost()->SendKeyEvent(keyEvent);
 
-                    keyEvent.type =  KEYEVENT_CHAR;
-                    mBrowser->GetHost()->SendKeyEvent(keyEvent);
                 }
                 else
                 {
                     keyEvent.type =  KEYEVENT_KEYUP;
+                    mBrowser->GetHost()->SendKeyEvent(keyEvent);
+
+                    keyEvent.type =  KEYEVENT_CHAR;
+                    mBrowser->GetHost()->SendKeyEvent(keyEvent);
                 }
             }
         }
