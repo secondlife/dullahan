@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # point this at your CEF build you made with make_dullahan_cef_pkg.sh
-cef_base_dir="/Users/callum/Work/cef_builds/cef_binary_3.3071.1637.gcb6cf75_macosx64"
+cef_base_dir="/Users/callum/Work/cef_builds/cef_binary_3.3112.1656.g9ec3e42_macosx64"
 
 # repoint where to find framework
 install_name_tool -id "@executable_path/../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework" ${cef_base_dir}/bin/release/Chromium\ Embedded\ Framework.framework/Chromium\ Embedded\ Framework
@@ -24,14 +24,18 @@ cmake -G "Xcode" \
 xcodebuild -project dullahan.xcodeproj -target dullahan -configuration 'Release'
 xcodebuild -project dullahan.xcodeproj -target DullahanHelper -configuration 'Release'
 xcodebuild -project dullahan.xcodeproj -target osxgl -configuration 'Release'
+xcodebuild -project dullahan.xcodeproj -target cef_minimal -configuration 'Release'
 
 mkdir Release/osxgl.app/Contents/Frameworks
+mkdir Release/cef_minimal.app/Contents/Frameworks
 
 # copy helper app to right place
 cp -r Release/DullahanHelper.app Release/osxgl.app/Contents/Frameworks/DullahanHelper.app
+cp -r Release/DullahanHelper.app Release/cef_minimal.app/Contents/Frameworks/DullahanHelper.app
 
 # copy framework to right place
 cp -r ${cef_base_dir}/bin/release/Chromium\ Embedded\ Framework.framework Release/osxgl.app/Contents/Frameworks/Chromium\ Embedded\ Framework.framework
+cp -r ${cef_base_dir}/bin/release/Chromium\ Embedded\ Framework.framework Release/cef_minimal.app/Contents/Frameworks/Chromium\ Embedded\ Framework.framework
 
 # helper app needs the framework too so make a symbolic link to existing one
 pushd .
@@ -39,6 +43,13 @@ mkdir  Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents/Framewo
 cd Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks
 ln -s '../../../../Frameworks/Chromium Embedded Framework.framework' 'Chromium Embedded Framework.framework'
 popd
+
+pushd .
+mkdir  Release/cef_minimal.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks
+cd Release/cef_minimal.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks
+ln -s '../../../../Frameworks/Chromium Embedded Framework.framework' 'Chromium Embedded Framework.framework'
+popd
+
 
 # copy meta data
 cp ../src/host/Info.plist Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents
