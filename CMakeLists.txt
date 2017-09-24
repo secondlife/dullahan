@@ -366,6 +366,35 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
     add_dependencies(osxgl dullahan)
     add_dependencies(osxgl DullahanHelper)
+
+    ################################################################################
+    ## minimal CEF console example (doesn't use Dullahan)
+
+    # add source file to application
+    add_executable(
+        cef_minimal
+        MACOSX_BUNDLE
+        examples/cef_minimal/cef_minimal.cpp
+    )
+
+    # define which include directories to pull in
+    target_include_directories(
+        cef_minimal
+        PUBLIC
+        ${CEF_INCLUDE_DIR}
+        ${CEF_INCLUDE_DIR}/..
+    )
+
+    # define which libs to link against
+    target_link_libraries(
+        cef_minimal
+        ${CEF_DLL_LIBRARY}
+        ${CEF_FRAMEWORK}
+        ${COCOA_FRAMEWORK}
+    )
+
+    add_dependencies(cef_minimal DullahanHelper)
+
 endif()
 
 ################################################################################

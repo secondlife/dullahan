@@ -20,7 +20,7 @@ cmake -G "Xcode" \
     -DCEF_RESOURCE_DIR="${cef_base_dir}/resources" \
     ..
 
-# build what we need plus an example
+# build what we need plus examples
 xcodebuild -project dullahan.xcodeproj -target dullahan -configuration 'Release'
 xcodebuild -project dullahan.xcodeproj -target DullahanHelper -configuration 'Release'
 xcodebuild -project dullahan.xcodeproj -target osxgl -configuration 'Release'
@@ -49,7 +49,6 @@ mkdir  Release/cef_minimal.app/Contents/Frameworks/DullahanHelper.app/Contents/F
 cd Release/cef_minimal.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks
 ln -s '../../../../Frameworks/Chromium Embedded Framework.framework' 'Chromium Embedded Framework.framework'
 popd
-
 
 # copy meta data
 cp ../src/host/Info.plist Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents
