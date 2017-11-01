@@ -310,7 +310,7 @@ void dullahan_browser_client::OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
     CEF_REQUIRE_UI_THREAD();
 
     bool is_in_progress = download_item->IsInProgress();
-    int percent_complete = max(0, download_item->GetPercentComplete());
+    int percent_complete = download_item->GetPercentComplete();
     bool is_complete = download_item->IsComplete();
 
     if (is_in_progress)
