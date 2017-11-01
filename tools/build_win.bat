@@ -13,6 +13,7 @@ set CEF_64_DIR="C:\work\cef_builds\cef_3071.1649.g98725e6_windows64"
 @goto End
 
 :BitWidth32
+if exist .\src\dullahan_version.h rm .\src\dullahan_version.h
 if exist .\build\* rmdir /s /q .\build
 mkdir build
 cd build
@@ -25,6 +26,7 @@ cmake -G "Visual Studio 12 2013" ^
 goto Build
 
 :BitWidth64
+if exist .\src\dullahan_version.h rm .\src\dullahan_version.h
 if exist .\build64\* rmdir /s /q .\build64
 mkdir build64
 cd build64
