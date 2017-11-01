@@ -89,8 +89,9 @@ void app::init_dullahan()
     mDullahan->setOnConsoleMessageCallback(std::bind(&app::onConsoleMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     mDullahan->setOnCursorChangedCallback(std::bind(&app::onCursorChanged, this, std::placeholders::_1));
     mDullahan->setOnCustomSchemeURLCallback(std::bind(&app::onCustomSchemeURL, this, std::placeholders::_1));
-    mDullahan->setOnFileDialogCallback(std::bind(&app::onFileDialog, this));
+    mDullahan->setOnFileDialogCallback(std::bind(&app::onFileDialog, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
     mDullahan->setOnFileDownloadCallback(std::bind(&app::onFileDownload, this, std::placeholders::_1));
+    mDullahan->setOnFileDownloadProgressCallback(std::bind(&app::onFileDownloadProgress, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnHTTPAuthCallback(std::bind(&app::onHTTPAuth, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
     mDullahan->setOnLoadEndCallback(std::bind(&app::onLoadEnd, this, std::placeholders::_1));
     mDullahan->setOnLoadErrorCallback(std::bind(&app::onLoadError, this, std::placeholders::_1, std::placeholders::_2));
@@ -107,12 +108,13 @@ void app::init_dullahan()
 
     dullahan::dullahan_settings settings;
     settings.accept_language_list = "en-US";
-    settings.background_color = 0xffffff;
+    settings.background_color = 0x80ffffff;
     settings.cache_enabled = true;
     settings.cache_path = ".\\cache";
     settings.cookie_store_path = ".\\cookies";
     settings.cookies_enabled = true;
     settings.disable_gpu = false;
+    settings.disable_web_security = true;
     settings.flash_enabled = true;
     settings.flip_mouse_y = false;
     settings.flip_pixels_y = false;
@@ -466,26 +468,80 @@ void app::onCustomSchemeURL(const std::string url)
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-const std::string app::onFileDialog()
+const std::string app::onFileDialog(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string dialog_accept_filter, bool& use_default)
 {
-    OPENFILENAME ofn;
-    char szFile[260];
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn);
-    ofn.hwndOwner = GetDesktopWindow();
-    ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = '\0';
-    ofn.nMaxFile = sizeof(szFile);
-    ofn.lpstrFilter = "JPEG files\0*.jpg\0";
-    ofn.nFilterIndex = 1;
-    ofn.lpstrFileTitle = NULL;
-    ofn.nMaxFileTitle = 0;
-    ofn.lpstrInitialDir = NULL;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+    std::cout << "onFileDialog(..) title: \"" << dialog_title << "\"  accept filter: \"" << dialog_accept_filter << "\"" << std::endl;
 
-    if (GetOpenFileName(&ofn) == TRUE)
+    // test directly download with no file dialog and user specified name
+    const bool download_directly = true;
+    if (download_directly)
     {
-        return std::string(ofn.lpstrFile);
+        use_default = false;
+        return "C:\\users\\callum\\Desktop\\flasm.jpg";
+    }
+
+    // test internal CEF file dialog and file dialog implemented here
+    const bool use_default_file_dialog = true;
+    use_default = use_default_file_dialog;
+
+    if (use_default_file_dialog)
+    {
+        std::cout << "onFileDialog(..) - using default CEF dialog" << std::endl;
+        return std::string();
+    }
+
+    std::cout << "onFileDialog(..) - using our own dialog" << std::endl;
+    if (dialog_type == dullahan::FD_OPEN_FILE)
+    {
+        OPENFILENAME ofn;
+        char szFile[MAX_PATH];
+        ZeroMemory(&ofn, sizeof(ofn));
+        ofn.lStructSize = sizeof(ofn);
+        ofn.hwndOwner = GetDesktopWindow();
+        ofn.lpstrFile = szFile;
+        ofn.lpstrFile[0] = '\0';
+        ofn.nMaxFile = sizeof(szFile);
+        ofn.lpstrFilter = (char*)dialog_accept_filter.c_str();
+        ofn.nFilterIndex = 0;
+        ofn.lpstrFileTitle = (char*)dialog_title.c_str();
+        ofn.nMaxFileTitle = 0;
+        ofn.lpstrInitialDir = NULL;
+        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+        if (GetOpenFileName(&ofn) == TRUE)
+        {
+            return std::string(ofn.lpstrFile);
+        }
+        else
+        {
+            return std::string();
+        }
+    }
+    else if (dialog_type == dullahan::FD_SAVE_FILE)
+    {
+        OPENFILENAME ofn;
+        char szFile[MAX_PATH];
+        ZeroMemory(&ofn, sizeof(ofn));
+        ofn.lStructSize = sizeof(ofn);
+        ofn.hwndOwner = GetDesktopWindow();
+        ofn.lpstrFile = szFile;
+        ofn.lpstrFile[0] = '\0';
+        ofn.nMaxFile = sizeof(szFile);
+        ofn.lpstrFilter = (char*)dialog_accept_filter.c_str();
+        ofn.nFilterIndex = 0;
+        ofn.lpstrFileTitle = (char*)dialog_title.c_str();
+        ofn.nMaxFileTitle = 0;
+        ofn.lpstrInitialDir = NULL;
+        ofn.Flags = OFN_OVERWRITEPROMPT;
+
+        if (GetSaveFileName(&ofn) == TRUE)
+        {
+            return std::string(ofn.lpstrFile);
+        }
+        else
+        {
+            return std::string();
+        }
     }
     else
     {
@@ -497,7 +553,14 @@ const std::string app::onFileDialog()
 //
 void app::onFileDownload(const std::string filename)
 {
-    MessageBoxA(0, filename.c_str(), "File download requested", MB_OK);
+    std::cout << "File download requested for " << filename << std::endl;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+void app::onFileDownloadProgress(int percent, bool complete)
+{
+    std::cout << "Download progress: " << percent << "%" << " --- complete: " << complete << std::endl;
 }
 
 /////////////////////////////////////////////////////////////////////////////////

@@ -1,10 +1,9 @@
 /*
     @brief Dullahan - a headless browser rendering engine
            based around the Chromium Embedded Framework
+    @author Callum Prentice 2017
 
-    @author Callum Prentice - September 2016
-
-    Copyright (c) 2016, Linden Research, Inc.
+    Copyright (c) 2017, Linden Research, Inc.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +46,7 @@ dullahan_impl::dullahan_impl() :
     mBeginFrameScheduling(false),
     mForceWaveAudio(false),
     mDisableGPU(true),
+    mDisableWebSecurity(false),
     mFlipPixelsY(false),
     mFlipMouseY(false),
     mRequestedPageZoom(1.0)
@@ -91,6 +91,11 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         {
             command_line->AppendSwitch("disable-gpu");
             command_line->AppendSwitch("disable-gpu-compositing");
+        }
+
+        if (mDisableWebSecurity)
+        {
+            command_line->AppendSwitch("--disable-web-security");
         }
     }
 }
@@ -169,6 +174,12 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     // needs to be off to allow videos to play back without stutter. For the moment, it is
     // recommended that this option always be enabled.
     mDisableGPU = user_settings.disable_gpu;
+
+    // this flag if set, adds command line parameters to disable the web security component
+    // that prohibits you from browsing local files.  It is used in the 360 Capture feature
+    // in the viewer to open a web page that references locally generated images without
+    // needing a web server.
+    mDisableWebSecurity = user_settings.disable_web_security;
 
     // if true, this setting inverts the pixels in Y direction - useful if your texture
     // coords are upside down compared to default for Dullahan

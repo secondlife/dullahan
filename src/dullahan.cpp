@@ -1,10 +1,9 @@
 /*
     @brief Dullahan - a headless browser rendering engine
            based around the Chromium Embedded Framework
+    @author Callum Prentice 2017
 
-    @author Callum Prentice - September 2016
-
-    Copyright (c) 2016, Linden Research, Inc.
+    Copyright (c) 2017, Linden Research, Inc.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -365,7 +364,12 @@ void dullahan::setOnFileDownloadCallback(std::function<void(const std::string fi
     mImpl->getCallbackManager()->setOnFileDownloadCallback(callback);
 }
 
-void dullahan::setOnFileDialogCallback(std::function<const std::string()> callback)
+void dullahan::setOnFileDownloadProgressCallback(std::function<void(int percent, bool complete)> callback)
+{
+    mImpl->getCallbackManager()->setOnFileDownloadProgressCallback(callback);
+}
+
+void dullahan::setOnFileDialogCallback(std::function<const std::string(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string dialog_accept_filter, bool& use_default)> callback)
 {
     mImpl->getCallbackManager()->setOnFileDialogCallback(callback);
 }

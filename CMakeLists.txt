@@ -146,8 +146,8 @@ FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MINOR_STR REGEX "\#
 FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_BUILD_STR REGEX "\#define CHROME_VERSION_BUILD ")
 FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_PATCH_STR REGEX "\#define CHROME_VERSION_PATCH ")
 CONFIGURE_FILE (
-  "${PROJECT_SOURCE_DIR}/src/dullahan.h.in"
-  "${PROJECT_SOURCE_DIR}/src/dullahan.h"
+  "${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in"
+  "${PROJECT_SOURCE_DIR}/src/dullahan_version.h"
 )
 
 ################################################################################

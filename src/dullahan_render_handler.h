@@ -1,9 +1,9 @@
 /*
     @brief Dullahan - a headless browser rendering engine
            based around the Chromium Embedded Framework
-    @author Callum Prentice 2015
+    @author Callum Prentice 2017
 
-    Copyright (c) 2016, Linden Research, Inc.
+    Copyright (c) 2017, Linden Research, Inc.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

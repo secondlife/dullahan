@@ -1,9 +1,9 @@
 /*
     @brief Dullahan - a headless browser rendering engine
            based around the Chromium Embedded Framework
-    @author Callum Prentice 2015
+    @author Callum Prentice 2017
 
-    Copyright (c) 2016, Linden Research, Inc.
+    Copyright (c) 2017, Linden Research, Inc.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -106,6 +106,9 @@ class dullahan_browser_client :
                               CefRefPtr<CefDownloadItem> download_item,
                               const CefString& suggested_name,
                               CefRefPtr<CefBeforeDownloadCallback> callback) OVERRIDE;
+        void OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
+                               CefRefPtr<CefDownloadItem> download_item,
+                               CefRefPtr<CefDownloadItemCallback> callback) OVERRIDE;
 
         // CefDialogHandler orerrides
         CefRefPtr<CefDialogHandler> GetDialogHandler() OVERRIDE { return this; }

@@ -1,9 +1,9 @@
 /*
     @brief Dullahan - a headless browser rendering engine
            based around the Chromium Embedded Framework
-    @author Callum Prentice 2015
+    @author Callum Prentice 2017
 
-    Copyright (c) 2016, Linden Research, Inc.
+    Copyright (c) 2017, Linden Research, Inc.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -66,8 +66,8 @@ bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
     std::string url = std::string(target_url);
     std::string target = std::string(target_frame_name);
 
-	// note target string is empty if target in HTML is "_blank" so don't test 
-	// for target length - just url which cannot be empty
+    // note target string is empty if target in HTML is "_blank" so don't test
+    // for target length - just url which cannot be empty
     if (url.length())
     {
         mParent->getCallbackManager()->onNavigateURL(url, target);
@@ -297,24 +297,77 @@ void dullahan_browser_client::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
 {
     CEF_REQUIRE_UI_THREAD();
 
+
+    bool show_file_dialog = true;
+    callback->Continue(suggested_name, show_file_dialog);
     mParent->getCallbackManager()->onFileDownload(std::string(suggested_name));
 }
 
+void dullahan_browser_client::OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefDownloadItem> download_item,
+        CefRefPtr<CefDownloadItemCallback> callback)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    bool is_in_progress = download_item->IsInProgress();
+    int percent_complete = max(0, download_item->GetPercentComplete());
+    bool is_complete = download_item->IsComplete();
+
+    if (is_in_progress)
+    {
+        mParent->getCallbackManager()->onFileDownloadProgress(percent_complete, is_complete);
+    }
+}
+
 // CefDialogHandler orerrides
-bool dullahan_browser_client::OnFileDialog(CefRefPtr<CefBrowser> browser, FileDialogMode mode, const CefString& title,
-        const CefString& default_file_path, const std::vector<CefString>& accept_filters, int selected_accept_filter,
+bool dullahan_browser_client::OnFileDialog(CefRefPtr<CefBrowser> browser,
+        FileDialogMode mode,
+        const CefString& title,
+        const CefString& default_file_path,
+        const std::vector<CefString>& accept_filters,
+        int selected_accept_filter,
         CefRefPtr<CefFileDialogCallback> callback)
 {
     CEF_REQUIRE_UI_THREAD();
 
-    const CefString file_path = mParent->getCallbackManager()->onFileDialog();
+    dullahan::EFileDialogType dialog_type = dullahan::FD_UNKNOWN;
+    if ((mode & 0x0f) ==  FileDialogMode::FILE_DIALOG_OPEN)
+    {
+        dialog_type = dullahan::FD_OPEN_FILE;
+    }
+    else if ((mode & 0x0f) == FileDialogMode::FILE_DIALOG_OPEN_FOLDER)
+    {
+        dialog_type = dullahan::FD_OPEN_FOLDER;
+    }
+    else if ((mode & 0x0f) == FileDialogMode::FILE_DIALOG_OPEN_MULTIPLE)
+    {
+        dialog_type = dullahan::FD_OPEN_MULTIPLE_FILES;
+    }
+    else if ((mode & 0x0f) == FileDialogMode::FILE_DIALOG_SAVE)
+    {
+        dialog_type = dullahan::FD_SAVE_FILE;
+    }
+
+    const std::string dialog_title = std::string(title);
+    std::string dialog_accept_filter = std::string();
+    if (accept_filters.size() > 0)
+    {
+        std::string dialog_accept_filter = std::string(accept_filters[0]);
+    }
+
+    bool use_default = true;
+    const CefString file_path = mParent->getCallbackManager()->onFileDialog(dialog_type, dialog_title, dialog_accept_filter, use_default);
+    if (use_default)
+    {
+        return false;
+    }
+
     if (file_path.length())
     {
         std::vector<CefString> file_paths;
         file_paths.push_back(CefString(file_path));
 
         const int file_path_index = 0;
-
         callback->Continue(file_path_index, file_paths);
     }
     else

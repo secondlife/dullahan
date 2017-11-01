@@ -1,9 +1,9 @@
 /*
     @brief Dullahan - a headless browser rendering engine
            based around the Chromium Embedded Framework
-    @author Callum Prentice 2015
+    @author Callum Prentice 2017
 
-    Copyright (c) 2016, Linden Research, Inc.
+    Copyright (c) 2017, Linden Research, Inc.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -79,17 +79,20 @@ class dullahan_callback_manager
         void setOnFileDownloadCallback(std::function<void(const std::string filename)> callback);
         void onFileDownload(const std::string filename);
 
-        void setOnFileDialogCallback(std::function<const std::string()> callback);
-        const std::string onFileDialog();
+        void setOnFileDownloadProgressCallback(std::function<void(int percent, bool complete)> callback);
+        void onFileDownloadProgress(int percent, bool progress);
+
+        void setOnFileDialogCallback(std::function<const std::string(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string dialog_accept_filter, bool& use_default)> callback);
+        const std::string onFileDialog(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string dialog_accept_filter, bool& use_default);
 
     private:
         std::function<void(const std::string)> mOnAddressChangeCallbackFunc;
         std::function<void(const std::string, const std::string, int)> mOnConsoleMessageCallbackFunc;
-        std::function<void(const dullahan::ECursorType type)> mOnCursorChangedCallbackFunc;
+        std::function<void(const dullahan::ECursorType)> mOnCursorChangedCallbackFunc;
         std::function<void(const std::string)> mOnCustomSchemeURLCallbackFunc;
         std::function<bool(const std::string, const std::string, std::string&, std::string&)> mOnHTTPAuthCallbackFunc;
         std::function<void(int)> mOnLoadEndCallbackFunc;
-        std::function<void(int, const std::string error_text)> mOnLoadErrorCallbackFunc;
+        std::function<void(int, const std::string)> mOnLoadErrorCallbackFunc;
         std::function<void()> mOnLoadStartCallbackFunc;
         std::function<void(const std::string, const std::string)> mOnNavigateURLCallbackFunc;
         std::function<void(const unsigned char*, int, int, int, int)> mOnPageChangedCallbackFunc;
@@ -98,7 +101,8 @@ class dullahan_callback_manager
         std::function<void(const std::string)> mOnTitleChangeCallbackFunc;
         std::function<void(const std::string, bool)> mOnPdfPrintFinishedCallbackFunc;
         std::function<void(const std::string)> mOnFileDownloadCallbackFunc;
-        std::function<const std::string()> mOnFileDialogCallbackFunc;
+        std::function<void(int percent, bool complete)> mOnFileDownloadProgressCallbackFunc;
+        std::function<const std::string(dullahan::EFileDialogType, const std::string, const std::string, bool&)> mOnFileDialogCallbackFunc;
 };
 
 #endif //_DULLAHAN_CALLBACK_MANAGER
