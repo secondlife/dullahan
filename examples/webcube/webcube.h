@@ -54,6 +54,7 @@ class app
         void navigateHome();
         void showDevTools();
         void printToPDF();
+        void executeJavaScript();
         void setPageZoom(float val);
         void setPageVolume(float volume);
         void initConsole();
@@ -127,7 +128,7 @@ class app
         void onFileDownload(const std::string filename);
         void onFileDownloadProgress(int percent, bool complete);
         bool onHTTPAuth(const std::string host, const std::string realm, std::string& username, std::string& password);
-        void onLoadEnd(int status);
+        void onLoadEnd(int status, const std::string url);
         void onLoadError(int status, const std::string error_text);
         void onLoadStart();
         void onNavigateURL(const std::string url, const std::string target);

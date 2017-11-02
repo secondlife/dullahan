@@ -192,7 +192,9 @@ void dullahan_browser_client::OnLoadEnd(CefRefPtr<CefBrowser> browser,
 
     if (frame->IsMain())
     {
-        mParent->getCallbackManager()->onLoadEnd(httpStatusCode);
+        const std::string url = frame->GetURL();
+
+        mParent->getCallbackManager()->onLoadEnd(httpStatusCode, url);
     }
 }
 

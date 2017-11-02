@@ -625,7 +625,10 @@ void dullahan_impl::postData(const std::string url, const std::string data,
 
 bool dullahan_impl::executeJavaScript(const std::string cmd)
 {
-    DLNOUT("executeJavaScript feature not yet implmenented");
+    if (mBrowser.get() && mBrowser->GetMainFrame())
+    {
+        mBrowser->GetMainFrame()->ExecuteJavaScript(cmd, std::string(), 0);
+    }
     return false;
 }
 

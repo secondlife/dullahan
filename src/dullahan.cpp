@@ -311,7 +311,7 @@ void dullahan::setOnHTTPAuthCallback(std::function<bool(const std::string host,
     mImpl->getCallbackManager()->setOnHTTPAuthCallback(callback);
 }
 
-void dullahan::setOnLoadEndCallback(std::function<void(int status)> callback)
+void dullahan::setOnLoadEndCallback(std::function<void(int status, const std::string url)> callback)
 {
     mImpl->getCallbackManager()->setOnLoadEndCallback(callback);
 }

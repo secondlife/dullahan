@@ -2,7 +2,7 @@
     @brief Dullahan - a headless browser rendering engine
            based around the Chromium Embedded Framework
 
-           Example: CEF host app for minimal CEF example that doesn't use 
+           Example: CEF host app for minimal CEF example that doesn't use
                     Dullahan - useful for iterating quickly on tricky issues
 
     @author Callum Prentice - April 2017

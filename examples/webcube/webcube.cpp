@@ -36,6 +36,7 @@
 
 #include <windows.h>
 #include <commctrl.h>
+#include <shlobj.h>
 
 #include <gl\gl.h>
 #include <gl\glu.h>
@@ -93,7 +94,7 @@ void app::init_dullahan()
     mDullahan->setOnFileDownloadCallback(std::bind(&app::onFileDownload, this, std::placeholders::_1));
     mDullahan->setOnFileDownloadProgressCallback(std::bind(&app::onFileDownloadProgress, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnHTTPAuthCallback(std::bind(&app::onHTTPAuth, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-    mDullahan->setOnLoadEndCallback(std::bind(&app::onLoadEnd, this, std::placeholders::_1));
+    mDullahan->setOnLoadEndCallback(std::bind(&app::onLoadEnd, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnLoadErrorCallback(std::bind(&app::onLoadError, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnLoadStartCallback(std::bind(&app::onLoadStart, this));
     mDullahan->setOnNavigateURLCallback(std::bind(&app::onNavigateURL, this, std::placeholders::_1, std::placeholders::_2));
@@ -404,6 +405,13 @@ void app::printToPDF()
 
 /////////////////////////////////////////////////////////////////////////////////
 //
+void app::executeJavaScript()
+{
+    mDullahan->executeJavaScript("alert('hello world')");
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
 void app::setPageZoom(float val)
 {
     mDullahan->setPageZoom(val);
@@ -477,7 +485,13 @@ const std::string app::onFileDialog(dullahan::EFileDialogType dialog_type, const
     if (download_directly)
     {
         use_default = false;
-        return "C:\\users\\callum\\Desktop\\flasm.jpg";
+        char desktop_path[MAX_PATH + 1];
+        SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, desktop_path);
+        std::string download_path = std::string(desktop_path) + "\\" + "dullahan_webcube.unknown";
+
+        std::cout << "Downloading directly to " << download_path << std::endl;
+
+        return download_path;
     }
 
     // test internal CEF file dialog and file dialog implemented here
@@ -575,9 +589,9 @@ bool app::onHTTPAuth(const std::string host, const std::string realm, std::strin
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-void app::onLoadEnd(int status)
+void app::onLoadEnd(int status, const std::string url)
 {
-    std::cout << "onLoadEnd: " << status << std::endl;
+    std::cout << "onLoadEnd: " << status << " --- URL: " << url << std::endl;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -773,6 +787,10 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                 case ID_FEATURES_PRINT_TO_PDF:
                     gApp->printToPDF();
+                    break;
+
+                case ID_FEATURES_EXECUTE_JAVASCRIPT:
+                    gApp->executeJavaScript();
                     break;
 
                 case ID_FEATURES_ZOOM_05X:

@@ -307,7 +307,7 @@ class dullahan
                                    std::string& username, std::string& password)> callback);
 
         // page finishes loading
-        void setOnLoadEndCallback(std::function<void(int status)> callback);
+        void setOnLoadEndCallback(std::function<void(int status, const std::string url)> callback);
 
         // page load error - e.g. 404
         void setOnLoadErrorCallback(

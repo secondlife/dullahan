@@ -101,16 +101,16 @@ bool dullahan_callback_manager::onHTTPAuth(const std::string host, const std::st
     return false;
 }
 
-void dullahan_callback_manager::setOnLoadEndCallback(std::function<void(int status)> callback)
+void dullahan_callback_manager::setOnLoadEndCallback(std::function<void(int status, const std::string url)> callback)
 {
     mOnLoadEndCallbackFunc = callback;
 }
 
-void dullahan_callback_manager::onLoadEnd(int status)
+void dullahan_callback_manager::onLoadEnd(int status, const std::string url)
 {
     if (mOnLoadEndCallbackFunc)
     {
-        mOnLoadEndCallbackFunc(status);
+        mOnLoadEndCallbackFunc(status, url);
     }
 }
 

@@ -142,7 +142,7 @@ void onLoadStart()
     gLastChangeTime = time(nullptr);
 }
 
-void onLoadEnd(int code)
+void onLoadEnd(int code, const std::string url)
 {
     std::cout << std::endl << "Page load ended with code " << code << std::endl;
     gLastChangeTime = time(nullptr);
@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
             std::placeholders::_4, std::placeholders::_5));
     headless_browser->setOnLoadStartCallback(std::bind(onLoadStart));
     headless_browser->setOnLoadEndCallback(std::bind(onLoadEnd,
-                                           std::placeholders::_1));
+                                           std::placeholders::_1, std::placeholders::_2));
     headless_browser->setOnRequestExitCallback(std::bind(onRequestExit));
 
     dullahan::dullahan_settings settings;
