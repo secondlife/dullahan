@@ -210,6 +210,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     browser_settings.plugins = user_settings.plugins_enabled ? STATE_ENABLED : STATE_DISABLED;
     browser_settings.application_cache = user_settings.cache_enabled ? STATE_ENABLED : STATE_DISABLED;
     browser_settings.background_color = user_settings.background_color;
+    browser_settings.file_access_from_file_urls = user_settings.file_access_from_file_urls ? STATE_ENABLED : STATE_DISABLED;
 
     mRenderHandler = new dullahan_render_handler(this);
     mBrowserClient = new dullahan_browser_client(this, mRenderHandler);

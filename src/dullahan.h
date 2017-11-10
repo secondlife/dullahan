@@ -146,18 +146,19 @@ class dullahan
             int frame_rate = 60;
 
             // enable/disable features - most obvious but listed for completeness
-            bool begin_frame_scheduling = false;    // fixes issue when onPaint not called
-            bool cache_enabled = true;              // local cache
-            bool cookies_enabled = true;            // cookies
-            bool disable_gpu = true;                // disable GPU and GPU compositing
-            bool disable_web_security = false;      // like adding --disable-web-security to Chrome command line
-            bool flash_enabled = true;              // system flash plugin
-            bool force_wave_audio = false;          // forces Windows WaveOut/In audio
-            bool java_enabled = false;              // java
-            bool javascript_enabled = true;         // javascript
-            bool media_stream_enabled = false;      // web cams etc. (caution)
-            bool plugins_enabled = true;            // all plugins
-            bool webgl_enabled = true;              // webgl
+            bool begin_frame_scheduling = false;        // fixes issue when onPaint not called
+            bool cache_enabled = true;                  // local cache
+            bool cookies_enabled = true;                // cookies
+            bool disable_gpu = true;                    // disable GPU and GPU compositing
+            bool file_access_from_file_urls = false;    // allow access files from local file system
+            bool disable_web_security = false;          // like adding --disable-web-security to Chrome command line
+            bool flash_enabled = true;                  // system flash plugin
+            bool force_wave_audio = false;              // forces Windows WaveOut/In audio
+            bool java_enabled = false;                  // java
+            bool javascript_enabled = true;             // javascript
+            bool media_stream_enabled = false;          // web cams etc. (caution)
+            bool plugins_enabled = true;                // all plugins
+            bool webgl_enabled = true;                  // webgl
 
             // path to browser cache
             std::string cache_path = "";

@@ -115,8 +115,9 @@ void app::init_dullahan()
     settings.cookie_store_path = ".\\cookies";
     settings.cookies_enabled = true;
     settings.disable_gpu = false;
-    settings.disable_web_security = true;
-    settings.flash_enabled = true;
+    settings.disable_web_security = false;
+    settings.file_access_from_file_urls = false;
+    settings.flash_enabled = false;
     settings.flip_mouse_y = false;
     settings.flip_pixels_y = false;
     settings.force_wave_audio = true;
