@@ -33,7 +33,7 @@ Building CEF locally is quite a dauting task and needs a toolset I do not have o
 
 ## Which version of CEF does Dullahan use?
 
-Dullahan currently builds against the [CEF 3.3029.1611.g44e39a8 / Chromium 58.0.3029.81](http://opensource.spotify.com/cefbuilds/index.html) build of CEF but with some small tweaks to take account of CEF interface changes etc. it should work with slightly older or more recent versions too.
+Dullahan currently builds against the [CEF 3.3202.1686.gd665578 / Chromium 62](http://opensource.spotify.com/cefbuilds/index.html) build of CEF but with some small tweaks to take account of CEF interface changes etc. it should work with slightly older or more recent versions too.
 
 ## What are the origins of this project?
 
