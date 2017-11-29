@@ -277,11 +277,12 @@ void dullahan_impl::setSize(int width, int height)
 
     if (mBrowser.get() && mBrowser->GetHost())
     {
-        // This is how you are supposed to change embeded browser window size but not quite working
-        // TODO: fix me for windows and mac
-        // HWND hwnd = mBrowser->GetHost()->GetWindowHandle();
-        // SetWindowPos(hwnd, 0, 0, 0, mViewWidth, mViewHeight,
-        //              SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW);
+#ifdef WIN32
+        HWND hwnd = mBrowser->GetHost()->GetWindowHandle();
+        SetWindowPos(hwnd, 0, 0, 0, mViewWidth, mViewHeight, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW);
+#elif __APPLE__
+        // nothing platform specific for macOS
+#endif
         mBrowser->GetHost()->WasResized();
     }
 }

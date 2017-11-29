@@ -431,6 +431,16 @@ void app::setPageVolume(float volume)
 
 /////////////////////////////////////////////////////////////////////////////////
 //
+void app::resizeBrowser(int width, int height)
+{
+    mTextureWidth = width;
+    mTextureHeight = height;
+
+    resize_texture(width, height);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
 void app::onAddressChange(const std::string url)
 {
     std::cout << "onAddressChange: " << url << std::endl;
@@ -824,6 +834,18 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                 case ID_FEATURES_VOLUME_10X:
                     gApp->setPageVolume(1.0f);
+                    break;
+
+                case ID_FEATURES_RESIZE_BROWSER_SMALL:
+                    gApp->resizeBrowser(300, 300);
+                    break;
+
+                case ID_FEATURES_RESIZE_BROWSER_MEDIUM:
+                    gApp->resizeBrowser(800, 800);
+                    break;
+
+                case ID_FEATURES_RESIZE_BROWSER_LARGE:
+                    gApp->resizeBrowser(1400, 1400);
                     break;
 
                 default:

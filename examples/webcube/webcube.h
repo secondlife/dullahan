@@ -57,6 +57,7 @@ class app
         void executeJavaScript();
         void setPageZoom(float val);
         void setPageVolume(float volume);
+        void resizeBrowser(int width, int height);
         void initConsole();
         void closeConsole();
         void request_exit();

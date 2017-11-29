@@ -104,7 +104,7 @@ void dullahan_browser_client::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 
     if (mBrowserList.empty())
     {
-        // TODO: add code to only call this when we are using CEF's 
+        // TODO: add code to only call this when we are using CEF's
         // message loop and not using our own along side CefDoMessageLoopWork()
         //CefQuitMessageLoop();
 
