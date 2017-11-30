@@ -25,7 +25,14 @@ cmake -G "Visual Studio 12 2013" ^
       -DCEF_BIN_DIR="%CEF_32_DIR%\bin" ^
       -DCEF_RESOURCE_DIR="%CEF_32_DIR%\resources" ^
       ..
-goto Build
+if errorlevel 1 goto ErrorOut
+
+msbuild dullahan.sln /p:Configuration=Debug /p:Platform="Win32"
+if errorlevel 1 goto ErrorOut
+msbuild dullahan.sln /p:Configuration=Release /p:Platform="Win32"
+if errorlevel 1 goto ErrorOut
+
+goto Finished
 
 :BitWidth64
 if exist .\src\dullahan_version.h rm .\src\dullahan_version.h
@@ -38,15 +45,24 @@ cmake -G "Visual Studio 12 2013 Win64" ^
       -DCEF_BIN_DIR="%CEF_64_DIR%\bin" ^
       -DCEF_RESOURCE_DIR="%CEF_64_DIR%\resources" ^
       ..
-goto Build
+if errorlevel 1 goto ErrorOut
 
-:Build
 msbuild dullahan.sln /p:Configuration=Debug
+if errorlevel 1 goto ErrorOut
 msbuild dullahan.sln /p:Configuration=Release
+if errorlevel 1 goto ErrorOut
 
+goto Finished
+
+:ErrorOut
+@echo.
+@echo [101;93m An error occured - look in console output for the reason [0m
+goto End
+
+:Finished
 cd Release
 .\webcube.exe
 
 :End
-
+echo ^<ESC^>[94m [94mBlue[0m
 popd
