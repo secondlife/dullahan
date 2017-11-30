@@ -165,6 +165,10 @@ void onPageChangedCallback(const unsigned char* pixels, int x, int y, const int 
 			GL_UNSIGNED_BYTE,
 			pixels);
 	}
+	else
+	{
+		std::cout << "Browser size for CEF and this application don't match! (that's okay - it's asynchronous but we don't draw)" << std::endl;
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////
