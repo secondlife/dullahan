@@ -3,7 +3,7 @@
            based around the Chromium Embedded Framework
 
            Example: simple render to OpenGL example mostly
-		            used to test the resizing browser functionality
+                    used to test the resizing browser functionality
 
     @author Callum Prentice - September 2016
 
@@ -145,15 +145,15 @@ void onPageChangedCallback(const unsigned char* pixels, int x, int y, const int 
 // be no to set the current working directory for Visual Studio using CMake.
 const std::string getStartURL()
 {
-	const std::string page_filename("dullahan_test_urls.html");
+    const std::string page_filename("dullahan_test_urls.html");
 
-	// get current working directory plus trailing separator
-	char buffer[MAX_PATH];
-	GetModuleFileName(NULL, buffer, MAX_PATH);
-	std::string::size_type pos = std::string(buffer).find_last_of("\\/");
+    // get current working directory plus trailing separator
+    char buffer[MAX_PATH];
+    GetModuleFileName(NULL, buffer, MAX_PATH);
+    std::string::size_type pos = std::string(buffer).find_last_of("\\/");
 
-	// return path to start page (CEF converts this to a file:// URL)
-	return std::string(buffer).substr(0, pos + 1) + page_filename;
+    // return path to start page (CEF converts this to a file:// URL)
+    return std::string(buffer).substr(0, pos + 1) + page_filename;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -191,31 +191,31 @@ int main(int argc, char* argv[])
 
     std::cout << "Version: " << gDullahan->composite_version() << std::endl;
 
-	gDullahan->setOnPageChangedCallback(std::bind(&onPageChangedCallback, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
+    gDullahan->setOnPageChangedCallback(std::bind(&onPageChangedCallback, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
 
-	dullahan::dullahan_settings settings;
-	settings.accept_language_list = "en-US";
-	settings.background_color = 0x80ffffff;
-	settings.cache_enabled = true;
-	settings.cache_path = ".\\cache";
-	settings.cookie_store_path = ".\\cookies";
-	settings.cookies_enabled = true;
-	settings.disable_gpu = false;
-	settings.disable_web_security = false;
-	settings.file_access_from_file_urls = false;
-	settings.flash_enabled = false;
-	settings.flip_mouse_y = false;
-	settings.flip_pixels_y = false;
-	settings.force_wave_audio = true;
-	settings.frame_rate = 60;
-	settings.initial_height = gTextureWidth;
-	settings.initial_width = gTextureHeight;
-	settings.java_enabled = false;
-	settings.javascript_enabled = true;
-	settings.media_stream_enabled = true;
-	settings.plugins_enabled = true;
-	settings.user_agent_substring = gDullahan->makeCompatibleUserAgentString("SimpleGL");
-	settings.webgl_enabled = true;
+    dullahan::dullahan_settings settings;
+    settings.accept_language_list = "en-US";
+    settings.background_color = 0x80ffffff;
+    settings.cache_enabled = true;
+    settings.cache_path = ".\\cache";
+    settings.cookie_store_path = ".\\cookies";
+    settings.cookies_enabled = true;
+    settings.disable_gpu = false;
+    settings.disable_web_security = false;
+    settings.file_access_from_file_urls = false;
+    settings.flash_enabled = false;
+    settings.flip_mouse_y = false;
+    settings.flip_pixels_y = false;
+    settings.force_wave_audio = true;
+    settings.frame_rate = 60;
+    settings.initial_height = gTextureWidth;
+    settings.initial_width = gTextureHeight;
+    settings.java_enabled = false;
+    settings.javascript_enabled = true;
+    settings.media_stream_enabled = true;
+    settings.plugins_enabled = true;
+    settings.user_agent_substring = gDullahan->makeCompatibleUserAgentString("SimpleGL");
+    settings.webgl_enabled = true;
 
     bool result = gDullahan->init(settings);
     if (result)

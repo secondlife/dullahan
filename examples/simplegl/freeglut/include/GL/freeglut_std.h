@@ -29,7 +29,7 @@
  */
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
 
 /*
@@ -76,7 +76,7 @@
 #       else
 #           define FGAPI __declspec(dllimport)
 
-            /* Link with Win32 shared freeglut lib */
+/* Link with Win32 shared freeglut lib */
 #           if FREEGLUT_LIB_PRAGMAS
 #             pragma comment (lib, "freeglut.lib")
 #           endif
@@ -210,22 +210,22 @@
 #   define  GLUT_BITMAP_HELVETICA_12        ((void *)0x0007)
 #   define  GLUT_BITMAP_HELVETICA_18        ((void *)0x0008)
 #else
-    /*
-     * I don't really know if it's a good idea... But here it goes:
-     */
-    extern void* glutStrokeRoman;
-    extern void* glutStrokeMonoRoman;
-    extern void* glutBitmap9By15;
-    extern void* glutBitmap8By13;
-    extern void* glutBitmapTimesRoman10;
-    extern void* glutBitmapTimesRoman24;
-    extern void* glutBitmapHelvetica10;
-    extern void* glutBitmapHelvetica12;
-    extern void* glutBitmapHelvetica18;
+/*
+ * I don't really know if it's a good idea... But here it goes:
+ */
+extern void* glutStrokeRoman;
+extern void* glutStrokeMonoRoman;
+extern void* glutBitmap9By15;
+extern void* glutBitmap8By13;
+extern void* glutBitmapTimesRoman10;
+extern void* glutBitmapTimesRoman24;
+extern void* glutBitmapHelvetica10;
+extern void* glutBitmapHelvetica12;
+extern void* glutBitmapHelvetica18;
 
-    /*
-     * Those pointers will be used by following definitions:
-     */
+/*
+ * Those pointers will be used by following definitions:
+ */
 #   define  GLUT_STROKE_ROMAN               ((void *) &glutStrokeRoman)
 #   define  GLUT_STROKE_MONO_ROMAN          ((void *) &glutStrokeMonoRoman)
 #   define  GLUT_BITMAP_9_BY_15             ((void *) &glutBitmap9By15)
@@ -396,194 +396,194 @@
 /*
  * Initialization functions, see fglut_init.c
  */
-FGAPI void    FGAPIENTRY glutInit( int* pargc, char** argv );
-FGAPI void    FGAPIENTRY glutInitWindowPosition( int x, int y );
-FGAPI void    FGAPIENTRY glutInitWindowSize( int width, int height );
-FGAPI void    FGAPIENTRY glutInitDisplayMode( unsigned int displayMode );
-FGAPI void    FGAPIENTRY glutInitDisplayString( const char* displayMode );
+FGAPI void    FGAPIENTRY glutInit(int* pargc, char** argv);
+FGAPI void    FGAPIENTRY glutInitWindowPosition(int x, int y);
+FGAPI void    FGAPIENTRY glutInitWindowSize(int width, int height);
+FGAPI void    FGAPIENTRY glutInitDisplayMode(unsigned int displayMode);
+FGAPI void    FGAPIENTRY glutInitDisplayString(const char* displayMode);
 
 /*
  * Process loop function, see fg_main.c
  */
-FGAPI void    FGAPIENTRY glutMainLoop( void );
+FGAPI void    FGAPIENTRY glutMainLoop(void);
 
 /*
  * Window management functions, see fg_window.c
  */
-FGAPI int     FGAPIENTRY glutCreateWindow( const char* title );
-FGAPI int     FGAPIENTRY glutCreateSubWindow( int window, int x, int y, int width, int height );
-FGAPI void    FGAPIENTRY glutDestroyWindow( int window );
-FGAPI void    FGAPIENTRY glutSetWindow( int window );
-FGAPI int     FGAPIENTRY glutGetWindow( void );
-FGAPI void    FGAPIENTRY glutSetWindowTitle( const char* title );
-FGAPI void    FGAPIENTRY glutSetIconTitle( const char* title );
-FGAPI void    FGAPIENTRY glutReshapeWindow( int width, int height );
-FGAPI void    FGAPIENTRY glutPositionWindow( int x, int y );
-FGAPI void    FGAPIENTRY glutShowWindow( void );
-FGAPI void    FGAPIENTRY glutHideWindow( void );
-FGAPI void    FGAPIENTRY glutIconifyWindow( void );
-FGAPI void    FGAPIENTRY glutPushWindow( void );
-FGAPI void    FGAPIENTRY glutPopWindow( void );
-FGAPI void    FGAPIENTRY glutFullScreen( void );
+FGAPI int     FGAPIENTRY glutCreateWindow(const char* title);
+FGAPI int     FGAPIENTRY glutCreateSubWindow(int window, int x, int y, int width, int height);
+FGAPI void    FGAPIENTRY glutDestroyWindow(int window);
+FGAPI void    FGAPIENTRY glutSetWindow(int window);
+FGAPI int     FGAPIENTRY glutGetWindow(void);
+FGAPI void    FGAPIENTRY glutSetWindowTitle(const char* title);
+FGAPI void    FGAPIENTRY glutSetIconTitle(const char* title);
+FGAPI void    FGAPIENTRY glutReshapeWindow(int width, int height);
+FGAPI void    FGAPIENTRY glutPositionWindow(int x, int y);
+FGAPI void    FGAPIENTRY glutShowWindow(void);
+FGAPI void    FGAPIENTRY glutHideWindow(void);
+FGAPI void    FGAPIENTRY glutIconifyWindow(void);
+FGAPI void    FGAPIENTRY glutPushWindow(void);
+FGAPI void    FGAPIENTRY glutPopWindow(void);
+FGAPI void    FGAPIENTRY glutFullScreen(void);
 
 /*
  * Display-related functions, see fg_display.c
  */
-FGAPI void    FGAPIENTRY glutPostWindowRedisplay( int window );
-FGAPI void    FGAPIENTRY glutPostRedisplay( void );
-FGAPI void    FGAPIENTRY glutSwapBuffers( void );
+FGAPI void    FGAPIENTRY glutPostWindowRedisplay(int window);
+FGAPI void    FGAPIENTRY glutPostRedisplay(void);
+FGAPI void    FGAPIENTRY glutSwapBuffers(void);
 
 /*
  * Mouse cursor functions, see fg_cursor.c
  */
-FGAPI void    FGAPIENTRY glutWarpPointer( int x, int y );
-FGAPI void    FGAPIENTRY glutSetCursor( int cursor );
+FGAPI void    FGAPIENTRY glutWarpPointer(int x, int y);
+FGAPI void    FGAPIENTRY glutSetCursor(int cursor);
 
 /*
  * Overlay stuff, see fg_overlay.c
  */
-FGAPI void    FGAPIENTRY glutEstablishOverlay( void );
-FGAPI void    FGAPIENTRY glutRemoveOverlay( void );
-FGAPI void    FGAPIENTRY glutUseLayer( GLenum layer );
-FGAPI void    FGAPIENTRY glutPostOverlayRedisplay( void );
-FGAPI void    FGAPIENTRY glutPostWindowOverlayRedisplay( int window );
-FGAPI void    FGAPIENTRY glutShowOverlay( void );
-FGAPI void    FGAPIENTRY glutHideOverlay( void );
+FGAPI void    FGAPIENTRY glutEstablishOverlay(void);
+FGAPI void    FGAPIENTRY glutRemoveOverlay(void);
+FGAPI void    FGAPIENTRY glutUseLayer(GLenum layer);
+FGAPI void    FGAPIENTRY glutPostOverlayRedisplay(void);
+FGAPI void    FGAPIENTRY glutPostWindowOverlayRedisplay(int window);
+FGAPI void    FGAPIENTRY glutShowOverlay(void);
+FGAPI void    FGAPIENTRY glutHideOverlay(void);
 
 /*
  * Menu stuff, see fg_menu.c
  */
-FGAPI int     FGAPIENTRY glutCreateMenu( void (* callback)( int menu ) );
-FGAPI void    FGAPIENTRY glutDestroyMenu( int menu );
-FGAPI int     FGAPIENTRY glutGetMenu( void );
-FGAPI void    FGAPIENTRY glutSetMenu( int menu );
-FGAPI void    FGAPIENTRY glutAddMenuEntry( const char* label, int value );
-FGAPI void    FGAPIENTRY glutAddSubMenu( const char* label, int subMenu );
-FGAPI void    FGAPIENTRY glutChangeToMenuEntry( int item, const char* label, int value );
-FGAPI void    FGAPIENTRY glutChangeToSubMenu( int item, const char* label, int value );
-FGAPI void    FGAPIENTRY glutRemoveMenuItem( int item );
-FGAPI void    FGAPIENTRY glutAttachMenu( int button );
-FGAPI void    FGAPIENTRY glutDetachMenu( int button );
+FGAPI int     FGAPIENTRY glutCreateMenu(void (* callback)(int menu));
+FGAPI void    FGAPIENTRY glutDestroyMenu(int menu);
+FGAPI int     FGAPIENTRY glutGetMenu(void);
+FGAPI void    FGAPIENTRY glutSetMenu(int menu);
+FGAPI void    FGAPIENTRY glutAddMenuEntry(const char* label, int value);
+FGAPI void    FGAPIENTRY glutAddSubMenu(const char* label, int subMenu);
+FGAPI void    FGAPIENTRY glutChangeToMenuEntry(int item, const char* label, int value);
+FGAPI void    FGAPIENTRY glutChangeToSubMenu(int item, const char* label, int value);
+FGAPI void    FGAPIENTRY glutRemoveMenuItem(int item);
+FGAPI void    FGAPIENTRY glutAttachMenu(int button);
+FGAPI void    FGAPIENTRY glutDetachMenu(int button);
 
 /*
  * Global callback functions, see fg_callbacks.c
  */
-FGAPI void    FGAPIENTRY glutTimerFunc( unsigned int time, void (* callback)( int ), int value );
-FGAPI void    FGAPIENTRY glutIdleFunc( void (* callback)( void ) );
+FGAPI void    FGAPIENTRY glutTimerFunc(unsigned int time, void (* callback)(int), int value);
+FGAPI void    FGAPIENTRY glutIdleFunc(void (* callback)(void));
 
 /*
  * Window-specific callback functions, see fg_callbacks.c
  */
-FGAPI void    FGAPIENTRY glutKeyboardFunc( void (* callback)( unsigned char, int, int ) );
-FGAPI void    FGAPIENTRY glutSpecialFunc( void (* callback)( int, int, int ) );
-FGAPI void    FGAPIENTRY glutReshapeFunc( void (* callback)( int, int ) );
-FGAPI void    FGAPIENTRY glutVisibilityFunc( void (* callback)( int ) );
-FGAPI void    FGAPIENTRY glutDisplayFunc( void (* callback)( void ) );
-FGAPI void    FGAPIENTRY glutMouseFunc( void (* callback)( int, int, int, int ) );
-FGAPI void    FGAPIENTRY glutMotionFunc( void (* callback)( int, int ) );
-FGAPI void    FGAPIENTRY glutPassiveMotionFunc( void (* callback)( int, int ) );
-FGAPI void    FGAPIENTRY glutEntryFunc( void (* callback)( int ) );
+FGAPI void    FGAPIENTRY glutKeyboardFunc(void (* callback)(unsigned char, int, int));
+FGAPI void    FGAPIENTRY glutSpecialFunc(void (* callback)(int, int, int));
+FGAPI void    FGAPIENTRY glutReshapeFunc(void (* callback)(int, int));
+FGAPI void    FGAPIENTRY glutVisibilityFunc(void (* callback)(int));
+FGAPI void    FGAPIENTRY glutDisplayFunc(void (* callback)(void));
+FGAPI void    FGAPIENTRY glutMouseFunc(void (* callback)(int, int, int, int));
+FGAPI void    FGAPIENTRY glutMotionFunc(void (* callback)(int, int));
+FGAPI void    FGAPIENTRY glutPassiveMotionFunc(void (* callback)(int, int));
+FGAPI void    FGAPIENTRY glutEntryFunc(void (* callback)(int));
 
-FGAPI void    FGAPIENTRY glutKeyboardUpFunc( void (* callback)( unsigned char, int, int ) );
-FGAPI void    FGAPIENTRY glutSpecialUpFunc( void (* callback)( int, int, int ) );
-FGAPI void    FGAPIENTRY glutJoystickFunc( void (* callback)( unsigned int, int, int, int ), int pollInterval );
-FGAPI void    FGAPIENTRY glutMenuStateFunc( void (* callback)( int ) );
-FGAPI void    FGAPIENTRY glutMenuStatusFunc( void (* callback)( int, int, int ) );
-FGAPI void    FGAPIENTRY glutOverlayDisplayFunc( void (* callback)( void ) );
-FGAPI void    FGAPIENTRY glutWindowStatusFunc( void (* callback)( int ) );
+FGAPI void    FGAPIENTRY glutKeyboardUpFunc(void (* callback)(unsigned char, int, int));
+FGAPI void    FGAPIENTRY glutSpecialUpFunc(void (* callback)(int, int, int));
+FGAPI void    FGAPIENTRY glutJoystickFunc(void (* callback)(unsigned int, int, int, int), int pollInterval);
+FGAPI void    FGAPIENTRY glutMenuStateFunc(void (* callback)(int));
+FGAPI void    FGAPIENTRY glutMenuStatusFunc(void (* callback)(int, int, int));
+FGAPI void    FGAPIENTRY glutOverlayDisplayFunc(void (* callback)(void));
+FGAPI void    FGAPIENTRY glutWindowStatusFunc(void (* callback)(int));
 
-FGAPI void    FGAPIENTRY glutSpaceballMotionFunc( void (* callback)( int, int, int ) );
-FGAPI void    FGAPIENTRY glutSpaceballRotateFunc( void (* callback)( int, int, int ) );
-FGAPI void    FGAPIENTRY glutSpaceballButtonFunc( void (* callback)( int, int ) );
-FGAPI void    FGAPIENTRY glutButtonBoxFunc( void (* callback)( int, int ) );
-FGAPI void    FGAPIENTRY glutDialsFunc( void (* callback)( int, int ) );
-FGAPI void    FGAPIENTRY glutTabletMotionFunc( void (* callback)( int, int ) );
-FGAPI void    FGAPIENTRY glutTabletButtonFunc( void (* callback)( int, int, int, int ) );
+FGAPI void    FGAPIENTRY glutSpaceballMotionFunc(void (* callback)(int, int, int));
+FGAPI void    FGAPIENTRY glutSpaceballRotateFunc(void (* callback)(int, int, int));
+FGAPI void    FGAPIENTRY glutSpaceballButtonFunc(void (* callback)(int, int));
+FGAPI void    FGAPIENTRY glutButtonBoxFunc(void (* callback)(int, int));
+FGAPI void    FGAPIENTRY glutDialsFunc(void (* callback)(int, int));
+FGAPI void    FGAPIENTRY glutTabletMotionFunc(void (* callback)(int, int));
+FGAPI void    FGAPIENTRY glutTabletButtonFunc(void (* callback)(int, int, int, int));
 
 /*
  * State setting and retrieval functions, see fg_state.c
  */
-FGAPI int     FGAPIENTRY glutGet( GLenum query );
-FGAPI int     FGAPIENTRY glutDeviceGet( GLenum query );
-FGAPI int     FGAPIENTRY glutGetModifiers( void );
-FGAPI int     FGAPIENTRY glutLayerGet( GLenum query );
+FGAPI int     FGAPIENTRY glutGet(GLenum query);
+FGAPI int     FGAPIENTRY glutDeviceGet(GLenum query);
+FGAPI int     FGAPIENTRY glutGetModifiers(void);
+FGAPI int     FGAPIENTRY glutLayerGet(GLenum query);
 
 /*
  * Font stuff, see fg_font.c
  */
-FGAPI void    FGAPIENTRY glutBitmapCharacter( void* font, int character );
-FGAPI int     FGAPIENTRY glutBitmapWidth( void* font, int character );
-FGAPI void    FGAPIENTRY glutStrokeCharacter( void* font, int character );
-FGAPI int     FGAPIENTRY glutStrokeWidth( void* font, int character );
-FGAPI GLfloat FGAPIENTRY glutStrokeWidthf( void* font, int character ); /* GLUT 3.8 */
-FGAPI int     FGAPIENTRY glutBitmapLength( void* font, const unsigned char* string );
-FGAPI int     FGAPIENTRY glutStrokeLength( void* font, const unsigned char* string );
-FGAPI GLfloat FGAPIENTRY glutStrokeLengthf( void* font, const unsigned char *string ); /* GLUT 3.8 */
+FGAPI void    FGAPIENTRY glutBitmapCharacter(void* font, int character);
+FGAPI int     FGAPIENTRY glutBitmapWidth(void* font, int character);
+FGAPI void    FGAPIENTRY glutStrokeCharacter(void* font, int character);
+FGAPI int     FGAPIENTRY glutStrokeWidth(void* font, int character);
+FGAPI GLfloat FGAPIENTRY glutStrokeWidthf(void* font, int character);   /* GLUT 3.8 */
+FGAPI int     FGAPIENTRY glutBitmapLength(void* font, const unsigned char* string);
+FGAPI int     FGAPIENTRY glutStrokeLength(void* font, const unsigned char* string);
+FGAPI GLfloat FGAPIENTRY glutStrokeLengthf(void* font, const unsigned char* string);   /* GLUT 3.8 */
 
 /*
  * Geometry functions, see fg_geometry.c
  */
 
-FGAPI void    FGAPIENTRY glutWireCube( double size );
-FGAPI void    FGAPIENTRY glutSolidCube( double size );
-FGAPI void    FGAPIENTRY glutWireSphere( double radius, GLint slices, GLint stacks );
-FGAPI void    FGAPIENTRY glutSolidSphere( double radius, GLint slices, GLint stacks );
-FGAPI void    FGAPIENTRY glutWireCone( double base, double height, GLint slices, GLint stacks );
-FGAPI void    FGAPIENTRY glutSolidCone( double base, double height, GLint slices, GLint stacks );
-FGAPI void    FGAPIENTRY glutWireTorus( double innerRadius, double outerRadius, GLint sides, GLint rings );
-FGAPI void    FGAPIENTRY glutSolidTorus( double innerRadius, double outerRadius, GLint sides, GLint rings );
-FGAPI void    FGAPIENTRY glutWireDodecahedron( void );
-FGAPI void    FGAPIENTRY glutSolidDodecahedron( void );
-FGAPI void    FGAPIENTRY glutWireOctahedron( void );
-FGAPI void    FGAPIENTRY glutSolidOctahedron( void );
-FGAPI void    FGAPIENTRY glutWireTetrahedron( void );
-FGAPI void    FGAPIENTRY glutSolidTetrahedron( void );
-FGAPI void    FGAPIENTRY glutWireIcosahedron( void );
-FGAPI void    FGAPIENTRY glutSolidIcosahedron( void );
+FGAPI void    FGAPIENTRY glutWireCube(double size);
+FGAPI void    FGAPIENTRY glutSolidCube(double size);
+FGAPI void    FGAPIENTRY glutWireSphere(double radius, GLint slices, GLint stacks);
+FGAPI void    FGAPIENTRY glutSolidSphere(double radius, GLint slices, GLint stacks);
+FGAPI void    FGAPIENTRY glutWireCone(double base, double height, GLint slices, GLint stacks);
+FGAPI void    FGAPIENTRY glutSolidCone(double base, double height, GLint slices, GLint stacks);
+FGAPI void    FGAPIENTRY glutWireTorus(double innerRadius, double outerRadius, GLint sides, GLint rings);
+FGAPI void    FGAPIENTRY glutSolidTorus(double innerRadius, double outerRadius, GLint sides, GLint rings);
+FGAPI void    FGAPIENTRY glutWireDodecahedron(void);
+FGAPI void    FGAPIENTRY glutSolidDodecahedron(void);
+FGAPI void    FGAPIENTRY glutWireOctahedron(void);
+FGAPI void    FGAPIENTRY glutSolidOctahedron(void);
+FGAPI void    FGAPIENTRY glutWireTetrahedron(void);
+FGAPI void    FGAPIENTRY glutSolidTetrahedron(void);
+FGAPI void    FGAPIENTRY glutWireIcosahedron(void);
+FGAPI void    FGAPIENTRY glutSolidIcosahedron(void);
 
 /*
  * Teapot rendering functions, found in fg_teapot.c
  * NB: front facing polygons have clockwise winding, not counter clockwise
  */
-FGAPI void    FGAPIENTRY glutWireTeapot( double size );
-FGAPI void    FGAPIENTRY glutSolidTeapot( double size );
+FGAPI void    FGAPIENTRY glutWireTeapot(double size);
+FGAPI void    FGAPIENTRY glutSolidTeapot(double size);
 
 /*
  * Game mode functions, see fg_gamemode.c
  */
-FGAPI void    FGAPIENTRY glutGameModeString( const char* string );
-FGAPI int     FGAPIENTRY glutEnterGameMode( void );
-FGAPI void    FGAPIENTRY glutLeaveGameMode( void );
-FGAPI int     FGAPIENTRY glutGameModeGet( GLenum query );
+FGAPI void    FGAPIENTRY glutGameModeString(const char* string);
+FGAPI int     FGAPIENTRY glutEnterGameMode(void);
+FGAPI void    FGAPIENTRY glutLeaveGameMode(void);
+FGAPI int     FGAPIENTRY glutGameModeGet(GLenum query);
 
 /*
  * Video resize functions, see fg_videoresize.c
  */
-FGAPI int     FGAPIENTRY glutVideoResizeGet( GLenum query );
-FGAPI void    FGAPIENTRY glutSetupVideoResizing( void );
-FGAPI void    FGAPIENTRY glutStopVideoResizing( void );
-FGAPI void    FGAPIENTRY glutVideoResize( int x, int y, int width, int height );
-FGAPI void    FGAPIENTRY glutVideoPan( int x, int y, int width, int height );
+FGAPI int     FGAPIENTRY glutVideoResizeGet(GLenum query);
+FGAPI void    FGAPIENTRY glutSetupVideoResizing(void);
+FGAPI void    FGAPIENTRY glutStopVideoResizing(void);
+FGAPI void    FGAPIENTRY glutVideoResize(int x, int y, int width, int height);
+FGAPI void    FGAPIENTRY glutVideoPan(int x, int y, int width, int height);
 
 /*
  * Colormap functions, see fg_misc.c
  */
-FGAPI void    FGAPIENTRY glutSetColor( int color, GLfloat red, GLfloat green, GLfloat blue );
-FGAPI GLfloat FGAPIENTRY glutGetColor( int color, int component );
-FGAPI void    FGAPIENTRY glutCopyColormap( int window );
+FGAPI void    FGAPIENTRY glutSetColor(int color, GLfloat red, GLfloat green, GLfloat blue);
+FGAPI GLfloat FGAPIENTRY glutGetColor(int color, int component);
+FGAPI void    FGAPIENTRY glutCopyColormap(int window);
 
 /*
  * Misc keyboard and joystick functions, see fg_misc.c
  */
-FGAPI void    FGAPIENTRY glutIgnoreKeyRepeat( int ignore );
-FGAPI void    FGAPIENTRY glutSetKeyRepeat( int repeatMode );
-FGAPI void    FGAPIENTRY glutForceJoystickFunc( void );
+FGAPI void    FGAPIENTRY glutIgnoreKeyRepeat(int ignore);
+FGAPI void    FGAPIENTRY glutSetKeyRepeat(int repeatMode);
+FGAPI void    FGAPIENTRY glutForceJoystickFunc(void);
 
 /*
  * Misc functions, see fg_misc.c
  */
-FGAPI int     FGAPIENTRY glutExtensionSupported( const char* extension );
-FGAPI void    FGAPIENTRY glutReportErrors( void );
+FGAPI int     FGAPIENTRY glutExtensionSupported(const char* extension);
+FGAPI void    FGAPIENTRY glutReportErrors(void);
 
 /* Comment from glut.h of classic GLUT:
 
@@ -611,26 +611,35 @@ FGAPI void    FGAPIENTRY glutReportErrors( void );
 #include <stdlib.h>
 
 #if defined(_WIN32) && !defined(GLUT_DISABLE_ATEXIT_HACK) && !defined(__WATCOMC__)
-FGAPI void FGAPIENTRY __glutInitWithExit(int *argcp, char **argv, void (__cdecl *exitfunc)(int));
-FGAPI int FGAPIENTRY __glutCreateWindowWithExit(const char *title, void (__cdecl *exitfunc)(int));
-FGAPI int FGAPIENTRY __glutCreateMenuWithExit(void (* func)(int), void (__cdecl *exitfunc)(int));
+FGAPI void FGAPIENTRY __glutInitWithExit(int* argcp, char** argv, void (__cdecl* exitfunc)(int));
+FGAPI int FGAPIENTRY __glutCreateWindowWithExit(const char* title, void (__cdecl* exitfunc)(int));
+FGAPI int FGAPIENTRY __glutCreateMenuWithExit(void (* func)(int), void (__cdecl* exitfunc)(int));
 #ifndef FREEGLUT_BUILDING_LIB
 #if defined(__GNUC__)
 #define FGUNUSED __attribute__((unused))
 #else
 #define FGUNUSED
 #endif
-static void FGAPIENTRY FGUNUSED glutInit_ATEXIT_HACK(int *argcp, char **argv) { __glutInitWithExit(argcp, argv, exit); }
+static void FGAPIENTRY FGUNUSED glutInit_ATEXIT_HACK(int* argcp, char** argv)
+{
+    __glutInitWithExit(argcp, argv, exit);
+}
 #define glutInit glutInit_ATEXIT_HACK
-static int FGAPIENTRY FGUNUSED glutCreateWindow_ATEXIT_HACK(const char *title) { return __glutCreateWindowWithExit(title, exit); }
+static int FGAPIENTRY FGUNUSED glutCreateWindow_ATEXIT_HACK(const char* title)
+{
+    return __glutCreateWindowWithExit(title, exit);
+}
 #define glutCreateWindow glutCreateWindow_ATEXIT_HACK
-static int FGAPIENTRY FGUNUSED glutCreateMenu_ATEXIT_HACK(void (* func)(int)) { return __glutCreateMenuWithExit(func, exit); }
+static int FGAPIENTRY FGUNUSED glutCreateMenu_ATEXIT_HACK(void (* func)(int))
+{
+    return __glutCreateMenuWithExit(func, exit);
+}
 #define glutCreateMenu glutCreateMenu_ATEXIT_HACK
 #endif
 #endif
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 /*** END OF FILE ***/

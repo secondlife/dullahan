@@ -29,7 +29,7 @@
  */
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
 
 /*
@@ -122,79 +122,79 @@
  * Flags for glutInitContextProfile, see fg_init.c
  */
 #define GLUT_CORE_PROFILE                   0x0001
-#define	GLUT_COMPATIBILITY_PROFILE          0x0002
+#define GLUT_COMPATIBILITY_PROFILE          0x0002
 
 /*
  * Process loop function, see fg_main.c
  */
-FGAPI void    FGAPIENTRY glutMainLoopEvent( void );
-FGAPI void    FGAPIENTRY glutLeaveMainLoop( void );
-FGAPI void    FGAPIENTRY glutExit         ( void );
+FGAPI void    FGAPIENTRY glutMainLoopEvent(void);
+FGAPI void    FGAPIENTRY glutLeaveMainLoop(void);
+FGAPI void    FGAPIENTRY glutExit(void);
 
 /*
  * Window management functions, see fg_window.c
  */
-FGAPI void    FGAPIENTRY glutFullScreenToggle( void );
-FGAPI void    FGAPIENTRY glutLeaveFullScreen( void );
+FGAPI void    FGAPIENTRY glutFullScreenToggle(void);
+FGAPI void    FGAPIENTRY glutLeaveFullScreen(void);
 
 /*
  * Menu functions
  */
-FGAPI void    FGAPIENTRY glutSetMenuFont( int menuID, void* font );
+FGAPI void    FGAPIENTRY glutSetMenuFont(int menuID, void* font);
 
 /*
  * Window-specific callback functions, see fg_callbacks.c
  */
-FGAPI void    FGAPIENTRY glutMouseWheelFunc( void (* callback)( int, int, int, int ) );
-FGAPI void    FGAPIENTRY glutPositionFunc( void (* callback)( int, int ) );
-FGAPI void    FGAPIENTRY glutCloseFunc( void (* callback)( void ) );
-FGAPI void    FGAPIENTRY glutWMCloseFunc( void (* callback)( void ) );
+FGAPI void    FGAPIENTRY glutMouseWheelFunc(void (* callback)(int, int, int, int));
+FGAPI void    FGAPIENTRY glutPositionFunc(void (* callback)(int, int));
+FGAPI void    FGAPIENTRY glutCloseFunc(void (* callback)(void));
+FGAPI void    FGAPIENTRY glutWMCloseFunc(void (* callback)(void));
 /* And also a destruction callback for menus */
-FGAPI void    FGAPIENTRY glutMenuDestroyFunc( void (* callback)( void ) );
+FGAPI void    FGAPIENTRY glutMenuDestroyFunc(void (* callback)(void));
 
 /*
  * State setting and retrieval functions, see fg_state.c
  */
-FGAPI void    FGAPIENTRY glutSetOption ( GLenum option_flag, int value );
-FGAPI int *   FGAPIENTRY glutGetModeValues(GLenum mode, int * size);
+FGAPI void    FGAPIENTRY glutSetOption(GLenum option_flag, int value);
+FGAPI int*    FGAPIENTRY glutGetModeValues(GLenum mode, int* size);
 /* A.Donev: User-data manipulation */
-FGAPI void*   FGAPIENTRY glutGetWindowData( void );
+FGAPI void*   FGAPIENTRY glutGetWindowData(void);
 FGAPI void    FGAPIENTRY glutSetWindowData(void* data);
-FGAPI void*   FGAPIENTRY glutGetMenuData( void );
+FGAPI void*   FGAPIENTRY glutGetMenuData(void);
 FGAPI void    FGAPIENTRY glutSetMenuData(void* data);
 
 /*
  * Font stuff, see fg_font.c
  */
-FGAPI int     FGAPIENTRY glutBitmapHeight( void* font );
-FGAPI GLfloat FGAPIENTRY glutStrokeHeight( void* font );
-FGAPI void    FGAPIENTRY glutBitmapString( void* font, const unsigned char *string );
-FGAPI void    FGAPIENTRY glutStrokeString( void* font, const unsigned char *string );
+FGAPI int     FGAPIENTRY glutBitmapHeight(void* font);
+FGAPI GLfloat FGAPIENTRY glutStrokeHeight(void* font);
+FGAPI void    FGAPIENTRY glutBitmapString(void* font, const unsigned char* string);
+FGAPI void    FGAPIENTRY glutStrokeString(void* font, const unsigned char* string);
 
 /*
  * Geometry functions, see fg_geometry.c
  */
-FGAPI void    FGAPIENTRY glutWireRhombicDodecahedron( void );
-FGAPI void    FGAPIENTRY glutSolidRhombicDodecahedron( void );
-FGAPI void    FGAPIENTRY glutWireSierpinskiSponge ( int num_levels, double offset[3], double scale );
-FGAPI void    FGAPIENTRY glutSolidSierpinskiSponge ( int num_levels, double offset[3], double scale );
-FGAPI void    FGAPIENTRY glutWireCylinder( double radius, double height, GLint slices, GLint stacks);
-FGAPI void    FGAPIENTRY glutSolidCylinder( double radius, double height, GLint slices, GLint stacks);
+FGAPI void    FGAPIENTRY glutWireRhombicDodecahedron(void);
+FGAPI void    FGAPIENTRY glutSolidRhombicDodecahedron(void);
+FGAPI void    FGAPIENTRY glutWireSierpinskiSponge(int num_levels, double offset[3], double scale);
+FGAPI void    FGAPIENTRY glutSolidSierpinskiSponge(int num_levels, double offset[3], double scale);
+FGAPI void    FGAPIENTRY glutWireCylinder(double radius, double height, GLint slices, GLint stacks);
+FGAPI void    FGAPIENTRY glutSolidCylinder(double radius, double height, GLint slices, GLint stacks);
 
 /*
  * Rest of functions for rendering Newell's teaset, found in fg_teapot.c
  * NB: front facing polygons have clockwise winding, not counter clockwise
  */
-FGAPI void    FGAPIENTRY glutWireTeacup( double size );
-FGAPI void    FGAPIENTRY glutSolidTeacup( double size );
-FGAPI void    FGAPIENTRY glutWireTeaspoon( double size );
-FGAPI void    FGAPIENTRY glutSolidTeaspoon( double size );
+FGAPI void    FGAPIENTRY glutWireTeacup(double size);
+FGAPI void    FGAPIENTRY glutSolidTeacup(double size);
+FGAPI void    FGAPIENTRY glutWireTeaspoon(double size);
+FGAPI void    FGAPIENTRY glutSolidTeaspoon(double size);
 
 /*
  * Extension functions, see fg_ext.c
  */
 typedef void (*GLUTproc)();
-FGAPI GLUTproc FGAPIENTRY glutGetProcAddress( const char *procName );
+FGAPI GLUTproc FGAPIENTRY glutGetProcAddress(const char* procName);
 
 /*
  * Multi-touch/multi-pointer extensions
@@ -204,10 +204,10 @@ FGAPI GLUTproc FGAPIENTRY glutGetProcAddress( const char *procName );
 
 /* TODO: add device_id parameter,
    cf. http://sourceforge.net/mailarchive/forum.php?thread_name=20120518071314.GA28061%40perso.beuc.net&forum_name=freeglut-developer */
-FGAPI void FGAPIENTRY glutMultiEntryFunc( void (* callback)( int, int ) );
-FGAPI void FGAPIENTRY glutMultiButtonFunc( void (* callback)( int, int, int, int, int ) );
-FGAPI void FGAPIENTRY glutMultiMotionFunc( void (* callback)( int, int, int ) );
-FGAPI void FGAPIENTRY glutMultiPassiveFunc( void (* callback)( int, int, int ) );
+FGAPI void FGAPIENTRY glutMultiEntryFunc(void (* callback)(int, int));
+FGAPI void FGAPIENTRY glutMultiButtonFunc(void (* callback)(int, int, int, int, int));
+FGAPI void FGAPIENTRY glutMultiMotionFunc(void (* callback)(int, int, int));
+FGAPI void FGAPIENTRY glutMultiPassiveFunc(void (* callback)(int, int, int));
 
 /*
  * Joystick functions, see fg_joystick.c
@@ -218,30 +218,30 @@ FGAPI void FGAPIENTRY glutMultiPassiveFunc( void (* callback)( int, int, int ) )
  * switch to the OpenGLUT library, or else port your joystick functionality over to PLIB's
  * "js" library.
  */
-int     glutJoystickGetNumAxes( int ident );
-int     glutJoystickGetNumButtons( int ident );
-int     glutJoystickNotWorking( int ident );
-float   glutJoystickGetDeadBand( int ident, int axis );
-void    glutJoystickSetDeadBand( int ident, int axis, float db );
-float   glutJoystickGetSaturation( int ident, int axis );
-void    glutJoystickSetSaturation( int ident, int axis, float st );
-void    glutJoystickSetMinRange( int ident, float *axes );
-void    glutJoystickSetMaxRange( int ident, float *axes );
-void    glutJoystickSetCenter( int ident, float *axes );
-void    glutJoystickGetMinRange( int ident, float *axes );
-void    glutJoystickGetMaxRange( int ident, float *axes );
-void    glutJoystickGetCenter( int ident, float *axes );
+int     glutJoystickGetNumAxes(int ident);
+int     glutJoystickGetNumButtons(int ident);
+int     glutJoystickNotWorking(int ident);
+float   glutJoystickGetDeadBand(int ident, int axis);
+void    glutJoystickSetDeadBand(int ident, int axis, float db);
+float   glutJoystickGetSaturation(int ident, int axis);
+void    glutJoystickSetSaturation(int ident, int axis, float st);
+void    glutJoystickSetMinRange(int ident, float* axes);
+void    glutJoystickSetMaxRange(int ident, float* axes);
+void    glutJoystickSetCenter(int ident, float* axes);
+void    glutJoystickGetMinRange(int ident, float* axes);
+void    glutJoystickGetMaxRange(int ident, float* axes);
+void    glutJoystickGetCenter(int ident, float* axes);
 
 /*
  * Initialization functions, see fg_init.c
  */
 /* to get the typedef for va_list */
 #include <stdarg.h>
-FGAPI void    FGAPIENTRY glutInitContextVersion( int majorVersion, int minorVersion );
-FGAPI void    FGAPIENTRY glutInitContextFlags( int flags );
-FGAPI void    FGAPIENTRY glutInitContextProfile( int profile );
-FGAPI void    FGAPIENTRY glutInitErrorFunc( void (* callback)( const char *fmt, va_list ap ) );
-FGAPI void    FGAPIENTRY glutInitWarningFunc( void (* callback)( const char *fmt, va_list ap ) );
+FGAPI void    FGAPIENTRY glutInitContextVersion(int majorVersion, int minorVersion);
+FGAPI void    FGAPIENTRY glutInitContextFlags(int flags);
+FGAPI void    FGAPIENTRY glutInitContextProfile(int profile);
+FGAPI void    FGAPIENTRY glutInitErrorFunc(void (* callback)(const char* fmt, va_list ap));
+FGAPI void    FGAPIENTRY glutInitWarningFunc(void (* callback)(const char* fmt, va_list ap));
 
 /* OpenGL >= 2.0 support */
 FGAPI void    FGAPIENTRY glutSetVertexAttribCoord3(GLint attrib);
@@ -263,7 +263,7 @@ FGAPI void    FGAPIENTRY glutAppStatusFunc(void (* callback)(int));
 #define  GLUT_SRGB                          0x1000
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 /*** END OF FILE ***/
