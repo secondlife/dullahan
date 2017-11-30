@@ -281,6 +281,49 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     endif()
 
     ################################################################################
+    ## simplegl example application using FreeGLUT
+
+    # add source file to application
+    add_executable(
+        simplegl
+        examples/simplegl/simplegl.cpp
+    )
+
+    # define which include directories to pull in
+    target_include_directories(
+        simplegl
+        PUBLIC
+        src
+        examples/simplegl/freeglut/include/GL
+    )
+
+    # determine location of FreeGLUT library to link against based on bitwidth
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(FREEGLUT_LIBRARY "${PROJECT_SOURCE_DIR}/examples/simplegl/freeglut/lib/x64/freeglut.lib")
+        set(FREEGLUT_DLL "${PROJECT_SOURCE_DIR}/examples/simplegl/freeglut/bin/x64/freeglut.dll")
+    elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(FREEGLUT_LIBRARY "${PROJECT_SOURCE_DIR}/examples/simplegl/freeglut/bin/freeglut.dll")
+        set(FREEGLUT_DLL "${PROJECT_SOURCE_DIR}/examples/simplegl/freeglut/bin/freeglut.dll")
+    endif()
+
+    # copy over freeglut.dll
+    add_custom_command(
+        TARGET simplegl POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy
+                "${FREEGLUT_DLL}"
+                "$<TARGET_FILE_DIR:simplegl>"
+       COMMENT "Copying FreeGLUT DLL to executable directory")
+
+    # define which libs to link against
+    target_link_libraries(
+        simplegl
+        dullahan
+        ${CEF_LIBRARY}
+        ${CEF_DLL_LIBRARY}
+        ${FREEGLUT_LIBRARY}
+    )
+
+    ################################################################################
     ## console example application
 
     # add source file to application
