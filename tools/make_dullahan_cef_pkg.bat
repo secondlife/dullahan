@@ -1,8 +1,12 @@
 @pushd .
+set VS_CMD=Visual Studio 12 2013
+
+rem uncomment this line or change one above for VS2015 builds
+rem set VS_CMD=Visual Studio 14 2015
 
 rem Edit these variables to point to the uncompressed CEF source directory and 
 rem the required destination directory for both 32 and 64 bit versions
-rem Note: I get the "src" CEF packages from the Spotify CEF builds site 
+rem Note: I get the default "src" CEF packages from the Spotify CEF builds site 
 rem here http://opensource.spotify.com/cefbuilds/index.html
 set SRC_DIR_32="%USERPROFILE%\Desktop\cef_binary_3.3202.1686.gd665578_windows32"
 set DST_DIR_32="%USERPROFILE%\Desktop\cef_3202.1686.gd665578_windows32"
@@ -18,23 +22,22 @@ set DST_DIR_64="%USERPROFILE%\Desktop\cef_3202.1686.gd665578_windows64"
 @goto End
 
 :BitWidth32
-set SRC_DIR="%SRC_DIR_32%"
-set DST_DIR="%DST_DIR_32%"
+set SRC_DIR=%SRC_DIR_32%
+set DST_DIR=%DST_DIR_32%
 set BUILD_DIR="build"
-set CMAKE_CMD="Visual Studio 12 2013"
+set CMAKE_CMD=%VS_CMD%
 set PLATFORM_CMD="/property:Platform=x86"
 goto skip_1
 
 :BitWidth64
-set SRC_DIR="%SRC_DIR_64%"
-set DST_DIR="%DST_DIR_64%"
+set SRC_DIR=%SRC_DIR_64%
+set DST_DIR=%DST_DIR_64%
 set BUILD_DIR="build64"
-set CMAKE_CMD="Visual Studio 12 2013 Win64"
+set CMAKE_CMD=%VS_CMD% Win64
 set PLATFORM_CMD="/property:Platform=x64"
 goto skip_1
 
 :skip_1
-
 if not exist %SRC_DIR% goto end
 mkdir %DST_DIR%
 if not exist %DST_DIR% goto end
@@ -48,14 +51,14 @@ mkdir %DST_DIR%"\resources"
 
 pushd .
 
-cd %SRC_DIR%
+cd /d %SRC_DIR%
 
 if exist %BUILD_DIR% del /s /q %BUILD_DIR%
 if exist %BUILD_DIR% rmdir /s /q %BUILD_DIR%
 
 mkdir %BUILD_DIR%
-cd %BUILD_DIR% 
-cmake -G %CMAKE_CMD% ..
+cd /d %BUILD_DIR% 
+cmake -G "%CMAKE_CMD%" ..
 cd libcef_dll_wrapper
 
 rem swap /MT for /MD because that's what we use (cringe - why isn't this an option in CMake)

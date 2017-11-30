@@ -1,5 +1,9 @@
 @pushd .
 @if exist build_win.bat cd ..
+set VS_CMD=Visual Studio 12 2013
+
+rem uncomment this line or change one above for VS2015 builds
+rem set VS_CMD=Visual Studio 14 2015
 
 rem We are using the CEF 3202 branch (like Chrome 62) version that we built
 rem from the Spotify CEF site using make_dullahan_cef_pkg.bat script in this folder.
@@ -12,44 +16,38 @@ set CEF_64_DIR="C:\work\cef_builds\cef_3202.1686.gd665578_windows64"
 :NoBitWidth
 @echo.
 @echo You must specify a bit width of 32 or 64
-@goto End
+@goto ErrorOut
 
 :BitWidth32
-if exist .\src\dullahan_version.h rm .\src\dullahan_version.h
-if exist .\build\* rmdir /s /q .\build
-mkdir build
-cd build
-cmake -G "Visual Studio 12 2013" ^
-      -DCEF_INCLUDE_DIR="%CEF_32_DIR%\include" ^
-      -DCEF_LIB_DIR="%CEF_32_DIR%\lib" ^
-      -DCEF_BIN_DIR="%CEF_32_DIR%\bin" ^
-      -DCEF_RESOURCE_DIR="%CEF_32_DIR%\resources" ^
-      ..
-if errorlevel 1 goto ErrorOut
-
-msbuild dullahan.sln /p:Configuration=Debug /p:Platform="Win32"
-if errorlevel 1 goto ErrorOut
-msbuild dullahan.sln /p:Configuration=Release /p:Platform="Win32"
-if errorlevel 1 goto ErrorOut
-
-goto Finished
+set BUILD_DIR=build
+set CMAKE_CMD="%VS_CMD%"
+set CEF_DIR=%CEF_32_DIR%
+set PLATFORM_CMD="/property:Platform=Win32"
+goto Build
 
 :BitWidth64
-if exist .\src\dullahan_version.h rm .\src\dullahan_version.h
-if exist .\build64\* rmdir /s /q .\build64
-mkdir build64
-cd build64
-cmake -G "Visual Studio 12 2013 Win64" ^
-      -DCEF_INCLUDE_DIR="%CEF_64_DIR%\include" ^
-      -DCEF_LIB_DIR="%CEF_64_DIR%\lib" ^
-      -DCEF_BIN_DIR="%CEF_64_DIR%\bin" ^
-      -DCEF_RESOURCE_DIR="%CEF_64_DIR%\resources" ^
+set BUILD_DIR=build64
+set CMAKE_CMD="%VS_CMD% Win64"
+set CEF_DIR=%CEF_64_DIR%
+set PLATFORM_CMD="/property:Platform=x64"
+goto Build
+
+:Build
+if exist .\src\dullahan_version.h del .\src\dullahan_version.h
+if exist .\%BUILD_DIR%\* rmdir /s /q .\%BUILD_DIR%
+mkdir %BUILD_DIR%
+cd /d %BUILD_DIR%
+cmake -G %CMAKE_CMD% ^
+      -DCEF_INCLUDE_DIR="%CEF_DIR%\include" ^
+      -DCEF_LIB_DIR="%CEF_DIR%\lib" ^
+      -DCEF_BIN_DIR="%CEF_DIR%\bin" ^
+      -DCEF_RESOURCE_DIR="%CEF_DIR%\resources" ^
       ..
 if errorlevel 1 goto ErrorOut
 
-msbuild dullahan.sln /p:Configuration=Debug
+msbuild dullahan.sln /p:Configuration=Debug %PLATFORM_CMD%
 if errorlevel 1 goto ErrorOut
-msbuild dullahan.sln /p:Configuration=Release
+msbuild dullahan.sln /p:Configuration=Release %PLATFORM_CMD%
 if errorlevel 1 goto ErrorOut
 
 goto Finished
@@ -64,5 +62,4 @@ cd Release
 .\webcube.exe
 
 :End
-echo ^<ESC^>[94m [94mBlue[0m
 popd
