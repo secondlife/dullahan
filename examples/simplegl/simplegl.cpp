@@ -5,7 +5,7 @@
            Example: simple render to OpenGL example mostly
                     used to test the resizing browser functionality
 
-    @author Callum Prentice - September 2016
+    @author Callum Prentice - November 2017
 
     Copyright (c) 2016, Linden Research, Inc.
 
@@ -36,8 +36,9 @@
 #include "dullahan.h"
 
 dullahan* gDullahan;
-const GLuint gTextureWidth = 1024;
-const GLuint gTextureHeight = 1024;
+GLuint gAppTexture = -1;
+GLuint gTextureWidth = 1024;
+GLuint gTextureHeight = 1024;
 GLuint gAppWindowWidth = gTextureWidth;
 GLuint gAppWindowHeight = gTextureHeight;
 
@@ -56,6 +57,18 @@ void glutResize(int width, int height)
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+	gTextureWidth = width;
+	gTextureHeight = height;
+
+	glDeleteTextures(1, &gAppTexture);
+	glGenTextures(1, &gAppTexture);
+	glBindTexture(GL_TEXTURE_2D, gAppTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gTextureWidth, gTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	gDullahan->setSize(gTextureWidth, gTextureHeight);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -117,6 +130,19 @@ void glutMouseButton(int button, int state, int x, int y)
 
 ////////////////////////////////////////////////////////////////////////////////
 //
+void glutKeyboard(unsigned char key, int x, int y)
+{
+	if (key == 27)
+	{
+		// Note:  This will not shut down the application cleanly as far as Dullahan
+		//        is concerned - to do so would need callbacks set up that are 
+		//        beyond the scope of this example. It's okay just to bomb out here.
+		glutLeaveMainLoop();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
 void glutMouseMove(int x, int y)
 {
     int scaled_x = x * gTextureWidth / gAppWindowWidth;
@@ -130,14 +156,16 @@ void glutMouseMove(int x, int y)
 //
 void onPageChangedCallback(const unsigned char* pixels, int x, int y, const int width, const int height)
 {
-    glTexSubImage2D(GL_TEXTURE_2D, 0,
-                    x, y,
-                    width, height,
-                    GL_BGRA_EXT,
-                    GL_UNSIGNED_BYTE,
-                    pixels);
+	if (width == gTextureWidth && height == gTextureHeight)
+	{
+		glTexSubImage2D(GL_TEXTURE_2D, 0,
+			x, y,
+			width, height,
+			GL_BGRA_EXT,
+			GL_UNSIGNED_BYTE,
+			pixels);
+	}
 }
-
 
 /////////////////////////////////////////////////////////////////////////////////
 // sadly need this so that the app can find the start URL when you start it
@@ -172,14 +200,14 @@ int main(int argc, char* argv[])
     glutDisplayFunc(glutDisplay);
     glutIdleFunc(glutIdle);
     glutMouseFunc(glutMouseButton);
+	glutKeyboardFunc(glutKeyboard);
     glutPassiveMotionFunc(glutMouseMove);
     glutMotionFunc(glutMouseMove);
     glutReshapeFunc(glutResize);
 
-    GLuint app_texture;
     glEnable(GL_TEXTURE_2D);
-    glGenTextures(1, &app_texture);
-    glBindTexture(GL_TEXTURE_2D, app_texture);
+    glGenTextures(1, &gAppTexture);
+    glBindTexture(GL_TEXTURE_2D, gAppTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gTextureWidth, gTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
