@@ -118,6 +118,15 @@ void dullahan_render_handler::OnPaint(CefRefPtr<CefBrowser> browser,
 {
     DLNOUT("onPaint called for size: " << width << " x " << height << " with type: " << type);
 
+	int browser_width, browser_height;
+	mParent->getSize(browser_width, browser_height);
+
+	if (width != browser_width || height != browser_height)
+	{
+		mParent->getBrowser()->GetHost()->WasResized();
+		return;
+	}
+
     // popup (dropdown menu) wants to be drawn
     if (type == PET_POPUP)
     {
