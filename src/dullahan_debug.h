@@ -27,19 +27,26 @@
 #ifndef _DULLAHAN_DEBUG
 #define _DULLAHAN_DEBUG
 
-#define ENABLE_DEBUG_OUTPUT 0
+/* 
+	Note: turning debug output on works well with the SysInternals tool that
+	captures OutputDebugStringA from here: 
+	https://docs.microsoft.com/en-us/sysinternals/downloads/debugview
+*/
+
+#define ENABLE_DEBUG_OUTPUT 1
 
 #if (ENABLE_DEBUG_OUTPUT)
+#ifdef WIN32
 #include <iostream>
 #include <sstream>
-
 #define DLNOUT( x ) \
     std::ostringstream s; \
     s << "DLNOUT> " << x << std::endl; \
-    std::cout  << s.str(); \
+    std::cout << s.str(); \
     OutputDebugStringA(s.str().c_str());
+#endif // WIN32
 #else
 #define DLNOUT( x )
-#endif
+#endif // ENABLE_DEBUG_OUTPUT
 
 #endif // _DULLAHAN_DEBUG
