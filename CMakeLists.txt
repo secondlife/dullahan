@@ -124,6 +124,8 @@ add_library(
     src/dullahan_debug.h
     src/dullahan_impl.cpp
     src/dullahan_impl.h
+    src/dullahan_version.h
+    src/dullahan_version.h.in
     ${KEYBOARD_IMPL_SRC_FILE}
     src/dullahan_impl_mouse.cpp
     src/dullahan_render_handler.cpp
