@@ -27,10 +27,10 @@
 #ifndef _DULLAHAN_DEBUG
 #define _DULLAHAN_DEBUG
 
-/* 
-	Note: turning debug output on works well with the SysInternals tool that
-	captures OutputDebugStringA from here: 
-	https://docs.microsoft.com/en-us/sysinternals/downloads/debugview
+/*
+    Note: turning debug output on works well with the SysInternals tool that
+    captures OutputDebugStringA from here:
+    https://docs.microsoft.com/en-us/sysinternals/downloads/debugview
 */
 
 #define ENABLE_DEBUG_OUTPUT 1

@@ -58,17 +58,17 @@ void glutResize(int width, int height)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-	gTextureWidth = width;
-	gTextureHeight = height;
+    gTextureWidth = width;
+    gTextureHeight = height;
 
-	glDeleteTextures(1, &gAppTexture);
-	glGenTextures(1, &gAppTexture);
-	glBindTexture(GL_TEXTURE_2D, gAppTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gTextureWidth, gTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glDeleteTextures(1, &gAppTexture);
+    glGenTextures(1, &gAppTexture);
+    glBindTexture(GL_TEXTURE_2D, gAppTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gTextureWidth, gTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
-	gDullahan->setSize(gTextureWidth, gTextureHeight);
+    gDullahan->setSize(gTextureWidth, gTextureHeight);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -132,13 +132,13 @@ void glutMouseButton(int button, int state, int x, int y)
 //
 void glutKeyboard(unsigned char key, int x, int y)
 {
-	if (key == 27)
-	{
-		// Note:  This will not shut down the application cleanly as far as Dullahan
-		//        is concerned - to do so would need callbacks set up that are 
-		//        beyond the scope of this example. It's okay just to bomb out here.
-		glutLeaveMainLoop();
-	}
+    if (key == 27)
+    {
+        // Note:  This will not shut down the application cleanly as far as Dullahan
+        //        is concerned - to do so would need callbacks set up that are
+        //        beyond the scope of this example. It's okay just to bomb out here.
+        glutLeaveMainLoop();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -156,19 +156,19 @@ void glutMouseMove(int x, int y)
 //
 void onPageChangedCallback(const unsigned char* pixels, int x, int y, const int width, const int height)
 {
-	if (width == gTextureWidth && height == gTextureHeight)
-	{
-		glTexSubImage2D(GL_TEXTURE_2D, 0,
-			x, y,
-			width, height,
-			GL_BGRA_EXT,
-			GL_UNSIGNED_BYTE,
-			pixels);
-	}
-	else
-	{
-		std::cout << "Browser size (" << width << " x " << height << ") for CEF and this application (" << gTextureWidth << " x " << gTextureHeight << ") don't match! (that's okay - it's asynchronous but we don't draw)" << std::endl;
-	}
+    if (width == gTextureWidth && height == gTextureHeight)
+    {
+        glTexSubImage2D(GL_TEXTURE_2D, 0,
+                        x, y,
+                        width, height,
+                        GL_BGRA_EXT,
+                        GL_UNSIGNED_BYTE,
+                        pixels);
+    }
+    else
+    {
+        std::cout << "Browser size (" << width << " x " << height << ") for CEF and this application (" << gTextureWidth << " x " << gTextureHeight << ") don't match! (that's okay - it's asynchronous but we don't draw)" << std::endl;
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
     glutDisplayFunc(glutDisplay);
     glutIdleFunc(glutIdle);
     glutMouseFunc(glutMouseButton);
-	glutKeyboardFunc(glutKeyboard);
+    glutKeyboardFunc(glutKeyboard);
     glutPassiveMotionFunc(glutMouseMove);
     glutMotionFunc(glutMouseMove);
     glutReshapeFunc(glutResize);

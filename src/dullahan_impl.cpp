@@ -274,8 +274,8 @@ void dullahan_impl::setSize(int width, int height)
 
     if (mBrowser.get() && mBrowser->GetHost())
     {
-		mViewWidth = width;
-		mViewHeight = height;
+        mViewWidth = width;
+        mViewHeight = height;
         mBrowser->GetHost()->WasResized();
     }
 }
