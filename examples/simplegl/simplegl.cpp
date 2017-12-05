@@ -167,7 +167,7 @@ void onPageChangedCallback(const unsigned char* pixels, int x, int y, const int 
 	}
 	else
 	{
-		std::cout << "Browser size for CEF and this application don't match! (that's okay - it's asynchronous but we don't draw)" << std::endl;
+		std::cout << "Browser size (" << width << " x " << height << ") for CEF and this application (" << gTextureWidth << " x " << gTextureHeight << ") don't match! (that's okay - it's asynchronous but we don't draw)" << std::endl;
 	}
 }
 
