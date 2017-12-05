@@ -33,7 +33,7 @@
     https://docs.microsoft.com/en-us/sysinternals/downloads/debugview
 */
 
-#define ENABLE_DEBUG_OUTPUT 1
+#define ENABLE_DEBUG_OUTPUT 0
 
 #if (ENABLE_DEBUG_OUTPUT)
 #ifdef WIN32
