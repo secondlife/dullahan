@@ -102,6 +102,7 @@ class app
         unsigned char* mTexturePixels[mMaxFaces];
 
         const std::string get_title();
+        void set_homepage_url(std::string url);
 
     private:
         FILE* mConsole;
@@ -115,9 +116,9 @@ class app
         unsigned char mPickPixelColor[3];
         unsigned char mPickTexturePixels[mMaxFaces][mPickTextureWidth * mPickTextureWidth * mPickTextureDepth];
         HWND mURLEntryHandle;
-
+        std::string mHomePageURL;
         dullahan* mDullahan;
-        const std::string getStartURL();
+        const std::string getHomePageURL();
 
         void init_dullahan();
 

@@ -69,6 +69,10 @@ app::app()
 
     mTextureWidth = 1024;
     mTextureHeight = 1024;
+
+    // empty string means go load the page of test URLs
+    // may be overridden by command line arg --homepage="URL"
+    mHomePageURL = "";
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -76,6 +80,13 @@ app::app()
 const std::string app::get_title()
 {
     return "Web Cube - a Dullahan example";
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+void app::set_homepage_url(std::string url)
+{
+    mHomePageURL = url;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -134,8 +145,8 @@ void app::init_dullahan()
     bool result = mDullahan->init(settings);
     if (result)
     {
-        mDullahan->setPageZoom(1.2);
-        mDullahan->navigate(getStartURL());
+        mDullahan->setPageZoom(1.0);
+        navigateHome();
     }
 }
 
@@ -385,7 +396,7 @@ void app::navigate(const std::string url)
 //
 void app::navigateHome()
 {
-    mDullahan->navigate(getStartURL());
+    mDullahan->navigate(getHomePageURL());
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -982,8 +993,13 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // sadly need this so that the app can find the start URL when you start it
 // from Visual Studio *and* when you do so via Windows Explorer. There seems to
 // be no to set the current working directory for Visual Studio using CMake.
-const std::string app::getStartURL()
+const std::string app::getHomePageURL()
 {
+    if (mHomePageURL.length() != 0)
+    {
+        return mHomePageURL;
+    }
+
     const std::string page_filename("dullahan_test_urls.html");
 
     // get current working directory plus trailing separator
@@ -1019,6 +1035,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     gApp = new app();
 
     gApp->initConsole();
+
+    // set from command line args
+    if (__argc == 2)
+    {
+        std::string argv1 = std::string(__argv[1]);
+        std::string opt("--homepage");
+        if (argv1.find(opt) != std::string::npos)
+        {
+            std::string url = argv1.substr(opt.length() + 1, argv1.length() - opt.length() - 1);
+
+            std::cout << "URL is " << url << std::endl;
+            gApp->set_homepage_url(url);
+        }
+    }
 
     std::cout << gApp->get_title() << std::endl;
 
