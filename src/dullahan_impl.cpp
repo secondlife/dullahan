@@ -211,6 +211,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     browser_settings.application_cache = user_settings.cache_enabled ? STATE_ENABLED : STATE_DISABLED;
     browser_settings.background_color = user_settings.background_color;
     browser_settings.file_access_from_file_urls = user_settings.file_access_from_file_urls ? STATE_ENABLED : STATE_DISABLED;
+    browser_settings.image_shrink_standalone_to_fit = user_settings.image_shrink_standalone_to_fit ? STATE_ENABLED : STATE_DISABLED;
 
     mRenderHandler = new dullahan_render_handler(this);
     mBrowserClient = new dullahan_browser_client(this, mRenderHandler);
@@ -461,13 +462,23 @@ void dullahan_impl::editPaste()
 // called multiple times - likely from CefLoadHandler::OnLoadingStateChange(..)
 void dullahan_impl::requestPageZoom()
 {
+    // special case the non-zoomed version since slight floating point rounding errors
+    // in the formula below result in a few pixels difference - best example of this is
+    // when 1024x1024 images in 1024x1024 browser cause scroll bars to appear
+    if (mRequestedPageZoom == 1.0)
+    {
+        // reset zoom level according to CEF docs
+        mBrowser->GetHost()->SetZoomLevel(0.0);
+        return;
+    }
+
     // Convert "Dullahan page zoom" to "CEF/Chromium page zoom"
     // The value we pass into CEF::SetZoomLevel is not on a linear scale and described here:
     // http://www.magpcss.org/ceforum/viewtopic.php?f=6&t=11491
     // Dullahan scale: 1.0 is 1:1 scale, 2.0 is double, 0.5 is half etc.
     // CEF scale is more complex :) and from that post above, this is the best we can do for now:
     // note: CEF/Chromium max scale seems to be 5 x normal - values higher than that are ignored
-    double cef_zoom_level = 5.46 * log(mRequestedPageZoom * 100.0) - 25.12;
+    double cef_zoom_level = 5.46149645 * log(mRequestedPageZoom * 100.0) - 25.1511206;
 
     if (mBrowser.get() && mBrowser->GetHost())
     {

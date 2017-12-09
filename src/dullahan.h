@@ -154,6 +154,7 @@ class dullahan
             bool disable_web_security = false;          // like adding --disable-web-security to Chrome command line
             bool flash_enabled = true;                  // system flash plugin
             bool force_wave_audio = false;              // forces Windows WaveOut/In audio
+            bool image_shrink_standalone_to_fit = true; // scale standalone images larger than browser size to fit
             bool java_enabled = false;                  // java
             bool javascript_enabled = true;             // javascript
             bool media_stream_enabled = false;          // web cams etc. (caution)
