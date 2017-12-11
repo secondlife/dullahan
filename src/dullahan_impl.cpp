@@ -462,26 +462,26 @@ void dullahan_impl::editPaste()
 // called multiple times - likely from CefLoadHandler::OnLoadingStateChange(..)
 void dullahan_impl::requestPageZoom()
 {
-    // special case the non-zoomed version since slight floating point rounding errors
-    // in the formula below result in a few pixels difference - best example of this is
-    // when 1024x1024 images in 1024x1024 browser cause scroll bars to appear
-    if (mRequestedPageZoom == 1.0)
-    {
-        // reset zoom level according to CEF docs
-        mBrowser->GetHost()->SetZoomLevel(0.0);
-        return;
-    }
-
-    // Convert "Dullahan page zoom" to "CEF/Chromium page zoom"
-    // The value we pass into CEF::SetZoomLevel is not on a linear scale and described here:
-    // http://www.magpcss.org/ceforum/viewtopic.php?f=6&t=11491
-    // Dullahan scale: 1.0 is 1:1 scale, 2.0 is double, 0.5 is half etc.
-    // CEF scale is more complex :) and from that post above, this is the best we can do for now:
-    // note: CEF/Chromium max scale seems to be 5 x normal - values higher than that are ignored
-    double cef_zoom_level = 5.46149645 * log(mRequestedPageZoom * 100.0) - 25.1511206;
-
     if (mBrowser.get() && mBrowser->GetHost())
     {
+        // special case the non-zoomed version since slight floating point rounding errors
+        // in the formula below result in a few pixels difference - best example of this is
+        // when 1024x1024 images in 1024x1024 browser cause scroll bars to appear
+        if (mRequestedPageZoom == 1.0)
+        {
+            // reset zoom level according to CEF docs
+            mBrowser->GetHost()->SetZoomLevel(0.0);
+            return;
+        }
+
+        // Convert "Dullahan page zoom" to "CEF/Chromium page zoom"
+        // The value we pass into CEF::SetZoomLevel is not on a linear scale and described here:
+        // http://www.magpcss.org/ceforum/viewtopic.php?f=6&t=11491
+        // Dullahan scale: 1.0 is 1:1 scale, 2.0 is double, 0.5 is half etc.
+        // CEF scale is more complex :) and from that post above, this is the best we can do for now:
+        // note: CEF/Chromium max scale seems to be 5 x normal - values higher than that are ignored
+        double cef_zoom_level = 5.46149645 * log(mRequestedPageZoom * 100.0) - 25.1511206;
+
         // if the zoom has not been established (being careful for floating point issues)
         if (fabs(mBrowser->GetHost()->GetZoomLevel() - cef_zoom_level) > 0.001)
         {
