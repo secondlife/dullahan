@@ -346,7 +346,7 @@ class dullahan
         void setOnFileDownloadProgressCallback(std::function<void(int percent, bool complete)> callback);
 
         // file picker shown
-        void setOnFileDialogCallback(std::function<const std::string(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string dialog_accept_filter, bool& use_default)> callback);
+		void setOnFileDialogCallback(std::function<const std::string(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default)> callback);
 
     private:
         std::unique_ptr <dullahan_impl> mImpl;

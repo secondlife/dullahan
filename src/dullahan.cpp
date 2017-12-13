@@ -369,7 +369,7 @@ void dullahan::setOnFileDownloadProgressCallback(std::function<void(int percent,
     mImpl->getCallbackManager()->setOnFileDownloadProgressCallback(callback);
 }
 
-void dullahan::setOnFileDialogCallback(std::function<const std::string(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string dialog_accept_filter, bool& use_default)> callback)
+void dullahan::setOnFileDialogCallback(std::function<const std::string(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default)> callback)
 {
     mImpl->getCallbackManager()->setOnFileDialogCallback(callback);
 }

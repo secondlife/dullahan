@@ -300,7 +300,6 @@ void dullahan_browser_client::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
 {
     CEF_REQUIRE_UI_THREAD();
 
-
     bool show_file_dialog = true;
     callback->Continue(suggested_name, show_file_dialog);
     mParent->getCallbackManager()->onFileDownload(std::string(suggested_name));
@@ -358,8 +357,10 @@ bool dullahan_browser_client::OnFileDialog(CefRefPtr<CefBrowser> browser,
         std::string dialog_accept_filter = std::string(accept_filters[0]);
     }
 
+	const std::string default_file = std::string(default_file_path);
+
     bool use_default = true;
-    const CefString file_path = mParent->getCallbackManager()->onFileDialog(dialog_type, dialog_title, dialog_accept_filter, use_default);
+	const CefString file_path = mParent->getCallbackManager()->onFileDialog(dialog_type, dialog_title, default_file, dialog_accept_filter, use_default);
     if (use_default)
     {
         return false;
