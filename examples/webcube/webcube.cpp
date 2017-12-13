@@ -101,7 +101,8 @@ void app::init_dullahan()
     mDullahan->setOnConsoleMessageCallback(std::bind(&app::onConsoleMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     mDullahan->setOnCursorChangedCallback(std::bind(&app::onCursorChanged, this, std::placeholders::_1));
     mDullahan->setOnCustomSchemeURLCallback(std::bind(&app::onCustomSchemeURL, this, std::placeholders::_1));
-	mDullahan->setOnFileDialogCallback(std::bind(&app::onFileDialog, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
+    mDullahan->setOnFileDialogCallback(std::bind(&app::onFileDialog, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
+    mDullahan->setOnFileDownloadProgressCallback(std::bind(&app::onFileDownloadProgress, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnHTTPAuthCallback(std::bind(&app::onHTTPAuth, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
     mDullahan->setOnLoadEndCallback(std::bind(&app::onLoadEnd, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnLoadErrorCallback(std::bind(&app::onLoadError, this, std::placeholders::_1, std::placeholders::_2));
@@ -498,17 +499,20 @@ void app::onCustomSchemeURL(const std::string url)
 //
 const std::string app::onFileDialog(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, std::string dialog_accept_filter, bool& use_default)
 {
-	if (dialog_type == dullahan::FD_OPEN_FILE)
-		std::cout << "onFileDialog(..) open file: ";
-	else
-	if (dialog_type == dullahan::FD_SAVE_FILE)
-		std::cout << "onFileDialog(..) save file ";
-	std::cout << "title: " << "\"" << dialog_title << "\"";
-	std::cout << " | ";
-	std::cout << "filename: " << "\"" << default_file << "\"";
-	std::cout << " | ";
-	std::cout << "filter: " << "\"" << dialog_accept_filter << "\"";
-	std::cout << std::endl;
+    if (dialog_type == dullahan::FD_OPEN_FILE)
+    {
+        std::cout << "onFileDialog(..) open file: ";
+    }
+    else if (dialog_type == dullahan::FD_SAVE_FILE)
+    {
+        std::cout << "onFileDialog(..) save file ";
+    }
+    std::cout << "title: " << "\"" << dialog_title << "\"";
+    std::cout << " | ";
+    std::cout << "filename: " << "\"" << default_file << "\"";
+    std::cout << " | ";
+    std::cout << "filter: " << "\"" << dialog_accept_filter << "\"";
+    std::cout << std::endl;
 
     // test directly download with no file dialog and user specified name
     const bool download_directly = false;
@@ -539,8 +543,8 @@ const std::string app::onFileDialog(dullahan::EFileDialogType dialog_type, const
     {
         OPENFILENAME ofn;
         char szFile[MAX_PATH];
-		ZeroMemory(szFile, MAX_PATH);
-		memcpy(szFile, default_file.c_str(), default_file.length());
+        ZeroMemory(szFile, MAX_PATH);
+        memcpy(szFile, default_file.c_str(), default_file.length());
         ZeroMemory(&ofn, sizeof(ofn));
         ofn.lStructSize = sizeof(ofn);
         ofn.hwndOwner = GetDesktopWindow();
@@ -566,9 +570,9 @@ const std::string app::onFileDialog(dullahan::EFileDialogType dialog_type, const
     {
         OPENFILENAME ofn;
         char szFile[MAX_PATH];
-		ZeroMemory(szFile, MAX_PATH);
-		memcpy(szFile, default_file.c_str(), default_file.length());
-		ZeroMemory(&ofn, sizeof(ofn));
+        ZeroMemory(szFile, MAX_PATH);
+        memcpy(szFile, default_file.c_str(), default_file.length());
+        ZeroMemory(&ofn, sizeof(ofn));
         ofn.lStructSize = sizeof(ofn);
         ofn.hwndOwner = GetDesktopWindow();
         ofn.lpstrFile = szFile;
@@ -593,13 +597,6 @@ const std::string app::onFileDialog(dullahan::EFileDialogType dialog_type, const
     {
         return std::string();
     }
-}
-
-/////////////////////////////////////////////////////////////////////////////////
-//
-void app::onFileDownload(const std::string filename)
-{
-    std::cout << "File download requested for " << filename << std::endl;
 }
 
 /////////////////////////////////////////////////////////////////////////////////

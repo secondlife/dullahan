@@ -221,22 +221,9 @@ void dullahan_callback_manager::onPdfPrintFinished(const std::string path, bool 
     }
 }
 
-void dullahan_callback_manager::setOnFileDownloadCallback(std::function<void(const std::string filename)> callback)
-{
-    mOnFileDownloadCallbackFunc = callback;
-}
-
 void dullahan_callback_manager::setOnFileDownloadProgressCallback(std::function<void(int percent, bool complete)> callback)
 {
     mOnFileDownloadProgressCallbackFunc = callback;
-}
-
-void dullahan_callback_manager::onFileDownload(const std::string filename)
-{
-    if (mOnFileDownloadCallbackFunc)
-    {
-        mOnFileDownloadCallbackFunc(filename);
-    }
 }
 
 void dullahan_callback_manager::onFileDownloadProgress(int percent, bool level)

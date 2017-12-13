@@ -359,11 +359,6 @@ void dullahan::setOnPdfPrintFinishedCallback(std::function<void(const std::strin
     mImpl->getCallbackManager()->setOnPdfPrintFinishedCallback(callback);
 }
 
-void dullahan::setOnFileDownloadCallback(std::function<void(const std::string filename)> callback)
-{
-    mImpl->getCallbackManager()->setOnFileDownloadCallback(callback);
-}
-
 void dullahan::setOnFileDownloadProgressCallback(std::function<void(int percent, bool complete)> callback)
 {
     mImpl->getCallbackManager()->setOnFileDownloadProgressCallback(callback);
