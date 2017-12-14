@@ -79,8 +79,8 @@ class dullahan_callback_manager
         void setOnFileDownloadProgressCallback(std::function<void(int percent, bool complete)> callback);
         void onFileDownloadProgress(int percent, bool progress);
 
-        void setOnFileDialogCallback(std::function<const std::string(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default)> callback);
-        const std::string onFileDialog(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default);
+        void setOnFileDialogCallback(std::function<const std::vector<std::string>(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default)> callback);
+        const std::vector<std::string> onFileDialog(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default);
 
     private:
         std::function<void(const std::string)> mOnAddressChangeCallbackFunc;
@@ -98,7 +98,7 @@ class dullahan_callback_manager
         std::function<void(const std::string)> mOnTitleChangeCallbackFunc;
         std::function<void(const std::string, bool)> mOnPdfPrintFinishedCallbackFunc;
         std::function<void(int percent, bool complete)> mOnFileDownloadProgressCallbackFunc;
-        std::function<const std::string(dullahan::EFileDialogType, const std::string, const std::string, const std::string, bool&)> mOnFileDialogCallbackFunc;
+        std::function<const std::vector<std::string>(dullahan::EFileDialogType, const std::string, const std::string, const std::string, bool&)> mOnFileDialogCallbackFunc;
 };
 
 #endif //_DULLAHAN_CALLBACK_MANAGER

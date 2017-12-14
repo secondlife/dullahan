@@ -97,7 +97,7 @@ void app::init_dullahan()
 
     std::cout << "Version: " << mDullahan->composite_version() << std::endl;
 
-    mDullahan->setOnAddressChangeCallback(std::bind(&app::onAddressChange, this, std::placeholders::_1));;
+    mDullahan->setOnAddressChangeCallback(std::bind(&app::onAddressChange, this, std::placeholders::_1));
     mDullahan->setOnConsoleMessageCallback(std::bind(&app::onConsoleMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     mDullahan->setOnCursorChangedCallback(std::bind(&app::onCursorChanged, this, std::placeholders::_1));
     mDullahan->setOnCustomSchemeURLCallback(std::bind(&app::onCustomSchemeURL, this, std::placeholders::_1));
@@ -497,7 +497,7 @@ void app::onCustomSchemeURL(const std::string url)
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-const std::string app::onFileDialog(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, std::string dialog_accept_filter, bool& use_default)
+const std::vector<std::string> app::onFileDialog(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, std::string dialog_accept_filter, bool& use_default)
 {
     if (dialog_type == dullahan::FD_OPEN_FILE)
     {
@@ -521,11 +521,12 @@ const std::string app::onFileDialog(dullahan::EFileDialogType dialog_type, const
         use_default = false;
         char desktop_path[MAX_PATH + 1];
         SHGetFolderPath(NULL, CSIDL_DESKTOP, NULL, 0, desktop_path);
-        std::string download_path = std::string(desktop_path) + "\\" + "dullahan_webcube.unknown";
 
-        std::cout << "Downloading directly to " << download_path << std::endl;
+        std::vector<std::string> download_paths { std::string(desktop_path) + "\\dullahan_webcube.unknown" };
 
-        return download_path;
+        std::cout << "Downloading directly to " << download_paths[0] << std::endl;
+
+        return download_paths;
     }
 
     // test internal CEF file dialog and file dialog implemented here
@@ -535,7 +536,7 @@ const std::string app::onFileDialog(dullahan::EFileDialogType dialog_type, const
     if (use_default_file_dialog)
     {
         std::cout << "onFileDialog(..) - using default CEF dialog" << std::endl;
-        return std::string();
+        return std::vector<std::string>();
     }
 
     std::cout << "onFileDialog(..) - using our own dialog" << std::endl;
@@ -551,19 +552,59 @@ const std::string app::onFileDialog(dullahan::EFileDialogType dialog_type, const
         ofn.lpstrFile = szFile;
         ofn.nMaxFile = sizeof(szFile);
         ofn.lpstrFilter = (char*)dialog_accept_filter.c_str();
-        ofn.nFilterIndex = 0;
+        ofn.nFilterIndex = (DWORD)dialog_accept_filter.length();
         ofn.lpstrFileTitle = (char*)dialog_title.c_str();
-        ofn.nMaxFileTitle = 0;
+        ofn.nMaxFileTitle = (DWORD)dialog_title.length();
         ofn.lpstrInitialDir = NULL;
-        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_EXPLORER;
 
         if (GetOpenFileName(&ofn) == TRUE)
         {
-            return std::string(ofn.lpstrFile);
+            std::vector<std::string> download_paths{ std::string(ofn.lpstrFile) };
+            return download_paths;
         }
         else
         {
-            return std::string();
+            return std::vector<std::string>();
+        }
+    }
+    if (dialog_type == dullahan::FD_OPEN_MULTIPLE_FILES)
+    {
+        OPENFILENAME ofn;
+        char szFile[MAX_PATH  * 10];
+        ZeroMemory(szFile, MAX_PATH * 10);
+        memcpy(szFile, default_file.c_str(), default_file.length());
+        ZeroMemory(&ofn, sizeof(ofn));
+        ofn.lStructSize = sizeof(ofn);
+        ofn.hwndOwner = GetDesktopWindow();
+        ofn.lpstrFile = szFile;
+        ofn.nMaxFile = sizeof(szFile);
+        ofn.lpstrFilter = (char*)dialog_accept_filter.c_str();
+        ofn.nFilterIndex = (DWORD)dialog_accept_filter.length();
+        ofn.lpstrFileTitle = (char*)dialog_title.c_str();
+        ofn.nMaxFileTitle = (DWORD)dialog_title.length();
+        ofn.lpstrInitialDir = NULL;
+        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ALLOWMULTISELECT;
+
+        if (GetOpenFileName(&ofn) == TRUE)
+        {
+            std::vector<std::string> download_paths;
+
+            char* str = ofn.lpstrFile;
+            std::string directory = str;
+            str += (directory.length() + 1);
+            while (*str)
+            {
+                std::string filename = str;
+                download_paths.push_back(directory + "\\" + str);
+                str += (filename.length() + 1);
+            }
+
+            return download_paths;
+        }
+        else
+        {
+            return std::vector<std::string>();
         }
     }
     else if (dialog_type == dullahan::FD_SAVE_FILE)
@@ -586,16 +627,17 @@ const std::string app::onFileDialog(dullahan::EFileDialogType dialog_type, const
 
         if (GetSaveFileName(&ofn) == TRUE)
         {
-            return std::string(ofn.lpstrFile);
+            std::vector<std::string> download_paths{ std::string(ofn.lpstrFile) };
+            return download_paths;
         }
         else
         {
-            return std::string();
+            return std::vector<std::string>();
         }
     }
     else
     {
-        return std::string();
+        return std::vector<std::string>();
     }
 }
 

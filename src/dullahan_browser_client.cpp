@@ -355,25 +355,29 @@ bool dullahan_browser_client::OnFileDialog(CefRefPtr<CefBrowser> browser,
     std::string dialog_accept_filter = std::string();
     if (accept_filters.size() > 0)
     {
-        std::string dialog_accept_filter = std::string(accept_filters[0]);
+        dialog_accept_filter = std::string(accept_filters[0]);
     }
 
     const std::string default_file = std::string(default_file_path);
 
     bool use_default = true;
-    const CefString file_path = mParent->getCallbackManager()->onFileDialog(dialog_type, dialog_title, default_file, dialog_accept_filter, use_default);
+    const std::vector<std::string> file_paths = mParent->getCallbackManager()->onFileDialog(dialog_type, dialog_title, default_file, dialog_accept_filter, use_default);
     if (use_default)
     {
         return false;
     }
 
-    if (file_path.length())
+    if (file_paths.size())
     {
-        std::vector<CefString> file_paths;
-        file_paths.push_back(CefString(file_path));
+        std::vector<CefString> cef_file_paths;
+
+        for (std::vector<std::string>::const_iterator iter = file_paths.begin(); iter != file_paths.end(); ++iter)
+        {
+            cef_file_paths.push_back(*iter);
+        }
 
         const int file_path_index = 0;
-        callback->Continue(file_path_index, file_paths);
+        callback->Continue(file_path_index, cef_file_paths);
     }
     else
     {

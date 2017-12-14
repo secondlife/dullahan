@@ -234,17 +234,17 @@ void dullahan_callback_manager::onFileDownloadProgress(int percent, bool level)
     }
 }
 
-void dullahan_callback_manager::setOnFileDialogCallback(std::function<const std::string(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default)> callback)
+void dullahan_callback_manager::setOnFileDialogCallback(std::function<const std::vector<std::string>(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default)> callback)
 {
     mOnFileDialogCallbackFunc = callback;
 }
 
-const std::string dullahan_callback_manager::onFileDialog(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default)
+const std::vector<std::string> dullahan_callback_manager::onFileDialog(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default)
 {
     if (mOnFileDialogCallbackFunc)
     {
         return mOnFileDialogCallbackFunc(dialog_type, dialog_title, default_file, dialog_accept_filter, use_default);
     }
 
-    return std::string();
+    return std::vector<std::string>();
 }
