@@ -66,6 +66,15 @@ bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
     std::string url = std::string(target_url);
     std::string target = std::string(target_frame_name);
 
+    // target = "_blank" is the official W3 way to specify a new tab/window but clickong on a link
+    // arrives here with target_frame_name = "".  I suspect there is more details I haven't worked out yet
+    // but for the moment, I'm going to manually insert the "_blank" string so links like this inside
+    // Second Life start working again.
+    if (target.length() == 0)
+    {
+        target = "_blank";
+    }
+
     // note target string is empty if target in HTML is "_blank" so don't test
     // for target length - just url which cannot be empty
     if (url.length())
