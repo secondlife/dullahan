@@ -8,10 +8,10 @@ rem Edit these variables to point to the uncompressed CEF source directory and
 rem the required destination directory for both 32 and 64 bit versions
 rem Note: I get the default "src" CEF packages from the Spotify CEF builds site 
 rem here http://opensource.spotify.com/cefbuilds/index.html
-set SRC_DIR_32="%USERPROFILE%\Desktop\cef_binary_3.3202.1686.gd665578_windows32"
-set DST_DIR_32="%USERPROFILE%\Desktop\cef_3202.1686.gd665578_windows32"
-set SRC_DIR_64="%USERPROFILE%\Desktop\cef_binary_3.3202.1686.gd665578_windows64"
-set DST_DIR_64="%USERPROFILE%\Desktop\cef_3202.1686.gd665578_windows64"
+set SRC_DIR_32="%USERPROFILE%\Desktop\cef_binary_3.3239.1706.gcd33baa_windows32"
+set DST_DIR_32="%USERPROFILE%\Desktop\cef_3239.1706.gcd33baa_windows32"
+set SRC_DIR_64="%USERPROFILE%\Desktop\cef_binary_3.3239.1706.gcd33baa_windows64"
+set DST_DIR_64="%USERPROFILE%\Desktop\cef_3239.1706.gcd33baa_windows64"
 
 @if "%1"=="32" goto BitWidth32
 @if "%1"=="64" goto BitWidth64
@@ -82,17 +82,19 @@ copy %SRC_DIR%"\Release\libEGL.dll" %DST_DIR%"\bin\release"
 copy %SRC_DIR%"\Release\libGLESv2.dll" %DST_DIR%"\bin\release"
 copy %SRC_DIR%"\Release\natives_blob.bin" %DST_DIR%"\bin\release"
 copy %SRC_DIR%"\Release\snapshot_blob.bin" %DST_DIR%"\bin\release"
+copy %SRC_DIR%"\Release\v8_context_snapshot.bin" %DST_DIR%"\bin\release"
 copy %SRC_DIR%"\Release\widevinecdmadapter.dll" %DST_DIR%"\bin\release"
 
-copy %SRC_DIR%"\Release\d3dcompiler_43.dll" %DST_DIR%"\bin\debug"
-copy %SRC_DIR%"\Release\d3dcompiler_47.dll" %DST_DIR%"\bin\debug"
-copy %SRC_DIR%"\Release\chrome_elf.dll" %DST_DIR%"\bin\debug"
-copy %SRC_DIR%"\Release\libcef.dll" %DST_DIR%"\bin\debug"
-copy %SRC_DIR%"\Release\libEGL.dll" %DST_DIR%"\bin\debug"
-copy %SRC_DIR%"\Release\libGLESv2.dll" %DST_DIR%"\bin\debug"
-copy %SRC_DIR%"\Release\natives_blob.bin" %DST_DIR%"\bin\debug"
-copy %SRC_DIR%"\Release\snapshot_blob.bin" %DST_DIR%"\bin\debug"
-copy %SRC_DIR%"\Release\widevinecdmadapter.dll" %DST_DIR%"\bin\debug"
+copy %SRC_DIR%"\Debug\d3dcompiler_43.dll" %DST_DIR%"\bin\debug"
+copy %SRC_DIR%"\Debug\d3dcompiler_47.dll" %DST_DIR%"\bin\debug"
+copy %SRC_DIR%"\Debug\chrome_elf.dll" %DST_DIR%"\bin\debug"
+copy %SRC_DIR%"\Debug\libcef.dll" %DST_DIR%"\bin\debug"
+copy %SRC_DIR%"\Debug\libEGL.dll" %DST_DIR%"\bin\debug"
+copy %SRC_DIR%"\Debug\libGLESv2.dll" %DST_DIR%"\bin\debug"
+copy %SRC_DIR%"\Debug\natives_blob.bin" %DST_DIR%"\bin\debug"
+copy %SRC_DIR%"\Debug\snapshot_blob.bin" %DST_DIR%"\bin\debug"
+copy %SRC_DIR%"\Debug\v8_context_snapshot.bin" %DST_DIR%"\bin\debug"
+copy %SRC_DIR%"\Debug\widevinecdmadapter.dll" %DST_DIR%"\bin\debug"
 
 rem ******** include folder ********
 xcopy %SRC_DIR%"\include\*" %DST_DIR%"\include\" /S
