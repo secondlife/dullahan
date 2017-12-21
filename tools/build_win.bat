@@ -7,8 +7,8 @@ rem set VS_CMD=Visual Studio 14 2015
 
 rem We are using the CEF 3202 branch (like Chrome 62) version that we built
 rem from the Spotify CEF site using make_dullahan_cef_pkg.bat script in this folder.
-set CEF_32_DIR="c:\work\cef_builds\cef_3202.1686.gd665578_windows32"
-set CEF_64_DIR="C:\work\cef_builds\cef_3202.1686.gd665578_windows64"
+set CEF_32_DIR="c:\work\cef_builds\cef_3239.1706.gcd33baa_windows32"
+set CEF_64_DIR="C:\work\cef_builds\cef_3239.1706.gcd33baa_windows64"
 
 @if "%1"=="32" goto BitWidth32
 @if "%1"=="64" goto BitWidth64
@@ -58,6 +58,7 @@ goto Finished
 goto End
 
 :Finished
+start dullahan.sln /MIN
 cd Release
 .\webcube.exe
 
