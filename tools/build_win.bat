@@ -5,10 +5,10 @@ set VS_CMD=Visual Studio 12 2013
 rem uncomment this line or change one above for VS2015 builds
 rem set VS_CMD=Visual Studio 14 2015
 
-rem We are using the CEF 3202 branch (like Chrome 62) version that we built
-rem from the Spotify CEF site using make_dullahan_cef_pkg.bat script in this folder.
-set CEF_32_DIR="c:\work\cef_builds\cef_3239.1706.gcd33baa_windows32"
-set CEF_64_DIR="C:\work\cef_builds\cef_3239.1706.gcd33baa_windows64"
+rem We are using the CEF branch that we built from the Spotify CEF site 
+rem using the make_dullahan_cef_pkg.bat script in this folder.
+set CEF_32_DIR="c:\work\cef_builds\cef_3239.1716.g735b746_windows32"
+set CEF_64_DIR="C:\work\cef_builds\cef_3239.1716.g735b746_windows64"
 
 @if "%1"=="32" goto BitWidth32
 @if "%1"=="64" goto BitWidth64
