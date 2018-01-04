@@ -51,7 +51,7 @@ app* gApp = 0;
 //
 app::app()
 {
-    mAppWindowPosX = 200;
+    mAppWindowPosX = 800;
     mAppWindowPosY = 0;
     mAppWindowWidth = 1500;
     mAppWindowHeight = 1500;
@@ -73,6 +73,7 @@ app::app()
     // empty string means go load the page of test URLs
     // may be overridden by command line arg --homepage="URL"
     mHomePageURL = "";
+//  mHomePageURL = "data:text/html;charset=utf-8;base64,PGh0bWw+DQo8aGVhZD4NCjxzdHlsZT4NCnNlbGVjdCwgaW5wdXQgew0KZm9udC1zaXplOiAzMHB4Ow0KZm9udC1mYW1pbHk6ICJDb3VyaWVyIE5ldyINCn0NCjwvc3R5bGU+DQo8L2hlYWQ+DQo8Ym9keT4NCjxpbnB1dCB0eXBlPSJ0ZXh0IiBpZD0ib3V0cHV0IiBwbGFjZWhvbGRlcj0iU2VsZWN0IGFuIG9wdGlvbiI+DQo8cD4NCjxzZWxlY3QgaWQ9InNlbCIgb25jaGFuZ2U9ImRpc3BsYXkoKSI+DQo8b3B0aW9uIHZhbHVlPSJ2YWx1ZTEiPlZhbHVlIDE8L29wdGlvbj4gDQo8b3B0aW9uIHZhbHVlPSJ2YWx1ZTIiPlZhbHVlIDI8L29wdGlvbj4NCjxvcHRpb24gdmFsdWU9InZhbHVlMyI+VmFsdWUgMzwvb3B0aW9uPg0KPG9wdGlvbiB2YWx1ZT0idmFsdWU0Ij5WYWx1ZSA0PC9vcHRpb24+DQo8b3B0aW9uIHZhbHVlPSJ2YWx1ZTUiPlZhbHVlIDU8L29wdGlvbj4NCjxvcHRpb24gdmFsdWU9InZhbHVlNiI+VmFsdWUgNjwvb3B0aW9uPg0KPG9wdGlvbiB2YWx1ZT0idmFsdWU3Ij5WYWx1ZSA3PC9vcHRpb24+DQo8b3B0aW9uIHZhbHVlPSJ2YWx1ZTgiPlZhbHVlIDg8L29wdGlvbj4NCjxvcHRpb24gdmFsdWU9InZhbHVlOSI+VmFsdWUgOTwvb3B0aW9uPg0KPC9zZWxlY3Q+DQo8c2NyaXB0Pg0KZnVuY3Rpb24gZGlzcGxheSgpIHsNCmRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJvdXRwdXQiKS52YWx1ZSA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJzZWwiKS52YWx1ZTsNCn0NCjwvc2NyaXB0Pg0KPC9ib2R5Pg0KPC9odG1sPg==";
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -1113,6 +1114,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU);
     wc.lpszClassName = gApp->gClassName;
     RegisterClass(&wc);
+
 
     RECT window_rect;
     SetRect(&window_rect, 0, 50, gApp->mAppWindowWidth, gApp->mAppWindowHeight + GetSystemMetrics(SM_CYMENU) + GetSystemMetrics(SM_CYMENU));

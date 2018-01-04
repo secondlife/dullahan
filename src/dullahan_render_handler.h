@@ -53,25 +53,17 @@ class dullahan_render_handler :
 
     private:
         void resizePixelBuffer(int width, int height);
-
-        void resizePopupBuffer(int width, int height);
-        void destroyPopupBuffer();
-
-        bool mFlipYPixels;
+        void copyPopupIntoView();
 
         unsigned char* mPixelBuffer;
         int mPixelBufferWidth;
         int mPixelBufferHeight;
-        int mPixelBufferDepth;
         unsigned char* mPopupBuffer;
-
         unsigned char* mPixelBufferRow;
-
         CefRect mPopupBufferRect;
-        int mPopupBufferWidth;
-        int mPopupBufferHeight;
-        int mPopupBufferDepth;
-        bool mPopupBufferDrawn;
+        int mBufferDepth;
+
+        bool mFlipYPixels;
 
         dullahan_impl* mParent;
 };

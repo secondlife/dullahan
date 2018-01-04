@@ -36,7 +36,6 @@ void dullahan_impl::mouseButton(dullahan::EMouseButton mouse_button,
         CefMouseEvent cef_mouse_event;
         cef_mouse_event.x = x;
         cef_mouse_event.y = getFlipMouseY() ? (mViewHeight - y) : y;
-        cef_mouse_event.modifiers = EVENTFLAG_LEFT_MOUSE_BUTTON;
 
         // set button
         CefBrowserHost::MouseButtonType btnType = MBT_LEFT;
@@ -50,24 +49,19 @@ void dullahan_impl::mouseButton(dullahan::EMouseButton mouse_button,
         }
 
         // set click type
-        bool is_down = false;
+        bool is_up = true;
         int last_click_count = 1;
         if (mouse_event == dullahan::ME_MOUSE_DOWN)
         {
-            is_down = true;
-        }
-        else if (mouse_event == dullahan::ME_MOUSE_UP)
-        {
-            is_down = false;
+            is_up = false;
         }
         else if (mouse_event == dullahan::ME_MOUSE_DOUBLE_CLICK)
         {
             last_click_count = 2;
-            is_down = true;
+            is_up = false;
         }
 
-        mBrowser->GetHost()->SendMouseClickEvent(cef_mouse_event, btnType,
-                is_down ? false : true, last_click_count);
+        mBrowser->GetHost()->SendMouseClickEvent(cef_mouse_event, btnType, is_up, last_click_count);
     }
 };
 
@@ -78,7 +72,6 @@ void dullahan_impl::mouseMove(int x, int y)
         CefMouseEvent cef_mouse_event;
         cef_mouse_event.x = x;
         cef_mouse_event.y = getFlipMouseY() ? (mViewHeight - y) : y;
-        cef_mouse_event.modifiers = EVENTFLAG_LEFT_MOUSE_BUTTON;
 
         bool mouse_leave = false;
         mBrowser->GetHost()->SendMouseMoveEvent(cef_mouse_event, mouse_leave);

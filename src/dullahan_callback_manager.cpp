@@ -41,8 +41,7 @@ void dullahan_callback_manager::onAddressChange(const std::string url)
 }
 
 void dullahan_callback_manager::setOnConsoleMessageCallback(
-    std::function<void(const std::string message, const std::string source, int line)>
-    callback)
+    std::function<void(const std::string message, const std::string source, int line)> callback)
 {
     mOnConsoleMessageCallbackFunc = callback;
 }
@@ -83,14 +82,12 @@ void dullahan_callback_manager::onCustomSchemeURL(const std::string url)
 }
 
 void dullahan_callback_manager::setOnHTTPAuthCallback(
-    std::function<bool(const std::string host, const std::string realm, std::string& username, std::string& password)>
-    callback)
+    std::function<bool(const std::string host, const std::string realm, std::string& username, std::string& password)> callback)
 {
     mOnHTTPAuthCallbackFunc = callback;
 }
 
-bool dullahan_callback_manager::onHTTPAuth(const std::string host, const std::string realm, std::string& username,
-        std::string& password)
+bool dullahan_callback_manager::onHTTPAuth(const std::string host, const std::string realm, std::string& username, std::string& password)
 {
     if (mOnHTTPAuthCallbackFunc)
     {
@@ -114,8 +111,7 @@ void dullahan_callback_manager::onLoadEnd(int status, const std::string url)
     }
 }
 
-void dullahan_callback_manager::setOnLoadErrorCallback(std::function<void(int status, const std::string error_text)>
-        callback)
+void dullahan_callback_manager::setOnLoadErrorCallback(std::function<void(int status, const std::string error_text)> callback)
 {
     mOnLoadErrorCallbackFunc = callback;
 }

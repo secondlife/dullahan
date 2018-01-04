@@ -24,6 +24,8 @@
     THE SOFTWARE.
 */
 
+#include "wrapper/cef_helpers.h"
+
 #include "dullahan_render_handler.h"
 
 #include "dullahan_impl.h"
@@ -36,20 +38,18 @@ dullahan_render_handler::dullahan_render_handler(dullahan_impl* parent) :
     mFlipYPixels = parent->getFlipPixelsY();
 
     // the pixel buffer
-    mPixelBuffer = 0;
+    mPixelBuffer = nullptr;
     mPixelBufferWidth = 0;
     mPixelBufferHeight = 0;
-    mPixelBufferDepth = parent->getDepth();
-
-    // a row in the pixel buffer - used as temp buffer when flipping
-    mPixelBufferRow = 0;
 
     // the popup buffer
-    mPopupBuffer = 0;
-    mPopupBufferWidth = 0;
-    mPopupBufferHeight = 0;
-    mPopupBufferDepth = parent->getDepth();
-    mPopupBufferDrawn = false;
+    mPopupBuffer = nullptr;
+
+    // a row in the pixel buffer - used as temp buffer when flipping
+    mPixelBufferRow = nullptr;
+
+    // depth is same for all buffer
+    mBufferDepth = parent->getDepth();
 }
 
 dullahan_render_handler::~dullahan_render_handler()
@@ -68,39 +68,19 @@ void dullahan_render_handler::resizePixelBuffer(int width, int height)
         delete[] mPixelBuffer;
         mPixelBufferWidth = width;
         mPixelBufferHeight = height;
-        mPixelBuffer = new unsigned char[mPixelBufferWidth * mPixelBufferHeight * mPixelBufferDepth];
-        memset(mPixelBuffer, 0, mPixelBufferWidth * mPixelBufferHeight * mPixelBufferDepth);
+        mPixelBuffer = new unsigned char[mPixelBufferWidth * mPixelBufferHeight * mBufferDepth];
+        memset(mPixelBuffer, 0xff, mPixelBufferWidth * mPixelBufferHeight * mBufferDepth);
 
         delete[] mPixelBufferRow;
-        mPixelBufferRow = new unsigned char[mPixelBufferWidth * mPixelBufferDepth];
+        mPixelBufferRow = new unsigned char[mPixelBufferWidth * mBufferDepth];
     }
-}
-
-void dullahan_render_handler::resizePopupBuffer(int width, int height)
-{
-    if (mPopupBufferWidth != width || mPopupBufferHeight != height)
-    {
-        delete[] mPopupBuffer;
-        mPopupBufferWidth = width;
-        mPopupBufferHeight = height;
-        mPopupBuffer = new unsigned char[mPopupBufferWidth * mPopupBufferHeight * mPopupBufferDepth];
-    }
-}
-
-void dullahan_render_handler::destroyPopupBuffer()
-{
-    delete[] mPopupBuffer;
-
-    mPopupBuffer = 0;
-    mPopupBufferWidth = 0;
-    mPopupBufferHeight = 0;
-    mPopupBufferDrawn = false;
 }
 
 // CefRenderHandler override
-bool dullahan_render_handler::GetViewRect(CefRefPtr<CefBrowser> browser,
-        CefRect& rect)
+bool dullahan_render_handler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
 {
+    CEF_REQUIRE_UI_THREAD();
+
     int width, height;
     mParent->getSize(width, height);
 
@@ -111,6 +91,19 @@ bool dullahan_render_handler::GetViewRect(CefRefPtr<CefBrowser> browser,
     return true;
 }
 
+void dullahan_render_handler::copyPopupIntoView()
+{
+    int popup_y = (mFlipYPixels ? (mPixelBufferHeight - mPopupBufferRect.y) : mPopupBufferRect.y);
+    unsigned char* src = (unsigned char*)mPopupBuffer;
+    unsigned char* dst = mPixelBuffer + popup_y * mPixelBufferWidth * mBufferDepth + mPopupBufferRect.x * mBufferDepth;
+    while (src < (unsigned char*)mPopupBuffer + mPopupBufferRect.width * mPopupBufferRect.height * mBufferDepth)
+    {
+        memcpy(dst, src, mPopupBufferRect.width * mBufferDepth);
+        src += mPopupBufferRect.width * mBufferDepth;
+        dst += mPixelBufferWidth * mBufferDepth * (mFlipYPixels ? -1 : 1);
+    }
+}
+
 // CefRenderHandler override
 void dullahan_render_handler::OnPaint(CefRefPtr<CefBrowser> browser,
                                       PaintElementType type, const RectList& dirtyRects,
@@ -118,42 +111,23 @@ void dullahan_render_handler::OnPaint(CefRefPtr<CefBrowser> browser,
 {
     DLNOUT("onPaint called for size: " << width << " x " << height << " with type: " << type);
 
-    int browser_width, browser_height;
-    mParent->getSize(browser_width, browser_height);
+    CEF_REQUIRE_UI_THREAD();
 
-    if (width != browser_width || height != browser_height)
+    // whole page was updated
+    if (type == PET_VIEW)
     {
-        mParent->getBrowser()->GetHost()->WasResized();
-        return;
-    }
-
-    // popup (dropdown menu) wants to be drawn
-    if (type == PET_POPUP)
-    {
-        // copy the pixels into the popup buffer (guaranteed to have been created in OnPopupShow()
-        // and mark the pixels as drawn so we don't copy in empty rectangle
-        memcpy(mPopupBuffer, buffer, mPopupBufferWidth * mPopupBufferHeight * mPopupBufferDepth);
-        mPopupBufferDrawn = true;
-    }
-    // whole page wants to be drawn
-    else if (type == PET_VIEW)
-    {
-        // OnPaint is drawing whole page but  we still have a popup/dropdown open so
-        // invalidate it which will cause a further paint call later on
-        if (mPopupBufferRect.width > 0 && mPopupBufferRect.height > 0)
+        // make a buffer for whole page if not there already and copy in pixels
+        if (mPixelBuffer == nullptr)
         {
-            browser->GetHost()->Invalidate(PET_POPUP);
+            mPixelBuffer = new unsigned char[width * height * mBufferDepth];
+            memset(mPixelBuffer, 0xff, width * height * mBufferDepth);
         }
-
-        // resize the buffer for the whole page and save the pixels
-        resizePixelBuffer(width, height);
-        memcpy(mPixelBuffer, (unsigned char*)buffer, mPixelBufferWidth * mPixelBufferHeight * mPixelBufferDepth);
+        memcpy(mPixelBuffer, buffer, width * height * mBufferDepth);
 
         // we need to flip pixel buffer in Y direction as per settings
         if (mFlipYPixels)
         {
-            // fast Y flip
-            const size_t stride = mPixelBufferWidth * mPixelBufferDepth;
+            const size_t stride = mPixelBufferWidth * mBufferDepth;
             unsigned char* lower = mPixelBuffer;
             unsigned char* upper = mPixelBuffer + (mPixelBufferHeight - 1) * stride;
             while (lower < upper)
@@ -165,42 +139,24 @@ void dullahan_render_handler::OnPaint(CefRefPtr<CefBrowser> browser,
                 upper -= stride;
             }
         }
+
+        // if there is still a popup open, write it into the page too (it's pixels will have been
+        // copied into it's buffer by a call to OnPaint with type of PET_POPUP earlier)
+        if (mPopupBuffer != nullptr)
+        {
+            copyPopupIntoView();
+        }
     }
-
-    // if something was drawn to the popup/dropdown
-    // (i.e.) it's not a black, empty buffer which will look ugly
-    if (mPopupBufferDrawn)
+    // popup was updated
+    else if (type == PET_POPUP)
     {
-        int popup_buffer_line_stride = mPopupBufferWidth * mPopupBufferDepth;
+        // copy over the popup pixels into it's buffer
+        // (popup buffer created in onPopupSize() as we know the size there)
+        memcpy(mPopupBuffer, buffer, width * height * mBufferDepth);
 
-        // if we are flipping Y pixels, we need to take account of this in position
-        // of the popup/dropdown
-        int y_position = mPopupBufferRect.y;
-        if (mFlipYPixels)
-        {
-            y_position = mPixelBufferHeight - mPopupBufferRect.y - mPopupBufferHeight;
-        }
-
-        // the location in the pixel buffer where we start copying
-        int offset = y_position * mPixelBufferWidth * mPixelBufferDepth + mPopupBufferRect.x * mPopupBufferDepth;
-
-        // check we're not going to overwrite memory if popup/dropdown extends off page
-        if (offset + (mPopupBufferHeight - 1) * mPixelBufferWidth * mPixelBufferDepth + popup_buffer_line_stride < mPixelBufferWidth * mPixelBufferHeight * mPixelBufferDepth)
-        {
-            // copy popup/dropdown into main page buffer
-            for (int line = 0; line < mPopupBufferHeight; ++line)
-            {
-                // start from top or bottom depending of Y flip setting
-                int src_line = line;
-                if (mFlipYPixels)
-                {
-                    src_line = mPopupBufferHeight - line - 1;
-                }
-                int src = src_line * mPopupBufferWidth * mPopupBufferDepth;
-                int dst = offset + line * mPixelBufferWidth * mPixelBufferDepth;
-                memcpy(mPixelBuffer + dst, mPopupBuffer + src, popup_buffer_line_stride);
-            }
-        }
+        // copy over popup pixels into page pixels. We need this for when popup is changing (e.g. highlighting or scrolling)
+        // when the containing page is not changing and therefore doesn't get an OnPaint update
+        copyPopupIntoView();
     }
 
     // if we have a buffer, indicate to consuming app that the page changed.
@@ -211,28 +167,37 @@ void dullahan_render_handler::OnPaint(CefRefPtr<CefBrowser> browser,
 }
 
 // CefRenderHandler override
-void dullahan_render_handler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor, CursorType type, const CefCursorInfo& custom_cursor_info)
-{
-    DLNOUT("OnCursorChange called cursor: " << cursor << " and type " << type);
-    mParent->getCallbackManager()->onCursorChanged((dullahan::ECursorType)type);
-}
-
-// CefRenderHandler override
 void dullahan_render_handler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show)
 {
+    CEF_REQUIRE_UI_THREAD();
+
     DLNOUT("Popup state set to " << show);
     if (!show)
     {
-        mPopupBufferRect.Set(0, 0, 0, 0);
-        destroyPopupBuffer();
-        browser->GetHost()->Invalidate(PET_VIEW);
-    };
+        delete[] mPopupBuffer;
+        mPopupBuffer = nullptr;
+
+        mPopupBufferRect.Reset();
+    }
 }
 
 // CefRenderHandler override
 void dullahan_render_handler::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect)
 {
-    DLNOUT("Popup sized to " << rect.x << ", " << rect.y << " - " << rect.width << " x " << rect.height);
+    CEF_REQUIRE_UI_THREAD();
+
     mPopupBufferRect = rect;
-    resizePopupBuffer(mPopupBufferRect.width, mPopupBufferRect.height);
+    if (mPopupBuffer == nullptr)
+    {
+        mPopupBuffer = new unsigned char[rect.width * rect.height * mBufferDepth];
+        memset(mPopupBuffer, 0xff, rect.width * rect.height * mBufferDepth);
+    }
+}
+
+// CefRenderHandler override
+void dullahan_render_handler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor,
+        CursorType type, const CefCursorInfo& custom_cursor_info)
+{
+    DLNOUT("OnCursorChange called cursor: " << cursor << " and type " << type);
+    mParent->getCallbackManager()->onCursorChanged((dullahan::ECursorType)type);
 }

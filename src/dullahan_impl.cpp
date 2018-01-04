@@ -469,9 +469,13 @@ void dullahan_impl::requestPageZoom()
         // when 1024x1024 images in 1024x1024 browser cause scroll bars to appear
         if (mRequestedPageZoom == 1.0)
         {
-            // reset zoom level according to CEF docs
-            mBrowser->GetHost()->SetZoomLevel(0.0);
-            return;
+            // only set zoom if needed remembering Dullahan zoom 1.0 == CEF zoon 0.0 :)
+            if (mBrowser->GetHost()->GetZoomLevel() != 0.0)
+            {
+                // reset zoom level according to CEF docs
+                mBrowser->GetHost()->SetZoomLevel(0.0);
+                return;
+            }
         }
 
         // Convert "Dullahan page zoom" to "CEF/Chromium page zoom"
