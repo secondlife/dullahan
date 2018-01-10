@@ -2,7 +2,7 @@
 
 exec 4>&1; export BASH_XTRACEFD=4; set -x
 
-CEF_BUILD="cef_binary_3.3239.1716.g735b746_macosx64"
+CEF_BUILD="cef_binary_3.3239.1723.g071d1c1_macosx64"
 
 SRC_DIR="/tmp/${CEF_BUILD}"
 
