@@ -116,9 +116,9 @@ void dullahan_render_handler::OnPaint(CefRefPtr<CefBrowser> browser,
     // whole page was updated
     if (type == PET_VIEW)
     {
-		// create (firs time) or resize (browser size changed) a buffer for pixels
-		// and copy them in
-		resizePixelBuffer(width, height);
+        // create (firs time) or resize (browser size changed) a buffer for pixels
+        // and copy them in
+        resizePixelBuffer(width, height);
         memcpy(mPixelBuffer, buffer, width * height * mBufferDepth);
 
         // we need to flip pixel buffer in Y direction as per settings

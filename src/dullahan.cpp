@@ -251,6 +251,11 @@ bool dullahan::setCookie(const std::string url, const std::string name,
     return mImpl->setCookie(url, name, value, domain, path, httponly, secure);
 }
 
+const std::vector<std::string> dullahan::getCookies()
+{
+    return mImpl->getAllCookies();
+}
+
 void dullahan::deleteAllCookies()
 {
     mImpl->deleteAllCookies();

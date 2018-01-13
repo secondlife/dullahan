@@ -102,7 +102,9 @@ class dullahan_impl :
         bool setCookie(const std::string url, const std::string name,
                        const std::string value,
                        const std::string domain, const std::string path, bool httponly, bool secure);
+        const std::vector<std::string> getAllCookies();
         void deleteAllCookies();
+        void flushAllCookies();
         void postData(const std::string url, const std::string data,
                       const std::string headers);
         bool executeJavaScript(const std::string cmd);

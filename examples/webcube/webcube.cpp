@@ -73,7 +73,6 @@ app::app()
     // empty string means go load the page of test URLs
     // may be overridden by command line arg --homepage="URL"
     mHomePageURL = "";
-//  mHomePageURL = "data:text/html;charset=utf-8;base64,PGh0bWw+DQo8aGVhZD4NCjxzdHlsZT4NCnNlbGVjdCwgaW5wdXQgew0KZm9udC1zaXplOiAzMHB4Ow0KZm9udC1mYW1pbHk6ICJDb3VyaWVyIE5ldyINCn0NCjwvc3R5bGU+DQo8L2hlYWQ+DQo8Ym9keT4NCjxpbnB1dCB0eXBlPSJ0ZXh0IiBpZD0ib3V0cHV0IiBwbGFjZWhvbGRlcj0iU2VsZWN0IGFuIG9wdGlvbiI+DQo8cD4NCjxzZWxlY3QgaWQ9InNlbCIgb25jaGFuZ2U9ImRpc3BsYXkoKSI+DQo8b3B0aW9uIHZhbHVlPSJ2YWx1ZTEiPlZhbHVlIDE8L29wdGlvbj4gDQo8b3B0aW9uIHZhbHVlPSJ2YWx1ZTIiPlZhbHVlIDI8L29wdGlvbj4NCjxvcHRpb24gdmFsdWU9InZhbHVlMyI+VmFsdWUgMzwvb3B0aW9uPg0KPG9wdGlvbiB2YWx1ZT0idmFsdWU0Ij5WYWx1ZSA0PC9vcHRpb24+DQo8b3B0aW9uIHZhbHVlPSJ2YWx1ZTUiPlZhbHVlIDU8L29wdGlvbj4NCjxvcHRpb24gdmFsdWU9InZhbHVlNiI+VmFsdWUgNjwvb3B0aW9uPg0KPG9wdGlvbiB2YWx1ZT0idmFsdWU3Ij5WYWx1ZSA3PC9vcHRpb24+DQo8b3B0aW9uIHZhbHVlPSJ2YWx1ZTgiPlZhbHVlIDg8L29wdGlvbj4NCjxvcHRpb24gdmFsdWU9InZhbHVlOSI+VmFsdWUgOTwvb3B0aW9uPg0KPC9zZWxlY3Q+DQo8c2NyaXB0Pg0KZnVuY3Rpb24gZGlzcGxheSgpIHsNCmRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJvdXRwdXQiKS52YWx1ZSA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJzZWwiKS52YWx1ZTsNCn0NCjwvc2NyaXB0Pg0KPC9ib2R5Pg0KPC9odG1sPg==";
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -122,8 +121,8 @@ void app::init_dullahan()
     settings.accept_language_list = "en-US";
     settings.background_color = 0x80ffffff;
     settings.cache_enabled = true;
-    settings.cache_path = ".\\cache";
-    settings.cookie_store_path = ".\\cookies";
+    settings.cache_path = ".\\webcube_cache";
+    settings.cookie_store_path = ".\\webcube_cookies";
     settings.cookies_enabled = true;
     settings.disable_gpu = false;
     settings.disable_web_security = false;
@@ -448,6 +447,43 @@ void app::resizeBrowser(int width, int height)
     mTextureHeight = height;
 
     resize_texture(width, height);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+void app::setACookie()
+{
+    const std::string url("https://id.callum.com");
+    const std::string name("best_cookies");
+    const std::string value("hobnobs");
+    const std::string domain("id.callum.com");
+    const std::string path("/");
+    const bool httponly = false;
+    const bool secure = false;
+
+    std::cout << "Setting cookie called " << name << " to value " << value << std::endl;
+
+    mDullahan->setCookie(url, name, value, domain, path, httponly, secure);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+void app::listAllCookies()
+{
+    std::cout << "Listing all cookies" << std::endl;
+
+    std::vector<std::string> cookies = mDullahan->getCookies();
+
+    std::cout << "Number of cookies is " << cookies.size() << std::endl;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+void app::deleteAllCookies()
+{
+    std::cout << "Deleting all cookies" << std::endl;
+
+    mDullahan->deleteAllCookies();
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -907,6 +943,18 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
                 case ID_FEATURES_RESIZE_BROWSER_LARGE:
                     gApp->resizeBrowser(1400, 1400);
+                    break;
+
+                case ID_FEATURES_COOKIES_SET_A_COOKIE:
+                    gApp->setACookie();
+                    break;
+
+                case ID_FEATURES_COOKIES_LIST_ALL_COOKIES:
+                    gApp->listAllCookies();
+                    break;
+
+                case ID_FEATURES_COOKIES_DELETE_ALL_COOKIES:
+                    gApp->deleteAllCookies();
                     break;
 
                 default:

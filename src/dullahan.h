@@ -272,6 +272,7 @@ class dullahan
                        const std::string name, const std::string value,
                        const std::string domain, const std::string path,
                        bool httponly, bool secure);
+        const std::vector<std::string> getCookies();
         void deleteAllCookies();
 
         // POST data to a URL

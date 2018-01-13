@@ -58,6 +58,9 @@ class app
         void setPageZoom(float val);
         void setPageVolume(float volume);
         void resizeBrowser(int width, int height);
+        void setACookie();
+        void listAllCookies();
+        void deleteAllCookies();
         void initConsole();
         void closeConsole();
         void request_exit();
