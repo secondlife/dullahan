@@ -107,9 +107,9 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     DLNOUT("dullahan_impl::init()");
 
 #ifdef WIN32
-    CefMainArgs args(GetModuleHandle(NULL));
+	CefMainArgs args(GetModuleHandle(nullptr));
 #elif __APPLE__
-    CefMainArgs args(0, NULL);
+	CefMainArgs args(0, nullptr);
 #endif
 
     CefSettings settings;
@@ -192,7 +192,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     mFlipMouseY = user_settings.flip_mouse_y;
 
     // initiaize CEF
-    bool result = CefInitialize(args, settings, this, NULL);
+	bool result = CefInitialize(args, settings, this, nullptr);
     if (!result)
     {
         return false;
@@ -242,7 +242,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     mBrowserClient = new dullahan_browser_client(this, mRenderHandler);
 
     CefString url = std::string();
-    CefRefPtr<CefRequestContext> request_context = NULL;
+    CefRefPtr<CefRequestContext> request_context = nullptr;
     mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), url, browser_settings, request_context);
 
     return true;
@@ -250,10 +250,10 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
 void dullahan_impl::shutdown()
 {
-    mBrowser = NULL;
-    mRenderHandler = NULL;
-    mBrowserClient = NULL;
-    mContextHandler = NULL;
+	mBrowser = nullptr;
+	mRenderHandler = nullptr;
+	mBrowserClient = nullptr;
+	mContextHandler = nullptr;
 
     CefShutdown();
 }
@@ -522,7 +522,7 @@ void dullahan_impl::showDevTools()
         window_info.width = 400;
         window_info.height = 400;
 #ifdef WIN32
-        window_info.SetAsPopup(NULL, "Dullahan Dev Tools");
+		window_info.SetAsPopup(nullptr, "Dullahan Dev Tools");
 #elif __APPLE__
         // TODO: need Apple equivalent
 #endif

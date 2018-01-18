@@ -37,7 +37,7 @@ dullahan_context_handler::dullahan_context_handler(const std::string cookieStora
 
 dullahan_context_handler::~dullahan_context_handler()
 {
-    mCookieManager = NULL;
+    mCookieManager = nullptr;
 };
 
 CefRefPtr<CefCookieManager> dullahan_context_handler::GetCookieManager()

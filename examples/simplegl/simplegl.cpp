@@ -181,7 +181,7 @@ const std::string getStartURL()
 
     // get current working directory plus trailing separator
     char buffer[MAX_PATH];
-    GetModuleFileName(NULL, buffer, MAX_PATH);
+	GetModuleFileName(nullptr, buffer, MAX_PATH - 1);
     std::string::size_type pos = std::string(buffer).find_last_of("\\/");
 
     // return path to start page (CEF converts this to a file:// URL)

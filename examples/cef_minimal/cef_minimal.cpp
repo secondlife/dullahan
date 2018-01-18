@@ -198,7 +198,7 @@ class CefMinimal : public CefApp
 
 #ifdef WIN32
 
-            CefMainArgs args(GetModuleHandle(NULL));
+            CefMainArgs args(GetModuleHandle(nullptr));
             CefString(&settings.browser_subprocess_path) = "cef_host.exe";
 
 #elif __APPLE__
@@ -212,7 +212,7 @@ class CefMinimal : public CefApp
 
 #endif
 
-            if (CefInitialize(args, settings, this, NULL))
+            if (CefInitialize(args, settings, this, nullptr))
             {
                 std::cout << "CefMinimal initialized okay" << std::endl;
 
@@ -251,9 +251,9 @@ class CefMinimal : public CefApp
 
         void shutdown()
         {
-            render_handler_ = NULL;
-            browser_client_ = NULL;
-            browser_ = NULL;
+            render_handler_ = nullptr;
+            browser_client_ = nullptr;
+            browser_ = nullptr;
             CefShutdown();
         }
 
@@ -278,7 +278,7 @@ int main(int argc, char* argv[])
     MSG msg;
     do
     {
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
 
             if (gExitFlag == false)
             {
-                if (time(NULL) > start_time + 5)
+                if (time(nullptr) > start_time + 5)
                 {
                     cm->requestExit();
                 }
@@ -310,7 +310,7 @@ int main(int argc, char* argv[])
 
         if (gExitFlag == false)
         {
-            if (time(NULL) > start_time + 5)
+            if (time(nullptr) > start_time + 5)
             {
                 cm->requestExit();
             }
@@ -324,7 +324,7 @@ int main(int argc, char* argv[])
 
     cm->shutdown();
 
-    cm = NULL;
+    cm = nullptr;
 
     return 0;
 }

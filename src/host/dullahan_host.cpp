@@ -32,7 +32,7 @@
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                      LPSTR lpCmdLine, int nCmdShow)
 {
-    CefMainArgs args(GetModuleHandle(NULL));
+	CefMainArgs args(GetModuleHandle(nullptr));
 
     return CefExecuteProcess(args, nullptr, nullptr);
 }

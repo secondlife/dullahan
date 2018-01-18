@@ -43,7 +43,7 @@ dullahan_browser_client::dullahan_browser_client(dullahan_impl* parent,
 
 dullahan_browser_client::~dullahan_browser_client()
 {
-    mRenderHandler = NULL;
+    mRenderHandler = nullptr;
 }
 
 // CefClient override
