@@ -436,7 +436,7 @@ void app::setPageVolume(float volume)
     DWORD right_channel = (DWORD)(volume * 65535.0f);
     DWORD hw_volume = left_channel << 16 | right_channel;
 
-	::waveOutSetVolume(nullptr, hw_volume);
+    ::waveOutSetVolume(nullptr, hw_volume);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -509,19 +509,19 @@ void app::onCursorChanged(dullahan::ECursorType type)
 
     if (type == dullahan::CT_POINTER)
     {
-		SetCursor(LoadCursor(nullptr, IDC_ARROW));
+        SetCursor(LoadCursor(nullptr, IDC_ARROW));
     }
     else if (type == dullahan::CT_HAND)
     {
-		SetCursor(LoadCursor(nullptr, IDC_HAND));
+        SetCursor(LoadCursor(nullptr, IDC_HAND));
     }
     else if (type == dullahan::CT_IBEAM)
     {
-		SetCursor(LoadCursor(nullptr, IDC_IBEAM));
+        SetCursor(LoadCursor(nullptr, IDC_IBEAM));
     }
     else if (type == dullahan::CT_MOVE)
     {
-		SetCursor(LoadCursor(nullptr, IDC_SIZEALL));
+        SetCursor(LoadCursor(nullptr, IDC_SIZEALL));
     }
 }
 
@@ -557,7 +557,7 @@ const std::vector<std::string> app::onFileDialog(dullahan::EFileDialogType dialo
     {
         use_default = false;
         char desktop_path[MAX_PATH + 1];
-		SHGetFolderPath(nullptr, CSIDL_DESKTOP, nullptr, 0, desktop_path);
+        SHGetFolderPath(nullptr, CSIDL_DESKTOP, nullptr, 0, desktop_path);
 
         std::vector<std::string> download_paths { std::string(desktop_path) + "\\dullahan_webcube.unknown" };
 
@@ -592,7 +592,7 @@ const std::vector<std::string> app::onFileDialog(dullahan::EFileDialogType dialo
         ofn.nFilterIndex = (DWORD)dialog_accept_filter.length();
         ofn.lpstrFileTitle = (char*)dialog_title.c_str();
         ofn.nMaxFileTitle = (DWORD)dialog_title.length();
-		ofn.lpstrInitialDir = nullptr;
+        ofn.lpstrInitialDir = nullptr;
         ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_EXPLORER;
 
         if (GetOpenFileName(&ofn) == TRUE)
@@ -620,7 +620,7 @@ const std::vector<std::string> app::onFileDialog(dullahan::EFileDialogType dialo
         ofn.nFilterIndex = (DWORD)dialog_accept_filter.length();
         ofn.lpstrFileTitle = (char*)dialog_title.c_str();
         ofn.nMaxFileTitle = (DWORD)dialog_title.length();
-		ofn.lpstrInitialDir = nullptr;
+        ofn.lpstrInitialDir = nullptr;
         ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ALLOWMULTISELECT;
 
         if (GetOpenFileName(&ofn) == TRUE)
@@ -659,7 +659,7 @@ const std::vector<std::string> app::onFileDialog(dullahan::EFileDialogType dialo
         ofn.nFilterIndex = 0;
         ofn.lpstrFileTitle = (char*)dialog_title.c_str();
         ofn.nMaxFileTitle = 0;
-		ofn.lpstrInitialDir = nullptr;
+        ofn.lpstrInitialDir = nullptr;
         ofn.Flags = OFN_OVERWRITEPROMPT;
 
         if (GetSaveFileName(&ofn) == TRUE)
@@ -757,7 +757,7 @@ void app::onPdfPrintFinished(const std::string path, bool ok)
     if (ok)
     {
         std::cout << "onPdfPrintFinished: " << path << "  " << ok << std::endl;
-		ShellExecute(nullptr, "open", path.c_str(), nullptr, ".", SW_SHOWNORMAL);
+        ShellExecute(nullptr, "open", path.c_str(), nullptr, ".", SW_SHOWNORMAL);
     }
     else
     {
@@ -848,8 +848,8 @@ void create_url_entry_ui(HWND parent)
 {
     HINSTANCE instance = (HINSTANCE)GetWindowLongPtr(parent, GWLP_HINSTANCE);
 
-	HWND hwnd_control = CreateWindowEx(0, "EDIT", nullptr, WS_CHILD | WS_VISIBLE | ES_LEFT | ES_AUTOVSCROLL, 0, 0, 0, 40, parent,
-		(HMENU)nullptr, instance, nullptr);
+    HWND hwnd_control = CreateWindowEx(0, "EDIT", nullptr, WS_CHILD | WS_VISIBLE | ES_LEFT | ES_AUTOVSCROLL, 0, 0, 0, 40, parent,
+                                       (HMENU)nullptr, instance, nullptr);
 
     SendMessage(hwnd_control, EM_SETMARGINS, EC_LEFTMARGIN, MAKELPARAM(8, 0));
     HFONT hFont = CreateFont(14, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
@@ -1102,7 +1102,7 @@ const std::string app::getHomePageURL()
 
     // get current working directory plus trailing separator
     char buffer[MAX_PATH];
-	GetModuleFileName(nullptr, buffer, MAX_PATH);
+    GetModuleFileName(nullptr, buffer, MAX_PATH);
     std::string::size_type pos = std::string(buffer).find_last_of("\\/");
 
     // return path to start page (CEF converts this to a file:// URL)
@@ -1156,9 +1156,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(nullptr, IDI_WINLOGO);
-	wc.hCursor = nullptr;
-	wc.hbrBackground = nullptr;
+    wc.hIcon = LoadIcon(nullptr, IDI_WINLOGO);
+    wc.hCursor = nullptr;
+    wc.hbrBackground = nullptr;
     wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU);
     wc.lpszClassName = gApp->gClassName;
     RegisterClass(&wc);
@@ -1178,7 +1178,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                                gApp->mAppWindowPosX, gApp->mAppWindowPosY,
                                window_rect.right - window_rect.left,
                                window_rect.bottom - window_rect.top,
-							   nullptr, nullptr, hInstance, nullptr);
+                               nullptr, nullptr, hInstance, nullptr);
 
     static  PIXELFORMATDESCRIPTOR pfd =
     {
@@ -1206,11 +1206,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     MSG msg;
 
-	SetCursor(LoadCursor(nullptr, IDC_ARROW));
+    SetCursor(LoadCursor(nullptr, IDC_ARROW));
 
     do
     {
-		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
@@ -1223,7 +1223,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
     while (msg.message != WM_QUIT);
 
-	wglMakeCurrent(nullptr, nullptr);
+    wglMakeCurrent(nullptr, nullptr);
     wglDeleteContext(hRC);
     ReleaseDC(hWnd, hDC);
     DestroyWindow(hWnd);
