@@ -36,7 +36,7 @@
 #include "dullahan.h"
 
 dullahan* gDullahan;
-GLuint gAppTexture = -1;
+GLuint gAppTexture = 0;
 GLuint gTextureWidth = 1024;
 GLuint gTextureHeight = 1024;
 GLuint gAppWindowWidth = gTextureWidth;
@@ -156,7 +156,7 @@ void glutMouseMove(int x, int y)
 //
 void onPageChangedCallback(const unsigned char* pixels, int x, int y, const int width, const int height)
 {
-    if (width == gTextureWidth && height == gTextureHeight)
+    if (width == (int)gTextureWidth && height == (int)gTextureHeight)
     {
         glTexSubImage2D(GL_TEXTURE_2D, 0,
                         x, y,

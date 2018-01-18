@@ -5,7 +5,7 @@ set VS_CMD=Visual Studio 12 2013
 rem uncomment this line or change one above for VS2015 builds
 rem set VS_CMD=Visual Studio 14 2015
 
-rem We are using the CEF branch that we built from the Spotify CEF site 
+rem We are using the CEF branch that we built from the Spotify CEF site
 rem using the make_dullahan_cef_pkg.bat script in this folder.
 set CEF_32_DIR="c:\work\cef_builds\cef_3239.1723.g071d1c1_windows32"
 set CEF_64_DIR="C:\work\cef_builds\cef_3239.1723.g071d1c1_windows64"
@@ -58,9 +58,7 @@ goto Finished
 goto End
 
 :Finished
-start dullahan.sln /MIN
-cd Release
-.\webcube.exe
+start dullahan.sln
 
 :End
 popd

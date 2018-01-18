@@ -92,9 +92,13 @@ set(CEF_DLL_LIBRARY
 )
 
 # set C and C++ flags
+# Warnings at level 4 (-W4 generates too much spew) but disable:
+#    4100 "unreferenced parameter" -  too much spew for cef code
+#    4127 "conditional is constant" - I use an explicity var to turn code on and off which triggers this
+#    4505 "unreferenced local function has been removed" - supress meaningless freeglut warning
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -W3")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -W3")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -W4 -wd4100 -wd4127 -wd4505")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -W4 -wd4100 -wd4127 -wd4505")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11  -xobjective-c++")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11 -xobjective-c++")
@@ -139,6 +143,11 @@ target_include_directories(
     ${CEF_INCLUDE_DIR}
     ${CEF_INCLUDE_DIR}/..
 )
+
+# turn off spurious linker warnings
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(dullahan PROPERTIES LINK_FLAGS "/ignore:4099")
+endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 ################################################################################
 ## parse CEF version header and process into dullahan header
@@ -199,10 +208,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     )
 endif()
 
-# we are building Windows executable, not a console app (default)
+# we are building Windows executable, not a console app (default) and turn off spurious linker warnings
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+    set_target_properties(dullahan_host PROPERTIES LINK_FLAGS "/ignore:4099")
 endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 # Windows commands to copy CEF 'bin', 'resources' folders to executable dir (needed at runtime)
@@ -265,10 +276,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         winmm
     )
 
-    # we are building Windows executable, not a console app (default)
+    # we are building Windows executable, not a console app (default) and turn off spurious linker warnings
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set_target_properties(webcube PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
         set_target_properties(webcube PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+        set_target_properties(webcube PROPERTIES LINK_FLAGS "/ignore:4099")
     endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     # webcube example dependes on main library and host executable
@@ -325,6 +337,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         ${FREEGLUT_LIBRARY}
     )
 
+    # turn off spurious linker warnings
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        set_target_properties(simplegl PROPERTIES LINK_FLAGS "/ignore:4099")
+    endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+
     ################################################################################
     ## console example application
 
@@ -348,6 +365,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         ${CEF_LIBRARY}
         ${CEF_DLL_LIBRARY}
     )
+
+    # turn off spurious linker warnings
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        set_target_properties(console PROPERTIES LINK_FLAGS "/ignore:4099")
+    endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     ################################################################################
     ## minimal CEF console example (doesn't use Dullahan)
@@ -375,6 +397,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     # cef_minimal example dependes on host executable
     add_dependencies(cef_minimal dullahan_host)
+
+    # turn off spurious linker warnings
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        set_target_properties(cef_minimal PROPERTIES LINK_FLAGS "/ignore:4099")
+    endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 

@@ -877,7 +877,6 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
-            int wmEvent = HIWORD(wParam);
 
             switch (wmId)
             {
