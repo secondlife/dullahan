@@ -24,10 +24,6 @@ A simple Windows batch file that uses a CEF build from the [Spotify](http://open
 
 A simple macOS shell script that uses a CEF build from the [Spotify](http://opensource.spotify.com/cefbuilds/index.html) CEF site and extracts files (headers, libs, frameworks etc.) that Dullahan needs.
 
-`make_src_hash.bat`
-
-Batch file used to generate a hash of the cpp/h source files that is used as part of the Dullahan version number. A testbed before actually using in the client. A post-build step in the Windows version used to use this but no longer does.
-
 `astyle.bat`
 
 I find it useful to use [Artistic Style](http://astyle.sourceforge.net/) to reformat the code occasionally and maintain control of tabs/space and line endings. This batch file assumes astyle is installed on your system and runs it with selected command line options.

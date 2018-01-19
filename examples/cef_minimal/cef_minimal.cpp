@@ -122,15 +122,15 @@ class RenderHandler :
         {
             std::cout << "OnPaint() for size: " << width << " x " << height << std::endl;
 
-			char* buf = nullptr;
-			size_t sz = 0;
-			if (_dupenv_s(&buf, &sz, "HOME") == 0 && buf != nullptr)
-			{
-				std::string path(buf);
-				path += "/Desktop/saved_page.bmp";
-				writeBMPImage(path, (unsigned char*)buffer, width, height);
-				free(buf);
-			}
+            char* buf = nullptr;
+            size_t sz = 0;
+            if (_dupenv_s(&buf, &sz, "HOME") == 0 && buf != nullptr)
+            {
+                std::string path(buf);
+                path += "/Desktop/saved_page.bmp";
+                writeBMPImage(path, (unsigned char*)buffer, width, height);
+                free(buf);
+            }
         }
 
         IMPLEMENT_REFCOUNTING(RenderHandler);

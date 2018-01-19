@@ -217,7 +217,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 # Windows commands to copy CEF 'bin', 'resources' folders to executable dir (needed at runtime)
-# as well as the local HTML page of test links
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 add_custom_command(
     TARGET dullahan_host POST_BUILD
@@ -232,14 +231,7 @@ add_custom_command(
             "${CEF_RESOURCE_DIR}"
             "$<TARGET_FILE_DIR:dullahan_host>"
     COMMENT "Copying resource files to executable directory")
-
-add_custom_command(
-    TARGET dullahan_host POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/tools/dullahan_test_urls.html"
-            "$<TARGET_FILE_DIR:dullahan_host>"
-    COMMENT "Copying startup HTML page to executable directory")
-endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+endif()
 
 ################################################################################
 ## examples

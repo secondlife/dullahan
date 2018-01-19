@@ -1087,25 +1087,18 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// sadly need this so that the app can find the start URL when you start it
-// from Visual Studio *and* when you do so via Windows Explorer. There seems to
-// be no to set the current working directory for Visual Studio using CMake.
+//
 const std::string app::getHomePageURL()
 {
+    // You can override default home page by adding --homepage="http://example.com" to command line
     if (mHomePageURL.length() != 0)
     {
         return mHomePageURL;
     }
 
-    const std::string page_filename("dullahan_test_urls.html");
+    const std::string default_homepage_url("http://callum-linden.s3.amazonaws.com/dullahan_test_urls/index.html");
 
-    // get current working directory plus trailing separator
-    char buffer[MAX_PATH];
-    GetModuleFileName(nullptr, buffer, MAX_PATH);
-    std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-
-    // return path to start page (CEF converts this to a file:// URL)
-    return std::string(buffer).substr(0, pos + 1) + page_filename;
+    return default_homepage_url;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -1148,6 +1141,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
 
     std::cout << gApp->get_title() << std::endl;
+
+    std::cout << "Instructions" << std::endl << std::endl;
+    std::cout << "- Interact with the web page normally" << std::endl;
+    std::cout << "- Hold the shift key and drag mouse to move cube" << std::endl;
+    std::cout << "- Hold the shift key and use mouse wheel to zoom cube" << std::endl;
+    std::cout << "- Select features to try from the menu" << std::endl;
+    std::cout << "- Press ESC key to exit or close normally" << std::endl;
 
     WNDCLASS wc;
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;

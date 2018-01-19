@@ -172,20 +172,12 @@ void onPageChangedCallback(const unsigned char* pixels, int x, int y, const int 
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// sadly need this so that the app can find the start URL when you start it
-// from Visual Studio *and* when you do so via Windows Explorer. There seems to
-// be no to set the current working directory for Visual Studio using CMake.
+//
 const std::string getStartURL()
 {
-    const std::string page_filename("dullahan_test_urls.html");
+    const std::string default_homepage_url("http://callum-linden.s3.amazonaws.com/dullahan_test_urls/index.html");
 
-    // get current working directory plus trailing separator
-    char buffer[MAX_PATH];
-    GetModuleFileName(nullptr, buffer, MAX_PATH - 1);
-    std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-
-    // return path to start page (CEF converts this to a file:// URL)
-    return std::string(buffer).substr(0, pos + 1) + page_filename;
+    return default_homepage_url;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
