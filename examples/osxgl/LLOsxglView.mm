@@ -114,7 +114,7 @@ static void onRequestExitCallback() {
 
     bool result = _mDullahan->init(settings);
     if (result) {
-        _mDullahan->navigate("https://callum-linden.s3.amazonaws.com/ceftests.html");
+        _mDullahan->navigate("https://sl-viewer-media-system.s3.amazonaws.com/index.html");
 
         _timer = [[NSTimer scheduledTimerWithTimeInterval:0.016
                                                    target:self
@@ -163,7 +163,7 @@ static void onRequestExitCallback() {
 
         uint32_t event_modifiers = [theEvent modifierFlags];
         uint32_t event_keycode = [theEvent keyCode];
-        
+
         uint32_t event_chars = 0;
         NSString* c = [theEvent characters];
         if ([c length] > 0)

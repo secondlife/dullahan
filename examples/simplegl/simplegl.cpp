@@ -175,7 +175,7 @@ void onPageChangedCallback(const unsigned char* pixels, int x, int y, const int 
 //
 const std::string getStartURL()
 {
-    const std::string default_homepage_url("http://callum-linden.s3.amazonaws.com/dullahan_test_urls/index.html");
+    const std::string default_homepage_url("https://sl-viewer-media-system.s3.amazonaws.com/index.html");
 
     return default_homepage_url;
 }
