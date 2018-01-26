@@ -191,6 +191,10 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     // useful for matching the setting for flipPixelsY
     mFlipMouseY = user_settings.flip_mouse_y;
 
+    // log file settings
+    CefString(&settings.log_file) = user_settings.log_file;
+    settings.log_severity = user_settings.log_verbose ? LOGSEVERITY_VERBOSE : LOGSEVERITY_DEFAULT;
+
     // initiaize CEF
     bool result = CefInitialize(args, settings, this, nullptr);
     if (!result)

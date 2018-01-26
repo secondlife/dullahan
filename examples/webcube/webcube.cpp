@@ -140,6 +140,8 @@ void app::init_dullahan()
     settings.plugins_enabled = true;
     settings.user_agent_substring = mDullahan->makeCompatibleUserAgentString(get_title());
     settings.webgl_enabled = true;
+    settings.log_file = "webcube_cef_log.txt";
+    settings.log_verbose = true;
 
     bool result = mDullahan->init(settings);
     if (result)

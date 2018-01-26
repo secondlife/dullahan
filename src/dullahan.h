@@ -179,6 +179,12 @@ class dullahan
 
             // flip mouse input in Y direction
             bool flip_mouse_y = false;
+
+            // location, name of CEF log file
+            std::string log_file = "cef_log.txt";
+
+            // whether to log verbosely (true) or not (false)
+            int log_verbose = false;
         };
 
     public:
