@@ -36,7 +36,7 @@ void dullahan_impl::mouseButton(dullahan::EMouseButton mouse_button,
         CefMouseEvent cef_mouse_event;
         cef_mouse_event.x = x;
         cef_mouse_event.y = getFlipMouseY() ? (mViewHeight - y) : y;
-		cef_mouse_event.modifiers = EVENTFLAG_LEFT_MOUSE_BUTTON;
+        cef_mouse_event.modifiers = EVENTFLAG_LEFT_MOUSE_BUTTON;
 
         // set button
         CefBrowserHost::MouseButtonType btnType = MBT_LEFT;
@@ -73,7 +73,7 @@ void dullahan_impl::mouseMove(int x, int y)
         CefMouseEvent cef_mouse_event;
         cef_mouse_event.x = x;
         cef_mouse_event.y = getFlipMouseY() ? (mViewHeight - y) : y;
-		cef_mouse_event.modifiers = EVENTFLAG_LEFT_MOUSE_BUTTON;
+        cef_mouse_event.modifiers = EVENTFLAG_LEFT_MOUSE_BUTTON;
 
         bool mouse_leave = false;
         mBrowser->GetHost()->SendMouseMoveEvent(cef_mouse_event, mouse_leave);

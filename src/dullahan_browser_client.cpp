@@ -61,7 +61,7 @@ bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
         CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client,
         CefBrowserSettings& settings, bool* no_javascript_access)
 {
-    CEF_REQUIRE_IO_THREAD();
+    CEF_REQUIRE_UI_THREAD();
 
     std::string url = std::string(target_url);
     std::string target = std::string(target_frame_name);
