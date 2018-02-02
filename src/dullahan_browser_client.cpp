@@ -113,9 +113,17 @@ void dullahan_browser_client::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 
     if (mBrowserList.empty())
     {
-        // TODO: add code to only call this when we are using CEF's
-        // message loop and not using our own along side CefDoMessageLoopWork()
-        //CefQuitMessageLoop();
+        // necessary to enforce CEF finishes work before exit - writing cookies file for example.
+        // see: https://github.com/chromiumembedded/cef/blob/2773518869b5f57a848e807ddb2ee30adbf1c255/tests/shared/browser/main_message_loop_external_pump_win.cc#L91
+        // and: https://bitbucket.org/chromiumembedded/cef/issues/1805/
+        const int num_extra_cef_work_loops = 10;
+        const int sleep_time_between_calls = 50;
+
+        for (int i = 0; i < num_extra_cef_work_loops; ++i)
+        {
+            CefDoMessageLoopWork();
+            Sleep(sleep_time_between_calls);
+        }
 
         mParent->getCallbackManager()->onRequestExit();
     }
