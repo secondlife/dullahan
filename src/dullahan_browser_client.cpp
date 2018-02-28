@@ -148,7 +148,8 @@ void dullahan_browser_client::OnAddressChange(CefRefPtr<CefBrowser> browser,
 
 // CefDisplayhandler override
 bool dullahan_browser_client::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
-        const CefString& message, const CefString& source, int line)
+        cef_log_severity_t level, const CefString& message,
+        const CefString& source, int line)
 {
     CEF_REQUIRE_UI_THREAD();
 

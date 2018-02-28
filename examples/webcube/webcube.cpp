@@ -119,7 +119,7 @@ void app::init_dullahan()
 
     dullahan::dullahan_settings settings;
     settings.accept_language_list = "en-US";
-    settings.background_color = 0x80ffffff;
+    settings.background_color = 0xff666666;
     settings.cache_enabled = true;
     settings.cache_path = ".\\webcube_cache";
     settings.cookie_store_path = ".\\webcube_cookies";
