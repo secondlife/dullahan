@@ -58,8 +58,8 @@ class dullahan_callback_manager
         void setOnLoadStartCallback(std::function<void()> callback);
         void onLoadStart();
 
-		void setOnOpenPopupCallback(std::function<void(const std::string url, const std::string target)> callback);
-		void onOpenPopup(const std::string url, const std::string target);
+        void setOnOpenPopupCallback(std::function<void(const std::string url, const std::string target)> callback);
+        void onOpenPopup(const std::string url, const std::string target);
 
         void setOnPageChangedCallback(std::function<void(const unsigned char* pixels, int x, int y, int width, int height)> callback);
         void onPageChanged(const unsigned char* pixels, int x, int y, int width, int height);

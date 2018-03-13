@@ -140,14 +140,14 @@ void dullahan_callback_manager::onLoadStart()
 void dullahan_callback_manager::setOnOpenPopupCallback(
     std::function<void(const std::string url, const std::string target)> callback)
 {
-	mOnOpenPopupCallbackFunc = callback;
+    mOnOpenPopupCallbackFunc = callback;
 }
 
 void dullahan_callback_manager::onOpenPopup(const std::string url, const std::string target)
 {
-	if (mOnOpenPopupCallbackFunc)
+    if (mOnOpenPopupCallbackFunc)
     {
-		mOnOpenPopupCallbackFunc(url, target);
+        mOnOpenPopupCallbackFunc(url, target);
     }
 }
 

@@ -210,7 +210,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     // off with it's head
     CefWindowInfo window_info;
-	window_info.SetAsWindowless(nullptr);
+    window_info.SetAsWindowless(nullptr);
     window_info.windowless_rendering_enabled = true;
 
     CefBrowserSettings browser_settings;

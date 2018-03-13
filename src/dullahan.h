@@ -329,8 +329,8 @@ class dullahan
         void setOnLoadStartCallback(std::function<void()> callback);
 
         // popup opened
-		void setOnOpenPopupCallback(std::function<void(const std::string url,
-                                      const std::string target)> callback);
+        void setOnOpenPopupCallback(std::function<void(const std::string url,
+                                    const std::string target)> callback);
 
         // contents of the pages changes
         void setOnPageChangedCallback(std::function<void(const unsigned char* pixels,

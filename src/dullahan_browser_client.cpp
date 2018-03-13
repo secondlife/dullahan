@@ -75,12 +75,12 @@ bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
         target = "_blank";
     }
 
-	// tell the calling app a popup wants to open
-	mParent->getCallbackManager()->onOpenPopup(url, target);
+    // tell the calling app a popup wants to open
+    mParent->getCallbackManager()->onOpenPopup(url, target);
 
-	// return true indicates CEF should not open the popup which is correct
-	// the app consuming this code is responsible for creating a new window
-	// and navigating to the popup URL itself
+    // return true indicates CEF should not open the popup which is correct
+    // the app consuming this code is responsible for creating a new window
+    // and navigating to the popup URL itself
     return true;
 }
 
