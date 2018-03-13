@@ -135,7 +135,7 @@ class app
         void onLoadEnd(int status, const std::string url);
         void onLoadError(int status, const std::string error_text);
         void onLoadStart();
-        void onNavigateURL(const std::string url, const std::string target);
+        void onOpenPopup(const std::string url, const std::string target);
         void onPageChangedCallback(const unsigned char* pixels, int x, int y, const int width, const int height);
         void onPdfPrintFinished(const std::string path, bool ok);
         void onRequestExitCallback();

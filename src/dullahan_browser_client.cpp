@@ -75,16 +75,12 @@ bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
         target = "_blank";
     }
 
-    // note target string is empty if target in HTML is "_blank" so don't test
-    // for target length - just url which cannot be empty
-    if (url.length())
-    {
-        mParent->getCallbackManager()->onNavigateURL(url, target);
-        return true;
-    }
+	// tell the calling app a popup wants to open
+	mParent->getCallbackManager()->onOpenPopup(url, target);
 
-    browser->GetMainFrame()->LoadURL(target_url);
-
+	// return true indicates CEF should not open the popup which is correct
+	// the app consuming this code is responsible for creating a new window
+	// and navigating to the popup URL itself
     return true;
 }
 

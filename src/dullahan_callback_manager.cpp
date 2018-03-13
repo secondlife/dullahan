@@ -137,17 +137,17 @@ void dullahan_callback_manager::onLoadStart()
     }
 }
 
-void dullahan_callback_manager::setOnNavigateURLCallback(
+void dullahan_callback_manager::setOnOpenPopupCallback(
     std::function<void(const std::string url, const std::string target)> callback)
 {
-    mOnNavigateURLCallbackFunc = callback;
+	mOnOpenPopupCallbackFunc = callback;
 }
 
-void dullahan_callback_manager::onNavigateURL(const std::string url, const std::string target)
+void dullahan_callback_manager::onOpenPopup(const std::string url, const std::string target)
 {
-    if (mOnNavigateURLCallbackFunc)
+	if (mOnOpenPopupCallbackFunc)
     {
-        mOnNavigateURLCallbackFunc(url, target);
+		mOnOpenPopupCallbackFunc(url, target);
     }
 }
 

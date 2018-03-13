@@ -107,7 +107,7 @@ void app::init_dullahan()
     mDullahan->setOnLoadEndCallback(std::bind(&app::onLoadEnd, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnLoadErrorCallback(std::bind(&app::onLoadError, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnLoadStartCallback(std::bind(&app::onLoadStart, this));
-    mDullahan->setOnNavigateURLCallback(std::bind(&app::onNavigateURL, this, std::placeholders::_1, std::placeholders::_2));
+    mDullahan->setOnOpenPopupCallback(std::bind(&app::onOpenPopup, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnPageChangedCallback(std::bind(&app::onPageChangedCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
     mDullahan->setOnPdfPrintFinishedCallback(std::bind(&app::onPdfPrintFinished, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnRequestExitCallback(std::bind(&app::onRequestExitCallback, this));
@@ -728,9 +728,9 @@ void app::onLoadStart()
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-void app::onNavigateURL(const std::string url, const std::string target)
+void app::onOpenPopup(const std::string url, const std::string target)
 {
-    std::cout << "onNavigateURL: " << url << " " << target << std::endl;
+    std::cout << "OnOpenPopup: " << url << " " << target << std::endl;
 }
 
 /////////////////////////////////////////////////////////////////////////////////

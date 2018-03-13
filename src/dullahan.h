@@ -328,8 +328,8 @@ class dullahan
         // page starts to load
         void setOnLoadStartCallback(std::function<void()> callback);
 
-        // URL navigated
-        void setOnNavigateURLCallback(std::function<void(const std::string url,
+        // popup opened
+		void setOnOpenPopupCallback(std::function<void(const std::string url,
                                       const std::string target)> callback);
 
         // contents of the pages changes
