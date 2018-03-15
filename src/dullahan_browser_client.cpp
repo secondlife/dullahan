@@ -276,8 +276,7 @@ bool dullahan_browser_client::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
 
     std::string username = "";
     std::string password = "";
-    bool proceed = mParent->getCallbackManager()->onHTTPAuth(host_str, realm_str,
-                   username, password);
+    bool proceed = mParent->getCallbackManager()->onHTTPAuth(host_str, realm_str, username, password);
 
     if (proceed)
     {
