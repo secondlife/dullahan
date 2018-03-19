@@ -29,9 +29,58 @@
 #ifdef WIN32
 #include <windows.h>
 
+//#define HOST_PROCESS_REAPER
+
+#ifdef HOST_PROCESS_REAPER
+// Ignore c:\program files (x86)\microsoft visual studio 12.0\vc\include\thr\xthread(196): warning C4702: unreachable code
+#pragma warning( disable : 4702)
+#include <thread>
+#include <tlhelp32.h>
+
+// taken from http://magpcss.org/ceforum/viewtopic.php?f=6&t=15817&start=10#p37820
+// works around a CEF issue (yet to be filed) where the host process is not destroyed
+// after CEF exits in some case on Windows 7
+// Making it switchable for now while I investigate it a bit
+HANDLE GetParentProcess()
+{
+    HANDLE Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+
+    PROCESSENTRY32 ProcessEntry = {};
+    ProcessEntry.dwSize = sizeof(PROCESSENTRY32);
+
+    if (Process32First(Snapshot, &ProcessEntry))
+    {
+        DWORD CurrentProcessId = GetCurrentProcessId();
+
+        do
+        {
+            if (ProcessEntry.th32ProcessID == CurrentProcessId)
+            {
+                break;
+            }
+        }
+        while (Process32Next(Snapshot, &ProcessEntry));
+    }
+
+    CloseHandle(Snapshot);
+
+    return OpenProcess(SYNCHRONIZE, FALSE, ProcessEntry.th32ParentProcessID);
+}
+#endif
+
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                      LPSTR lpCmdLine, int nCmdShow)
 {
+#ifdef HOST_PROCESS_REAPER
+    HANDLE ParentProcess = GetParentProcess();
+
+    std::thread([ParentProcess]()
+    {
+        WaitForSingleObject(ParentProcess, INFINITE);
+        ExitProcess(0);
+    }).detach();
+#endif
+
     CefMainArgs args(GetModuleHandle(nullptr));
 
     return CefExecuteProcess(args, nullptr, nullptr);
