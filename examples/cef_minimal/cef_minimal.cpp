@@ -33,10 +33,6 @@
 #include <list>
 #include <fstream>
 
-#ifdef __APPLE__
-#import <Cocoa/Cocoa.h>
-#endif
-
 #include "cef_app.h"
 #include "cef_client.h"
 #include "wrapper/cef_helpers.h"
@@ -124,11 +120,16 @@ class RenderHandler :
 
             char* buf = nullptr;
             size_t sz = 0;
-            if (_dupenv_s(&buf, &sz, "HOME") == 0 && buf != nullptr)
+            static int imgnum = 1000;
+            if (_dupenv_s(&buf, &sz, "HOMEPATH") == 0 && buf != nullptr)
             {
-                std::string path(buf);
-                path += "/Desktop/saved_page.bmp";
-                writeBMPImage(path, (unsigned char*)buffer, width, height);
+                std::ostringstream ostr;
+                ostr << std::string(buf);
+                ostr << "/Desktop/saved_page";
+                ostr << imgnum++;
+                ostr << ".bmp";
+                std::cout << "Writing image to " << ostr.str() << std::endl;
+                writeBMPImage(ostr.str(), (unsigned char*)buffer, width, height);
                 free(buf);
             }
         }
@@ -183,6 +184,18 @@ class BrowserClient :
             }
         }
 
+        bool OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                           const CefString& target_url, const CefString& target_frame_name,
+                           CefLifeSpanHandler::WindowOpenDisposition target_disposition,
+                           bool user_gesture, const CefPopupFeatures& popupFeatures,
+                           CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client,
+                           CefBrowserSettings& settings, bool* no_javascript_access)
+        {
+            std::cout << "Page wants to open a popup" << std::endl;
+
+            return true;
+        };
+
         IMPLEMENT_REFCOUNTING(BrowserClient);
 
     private:
@@ -202,21 +215,8 @@ class CefMinimal : public CefApp
         {
             CefSettings settings;
 
-#ifdef WIN32
-
             CefMainArgs args(GetModuleHandle(nullptr));
-            CefString(&settings.browser_subprocess_path) = "cef_host.exe";
-
-#elif __APPLE__
-
-            CefMainArgs args(argc, argv);
-
-            NSString* appBundlePath = [[NSBundle mainBundle] bundlePath];
-            CefString(&settings.browser_subprocess_path) =
-                [[NSString stringWithFormat:
-                  @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
-
-#endif
+            CefString(&settings.browser_subprocess_path) = "dullahan_host.exe";
 
             if (CefInitialize(args, settings, this, nullptr))
             {
@@ -231,8 +231,9 @@ class CefMinimal : public CefApp
 
                 CefBrowserSettings browser_settings;
                 browser_settings.windowless_frame_rate = 60;
+                browser_settings.background_color = 0xffffffff;
 
-                CefString url = "http://youtube.com";
+                CefString url = "http://community.secondlife.com/t5/Featured-News/bg-p/blog_feature_news";
                 browser_ = CefBrowserHost::CreateBrowserSync(window_info, browser_client_.get(), url, browser_settings, nullptr);
 
                 return true;
@@ -240,6 +241,34 @@ class CefMinimal : public CefApp
 
             std::cout << "Unable to initialize" << std::endl;
             return false;
+        }
+
+        void navigate(const std::string url)
+        {
+            if (browser_.get() && browser_->GetMainFrame())
+            {
+                std::cout << "CefMinimal loading URL " << url << std::endl;
+                browser_->GetMainFrame()->LoadURL(url);
+            }
+        }
+
+        void clickCenter()
+        {
+            // send to CEF
+            if (browser_ && browser_->GetHost())
+            {
+                CefMouseEvent cef_mouse_event;
+                cef_mouse_event.x = 512;
+                cef_mouse_event.y = 512;
+                cef_mouse_event.modifiers = EVENTFLAG_LEFT_MOUSE_BUTTON;
+
+                bool is_up = false;
+                int last_click_count = 1;
+                browser_->GetHost()->SendMouseClickEvent(cef_mouse_event, MBT_LEFT, is_up, last_click_count);
+
+                is_up = true;
+                browser_->GetHost()->SendMouseClickEvent(cef_mouse_event, MBT_LEFT, is_up, last_click_count);
+            }
         }
 
         void update()
@@ -280,7 +309,6 @@ int main(int argc, char* argv[])
     time_t start_time;
     time(&start_time);
 
-#ifdef WIN32
     MSG msg;
     do
     {
@@ -295,7 +323,23 @@ int main(int argc, char* argv[])
 
             if (gExitFlag == false)
             {
-                if (time(nullptr) > start_time + 5)
+                static bool switched_to_test_page = false;
+                if (switched_to_test_page == false && time(nullptr) > start_time + 2)
+                {
+                    switched_to_test_page = true;
+                    std::cout << "Navigating to test URL page" << std::endl;
+                    cm->navigate("https://callum-linden.s3.amazonaws.com/bigclick.html");
+                }
+
+                static bool clicked_on_test_page = false;
+                if (clicked_on_test_page == false && time(nullptr) > start_time + 4)
+                {
+                    clicked_on_test_page = true;
+                    std::cout << "Clicking on test URL page" << std::endl;
+                    cm->clickCenter();
+                }
+
+                if (time(nullptr) > start_time + 10)
                 {
                     cm->requestExit();
                 }
@@ -307,26 +351,6 @@ int main(int argc, char* argv[])
         }
     }
     while (msg.message != WM_QUIT);
-
-#elif __APPLE__
-
-    while (true)
-    {
-        cm->update();
-
-        if (gExitFlag == false)
-        {
-            if (time(nullptr) > start_time + 5)
-            {
-                cm->requestExit();
-            }
-        }
-        else
-        {
-            break;
-        }
-    }
-#endif
 
     cm->shutdown();
 
