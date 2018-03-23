@@ -50,7 +50,7 @@ class dullahan_impl :
         ~dullahan_impl();
 
         // CefApp overrides
-        virtual void OnBeforeCommandLineProcessing(const CefString& process_type, CefRefPtr<CefCommandLine> command_line) OVERRIDE;
+        virtual void OnBeforeCommandLineProcessing(const CefString& process_type, CefRefPtr<CefCommandLine> command_line) override;
 
         bool init(dullahan::dullahan_settings& user_settings);
         void shutdown();
@@ -131,7 +131,7 @@ class dullahan_impl :
         const std::string composite_version();
 
         // CefPdfPrintCallback overrides
-        void OnPdfPrintFinished(const CefString& path, bool ok) OVERRIDE;
+        void OnPdfPrintFinished(const CefString& path, bool ok) override;
 
     private:
         CefRefPtr<dullahan_browser_client> mBrowserClient;

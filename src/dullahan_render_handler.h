@@ -39,15 +39,15 @@ class dullahan_render_handler :
         ~dullahan_render_handler();
 
         // CefRenderHandler interface
-        bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) OVERRIDE;
+        bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override;
         void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                      const RectList& dirtyRects,
-                     const void* buffer, int width, int height) OVERRIDE;
+                     const void* buffer, int width, int height) override;
         void OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor,
                             CursorType type,
-                            const CefCursorInfo& custom_cursor_info) OVERRIDE;
-        void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) OVERRIDE;
-        void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) OVERRIDE;
+                            const CefCursorInfo& custom_cursor_info) override;
+        void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) override;
+        void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) override;
 
         IMPLEMENT_REFCOUNTING(dullahan_render_handler);
 
