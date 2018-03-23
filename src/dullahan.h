@@ -322,8 +322,7 @@ class dullahan
         void setOnLoadEndCallback(std::function<void(int status, const std::string url)> callback);
 
         // page load error - e.g. 404
-        void setOnLoadErrorCallback(
-            std::function<void(int status, const std::string error_text)> callback);
+        void setOnLoadErrorCallback(std::function<void(int status, const std::string error_text)> callback);
 
         // page starts to load
         void setOnLoadStartCallback(std::function<void()> callback);

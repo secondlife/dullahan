@@ -99,6 +99,10 @@ class dullahan_browser_client :
                             const CefString& origin_url,
                             int64 new_size,
                             CefRefPtr<CefRequestCallback> callback) OVERRIDE;
+        CefRequestHandler::ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                CefRefPtr<CefFrame> frame,
+                CefRefPtr<CefRequest> request,
+                CefRefPtr<CefRequestCallback> callback) OVERRIDE;
 
         // CefDownloadHandler overrides
         CefRefPtr<CefDownloadHandler> GetDownloadHandler() OVERRIDE{ return this; }

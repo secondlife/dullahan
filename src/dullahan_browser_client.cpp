@@ -305,6 +305,18 @@ bool dullahan_browser_client::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
     return true;
 }
 
+// CefRequestHandler override
+CefRequestHandler::ReturnValue dullahan_browser_client::OnBeforeResourceLoad(
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefRequest> request,
+    CefRefPtr<CefRequestCallback> callback)
+{
+    CEF_REQUIRE_IO_THREAD();
+
+    return RV_CONTINUE;
+}
+
 // CefDownloadHandler overrides
 void dullahan_browser_client::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
         CefRefPtr<CefDownloadItem> download_item,
