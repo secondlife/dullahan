@@ -33,7 +33,7 @@ Building CEF locally is quite a dauting task and needs a toolset I do not have o
 
 ## Which version of CEF does Dullahan use?
 
-Dullahan currently builds against the [CEF 3.3202.1686.gd665578 / Chromium 62](http://opensource.spotify.com/cefbuilds/index.html) build of CEF but with some small tweaks to take account of CEF interface changes etc. it should work with slightly older or more recent versions too.
+Dullahan currently builds against the [Spotify Opensource CEF site](http://opensource.spotify.com/cefbuilds/index.html) build of CEF but with some small tweaks to take account of CEF interface changes etc. it should work with slightly older or more recent versions too. For the exact version in use, you can inspect one of the [build batch files](https://bitbucket.org/lindenlab/dullahan/src/default/tools/build_win.bat?at=default&fileviewer=file-view-default#build_win.bat-10).  files.
 
 ## What are the origins of this project?
 
