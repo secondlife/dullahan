@@ -7,8 +7,8 @@ rem set VS_CMD=Visual Studio 14 2015
 
 rem We are using the CEF branch that we built from the Spotify CEF site
 rem using the make_dullahan_cef_pkg.bat script in this folder.
-set CEF_32_DIR="c:\work\cef_builds\cef_3325.1750.gaabe4c4_windows32"
-set CEF_64_DIR="C:\work\cef_builds\cef_3325.1750.gaabe4c4_windows64"
+set CEF_32_DIR="c:\work\cef_builds\cef_3359.1774.gd49d25f_windows32"
+set CEF_64_DIR="C:\work\cef_builds\cef_3359.1774.gd49d25f_windows64"
 
 @if "%1"=="32" goto BitWidth32
 @if "%1"=="64" goto BitWidth64

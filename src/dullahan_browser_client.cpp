@@ -233,8 +233,8 @@ void dullahan_browser_client::OnLoadError(CefRefPtr<CefBrowser> browser,
 
 // CefRequestHandler override
 bool dullahan_browser_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
-        CefRefPtr<CefFrame> frame,
-        CefRefPtr<CefRequest> request, bool isRedirect)
+        CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request,
+        bool user_gesture, bool isRedirect)
 {
     CEF_REQUIRE_UI_THREAD();
 

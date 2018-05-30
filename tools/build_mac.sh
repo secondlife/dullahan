@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # point this at your CEF build you made with make_dullahan_cef_pkg.sh
-cef_base_dir="/Users/callum/Work/cef_builds/cef_binary_3.3325.1750.gaabe4c4_macosx64"
+cef_base_dir="/Users/callum/Work/cef_builds/cef_binary_3.3359.1774.gd49d25f_macosx64"
 
 # repoint where to find framework
 install_name_tool -id "@executable_path/../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework" ${cef_base_dir}/bin/release/Chromium\ Embedded\ Framework.framework/Chromium\ Embedded\ Framework

@@ -8,10 +8,10 @@ rem Edit these variables to point to the uncompressed CEF source directory and
 rem the required destination directory for both 32 and 64 bit versions
 rem Note: I get the default "src" CEF packages from the Spotify CEF builds site
 rem here http://opensource.spotify.com/cefbuilds/index.html
-set SRC_DIR_32="%USERPROFILE%\Desktop\cef_binary_3.3325.1750.gaabe4c4_windows32"
-set DST_DIR_32="%USERPROFILE%\Desktop\cef_3325.1750.gaabe4c4_windows32"
-set SRC_DIR_64="%USERPROFILE%\Desktop\cef_binary_3.3325.1750.gaabe4c4_windows64"
-set DST_DIR_64="%USERPROFILE%\Desktop\cef_3325.1750.gaabe4c4_windows64"
+set SRC_DIR_32="%USERPROFILE%\Desktop\cef_binary_3.3359.1774.gd49d25f_windows32"
+set DST_DIR_32="%USERPROFILE%\Desktop\cef_3359.1774.gd49d25f_windows32"
+set SRC_DIR_64="%USERPROFILE%\Desktop\cef_binary_3.3359.1774.gd49d25f_windows64"
+set DST_DIR_64="%USERPROFILE%\Desktop\cef_3359.1774.gd49d25f_windows64"
 
 @if "%1"=="32" goto BitWidth32
 @if "%1"=="64" goto BitWidth64
