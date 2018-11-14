@@ -35,9 +35,10 @@
 #include "dullahan_context_handler.h"
 
 #include "include/cef_waitable_event.h"
-#include "include/wrapper/cef_library_loader.h"
 
-#include <iostream>
+#ifdef __APPLE__
+#include "include/wrapper/cef_library_loader.h"
+#endif
 
 dullahan_impl::dullahan_impl() :
     mBrowser(0),
@@ -115,7 +116,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     {
         return false;
     }
-    
+
     CefMainArgs args(0, nullptr);
 #endif
 
@@ -133,7 +134,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     // explicitly disable sandbox
     settings.no_sandbox = true;
-    
+
     // use a single thread for the message loop
     settings.multi_threaded_message_loop = false;
 
@@ -655,7 +656,6 @@ const std::vector<std::string> dullahan_impl::getAllCookies()
                 const std::string value = std::string(CefString(&cookie.value));
 
                 mCookies.push_back(name);
-                std::cout << " dullahan_impl::getAllCookies(): " << name << " = " << value << std::endl;
                 deleteCookie = false;
                 return true;
             }
