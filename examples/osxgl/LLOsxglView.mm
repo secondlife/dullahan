@@ -114,6 +114,8 @@ static void onRequestExitCallback() {
 
     bool result = _mDullahan->init(settings);
     if (result) {
+        _mDullahan->setSize(1024, 1024);
+
         _mDullahan->navigate("https://sl-viewer-media-system.s3.amazonaws.com/index.html");
 
         _timer = [[NSTimer scheduledTimerWithTimeInterval:0.016
@@ -151,6 +153,12 @@ static void onRequestExitCallback() {
     if (self.mDullahan) {
         self.mDullahan->nativeKeyboardEventOSX(theEvent);
     }
+}
+
+-(void)setLayer:(CALayer*)layer
+{
+    [super setLayer:layer];
+    [self.openGLContext update];
 }
 
 - (void)sendKeyEvent:(NSEvent*)theEvent

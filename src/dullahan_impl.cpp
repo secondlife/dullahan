@@ -35,6 +35,7 @@
 #include "dullahan_context_handler.h"
 
 #include "include/cef_waitable_event.h"
+#include "include/wrapper/cef_library_loader.h"
 
 #include <iostream>
 
@@ -109,6 +110,12 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 #ifdef WIN32
     CefMainArgs args(GetModuleHandle(nullptr));
 #elif __APPLE__
+    CefScopedLibraryLoader library_loader;
+    if (!library_loader.LoadInMain())
+    {
+        return false;
+    }
+    
     CefMainArgs args(0, nullptr);
 #endif
 
@@ -124,6 +131,9 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
           @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
 #endif
 
+    // explicitly disable sandbox
+    settings.no_sandbox = true;
+    
     // use a single thread for the message loop
     settings.multi_threaded_message_loop = false;
 

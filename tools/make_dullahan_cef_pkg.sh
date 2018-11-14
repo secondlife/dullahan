@@ -2,12 +2,12 @@
 
 exec 4>&1; export BASH_XTRACEFD=4; set -x
 
-CEF_BUILD="cef_binary_3.3538.1849.g458cc98_macosx64"
+CEF_BUILD="cef_binary_3.3538.1851.g5622787_macosx64"
 
 SRC_DIR="/tmp/${CEF_BUILD}"
 
 # change this to point to where you want to build the CEF package
-DST_DIR="/Users/callum/Desktop/${CEF_BUILD}"
+DST_DIR="$HOME/work/cef_builds/${CEF_BUILD}"
 
 pushd .
 cd /tmp
@@ -43,4 +43,3 @@ mkdir -p "${DST_DIR}/lib/Release"
 cp "${SRC_DIR}/build64/libcef_dll_wrapper/Release/libcef_dll_wrapper.a" "${DST_DIR}/lib/Release"
 
 popd
-

@@ -89,10 +89,17 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 // OS X Helper executable, we can probably share this between Win & Mac
 #ifdef __APPLE__
+#include "include/wrapper/cef_library_loader.h"
 
 // Entry point function for sub-processes.
 int main(int argc, char* argv[])
 {
+    CefScopedLibraryLoader library_loader;
+    if (!library_loader.LoadInHelper())
+    {
+        return 1;
+    }
+
     // Provide CEF with command-line arguments.
     CefMainArgs args(argc, argv);
 

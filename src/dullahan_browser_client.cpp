@@ -118,7 +118,11 @@ void dullahan_browser_client::OnBeforeClose(CefRefPtr<CefBrowser> browser)
         for (int i = 0; i < num_extra_cef_work_loops; ++i)
         {
             CefDoMessageLoopWork();
+#ifdef WIN32
             Sleep(sleep_time_between_calls);
+#elif __APPLE__
+            sleep(sleep_time_between_calls);
+#endif
         }
 
         mParent->getCallbackManager()->onRequestExit();
