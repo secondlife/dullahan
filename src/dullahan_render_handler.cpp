@@ -87,8 +87,6 @@ void dullahan_render_handler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect
     resizePixelBuffer(width, height);
 
     rect = CefRect(0, 0, width, height);
-
-    return true;
 }
 
 void dullahan_render_handler::copyPopupIntoView()
