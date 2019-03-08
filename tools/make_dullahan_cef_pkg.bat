@@ -8,7 +8,7 @@ rem Edit this variable so that it contains the version number of CEF you
 rem want to use. Not there is no 3.xx part that appears in the source CEF
 rem Note: I get the default "src" CEF packages from the Spotify CEF builds site
 rem here http://opensource.spotify.com/cefbuilds/index.html
-set BASE_CEF_VERSION="3538.1851.g5622787"
+set BASE_CEF_VERSION="3626.1895.g7001d56"
 
 rem Edit these variables to point to the uncompressed CEF source directory and
 rem the required destination directory for both 32 and 64 bit versions

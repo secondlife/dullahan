@@ -77,7 +77,7 @@ void dullahan_render_handler::resizePixelBuffer(int width, int height)
 }
 
 // CefRenderHandler override
-bool dullahan_render_handler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
+void dullahan_render_handler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
 {
     CEF_REQUIRE_UI_THREAD();
 

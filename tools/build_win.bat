@@ -6,7 +6,7 @@ rem uncomment this line or change one above for VS2015 builds
 rem set VS_CMD=Visual Studio 14 2015
 
 rem This is the version of CEF3 we will use
-set BASE_CEF_VERSION="3538.1851.g5622787"
+set BASE_CEF_VERSION="3626.1895.g7001d56"
 
 rem We are using the CEF branch that we built from the Spotify CEF site
 rem using the make_dullahan_cef_pkg.bat script in this folder.

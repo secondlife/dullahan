@@ -2,7 +2,8 @@
 
 exec 4>&1; export BASH_XTRACEFD=4; set -x
 
-CEF_BUILD="cef_binary_3.3538.1851.g5622787_macosx64"
+# Chromium 72.0.3626.121 fix for CVE-2019-5786
+CEF_BUILD="cef_binary_3.3626.1895.g7001d56_macosx64"
 
 SRC_DIR="/tmp/${CEF_BUILD}"
 

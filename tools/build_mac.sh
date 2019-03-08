@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # point this at your CEF build you made with make_dullahan_cef_pkg.sh
-cef_base_dir="/Users/callum/work/cef_builds/cef_binary_3.3538.1851.g5622787_macosx64"
+# Chromium 72.0.3626.121 fix for CVE-2019-5786
+cef_base_dir="/Users/callum/work/cef_builds/cef_binary_3.3626.1895.g7001d56_macosx64"
 
 # repoint where to find framework
 install_name_tool -id "@executable_path/../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework" ${cef_base_dir}/bin/release/Chromium\ Embedded\ Framework.framework/Chromium\ Embedded\ Framework
