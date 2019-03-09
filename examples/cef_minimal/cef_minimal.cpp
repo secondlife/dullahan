@@ -102,12 +102,11 @@ class RenderHandler :
     public CefRenderHandler
 {
     public:
-        bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override
+        void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override
         {
             int width = 1024;
             int height = 1024;
             rect = CefRect(0, 0, width, height);
-            return true;
         }
 
         void OnPaint(CefRefPtr<CefBrowser> browser,
