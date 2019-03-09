@@ -216,13 +216,14 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
         return false;
     }
 
-    // initial size of the headless browser
-    setSize(user_settings.initial_width, user_settings.initial_height);
-
     // off with it's head
     CefWindowInfo window_info;
     window_info.SetAsWindowless(nullptr);
     window_info.windowless_rendering_enabled = true;
+    window_info.x = 0;
+    window_info.y = 0;
+    window_info.width = user_settings.initial_width;
+    window_info.height = user_settings.initial_height;
 
     CefBrowserSettings browser_settings;
     browser_settings.windowless_frame_rate = user_settings.frame_rate;
@@ -263,6 +264,9 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     CefString url = std::string();
     CefRefPtr<CefRequestContext> request_context = nullptr;
     mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), url, browser_settings, request_context);
+
+    // important: set the size *after* we create a browser
+    setSize(user_settings.initial_width, user_settings.initial_height);
 
     return true;
 }
