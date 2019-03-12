@@ -140,6 +140,7 @@ class dullahan_impl :
         CefRefPtr<dullahan_context_handler> mContextHandler;
         dullahan_callback_manager* mCallbackManager;
 
+        bool mInitialized;
         int mViewWidth;
         int mViewHeight;
         bool mSystemFlashEnabled;

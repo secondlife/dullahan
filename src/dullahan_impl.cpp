@@ -41,6 +41,7 @@
 #endif
 
 dullahan_impl::dullahan_impl() :
+    mInitialized(false),
     mBrowser(0),
     mCallbackManager(new dullahan_callback_manager),
     mViewWidth(0),
@@ -268,6 +269,10 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     // important: set the size *after* we create a browser
     setSize(user_settings.initial_width, user_settings.initial_height);
 
+    // recent versions of CEF seem to be pickier (rightly so) about calling dullahan_impl::update()
+    // before initialization has completed so we should block that until we're fully complete here
+    mInitialized = true;
+
     return true;
 }
 
@@ -333,6 +338,11 @@ void dullahan_impl::run()
 
 void dullahan_impl::update()
 {
+    if (! mInitialized )
+    {
+        return;
+    }
+
     CefDoMessageLoopWork();
 
     // CEF/Chromium resets page zoom in between pages
