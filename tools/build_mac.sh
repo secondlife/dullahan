@@ -41,10 +41,6 @@ cd Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks
 ln -s '../../../../Frameworks/Chromium Embedded Framework.framework' 'Chromium Embedded Framework.framework'
 popd
 
-# copy meta data
-cp ../src/host/Info.plist Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents
-cp ../examples/osxgl/Info.plist CMakeFiles/osxgl.dir/
-
 # copy nib file
 mkdir Release/osxgl.app/Contents/Resources
 cp -r ../examples/osxgl/Resources/* Release/osxgl.app/Contents/Resources

@@ -431,6 +431,12 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_dependencies(osxgl dullahan)
     add_dependencies(osxgl DullahanHelper)
 
+    # default Inof.plist.in template in CMake doesn't contain
+    # the NSPrincipalClass definition so we must add it
+    set(PRINCIPAL_CLASS "NSApplication")
+    set_target_properties(osxgl PROPERTIES
+        MACOSX_BUNDLE_BUNDLE_NAME "OSXGL Test"
+        MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/examples/osxgl/Info.plist.in")
 endif()
 
 ################################################################################
