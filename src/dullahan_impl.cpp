@@ -338,7 +338,7 @@ void dullahan_impl::run()
 
 void dullahan_impl::update()
 {
-    if (! mInitialized )
+    if (! mInitialized)
     {
         return;
     }
