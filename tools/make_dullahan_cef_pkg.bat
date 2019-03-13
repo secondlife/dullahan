@@ -8,15 +8,15 @@ rem Edit this variable so that it contains the version number of CEF you
 rem want to use. Not there is no 3.xx part that appears in the source CEF
 rem Note: I get the default "src" CEF packages from the Spotify CEF builds site
 rem here http://opensource.spotify.com/cefbuilds/index.html
-set BASE_CEF_VERSION="3626.1895.g7001d56"
+set CEF_VERSION="3626.1895.g7001d56"
 
 rem Edit these variables to point to the uncompressed CEF source directory and
 rem the required destination directory for both 32 and 64 bit versions
-rem remembering to express the locations in terms of the BASE_CEF_VERSION above
-set SRC_DIR_32="c:\work\cef_builds\cef_binary_3.%BASE_CEF_VERSION%_windows32"
-set DST_DIR_32="c:\work\cef_builds\cef_%BASE_CEF_VERSION%_windows32"
-set SRC_DIR_64="c:\work\cef_builds\cef_binary_3.%BASE_CEF_VERSION%_windows64"
-set DST_DIR_64="c:\work\cef_builds\cef_%BASE_CEF_VERSION%_windows64"
+rem remembering to express the locations in terms of the CEF_VERSION above
+set SRC_DIR_32="c:\work\cef_builds\cef_binary_3.%CEF_VERSION%_windows32"
+set DST_DIR_32="c:\work\cef_builds\cef_%CEF_VERSION%_windows32"
+set SRC_DIR_64="c:\work\cef_builds\cef_binary_3.%CEF_VERSION%_windows64"
+set DST_DIR_64="c:\work\cef_builds\cef_%CEF_VERSION%_windows64"
 
 @if "%1"=="32" goto BitWidth32
 @if "%1"=="64" goto BitWidth64
