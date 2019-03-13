@@ -2,17 +2,22 @@
 
 exec 4>&1; export BASH_XTRACEFD=4; set -x
 
-# Chromium 72.0.3626.121 fix for CVE-2019-5786
-CEF_BUILD="cef_binary_3.3626.1895.g7001d56_macosx64"
+# CHANGE this to the version of CEF you want to build
+CEF_VERSION="3626.1895.g7001d56"
 
-SRC_DIR="/tmp/${CEF_BUILD}"
+# CHANGE this to point to the folder where you want to build CEF
+DST_DIR="$HOME/work/cef_builds/"
 
-# change this to point to where you want to build the CEF package
-DST_DIR="$HOME/work/cef_builds/${CEF_BUILD}"
+# probably don't want to change anything from now on
+CEF_BUILD="cef_binary_3.${CEF_VERSION}_macosx64"
+SRC_DIR="/tmp"
 
 pushd .
-cd /tmp
-curl -O "http://opensource.spotify.com/cefbuilds/${CEF_BUILD}.tar.bz2"
+cd ${SRC_DIR}
+
+# there is a script that pulls the CEF builds from Spotify over to a Linden
+# owned S3 bucket on a regular basis - just in case Spotify ever goes away
+curl -O "https://secondlife-cef-builds.s3.amazonaws.com/${CEF_BUILD}.tar.bz2"
 
 tar -xvf "${CEF_BUILD}.tar.bz2"
 
@@ -28,19 +33,19 @@ xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration 'Deb
 xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration 'Release'
 
 # copy frameworks
-mkdir -p "${DST_DIR}/bin/Debug/Chromium Embedded Framework.framework"
-cp -R "${SRC_DIR}/Debug/Chromium Embedded Framework.framework" "${DST_DIR}/bin/Debug/"
-mkdir -p "${DST_DIR}/bin/Release/Chromium Embedded Framework.framework"
-cp -R "${SRC_DIR}/Release/Chromium Embedded Framework.framework" "${DST_DIR}/bin/Release/"
+mkdir -p "${DST_DIR}/${CEF_BUILD}/bin/Debug/Chromium Embedded Framework.framework"
+cp -R "${SRC_DIR}/${CEF_BUILD}/Debug/Chromium Embedded Framework.framework" "${DST_DIR}/${CEF_BUILD}/bin/Debug/"
+mkdir -p "${DST_DIR}/${CEF_BUILD}/bin/Release/Chromium Embedded Framework.framework"
+cp -R "${SRC_DIR}/${CEF_BUILD}/Release/Chromium Embedded Framework.framework" "${DST_DIR}/${CEF_BUILD}/bin/Release/"
 
 # copy headers
-mkdir -p "${DST_DIR}/include"
-cp -R "${SRC_DIR}/include" "${DST_DIR}"
+mkdir -p "${DST_DIR}/${CEF_BUILD}/include"
+cp -R "${SRC_DIR}/${CEF_BUILD}/include" "${DST_DIR}/${CEF_BUILD}"
 
 # copy libcef_dll library
-mkdir -p "${DST_DIR}/lib/Debug"
-cp "${SRC_DIR}/build64/libcef_dll_wrapper/Debug/libcef_dll_wrapper.a" "${DST_DIR}/lib/Debug"
-mkdir -p "${DST_DIR}/lib/Release"
-cp "${SRC_DIR}/build64/libcef_dll_wrapper/Release/libcef_dll_wrapper.a" "${DST_DIR}/lib/Release"
+mkdir -p "${DST_DIR}/${CEF_BUILD}/lib/Debug"
+cp "${SRC_DIR}/${CEF_BUILD}/build64/libcef_dll_wrapper/Debug/libcef_dll_wrapper.a" "${DST_DIR}/${CEF_BUILD}/lib/Debug"
+mkdir -p "${DST_DIR}/${CEF_BUILD}/lib/Release"
+cp "${SRC_DIR}/${CEF_BUILD}/build64/libcef_dll_wrapper/Release/libcef_dll_wrapper.a" "${DST_DIR}/${CEF_BUILD}/lib/Release"
 
 popd
