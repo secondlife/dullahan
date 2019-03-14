@@ -60,7 +60,7 @@ Not right now. I used to store a pre-built version on the Windows 64 bit version
     * [CMake](https://cmake.org/) version 3.6.3 or later
     * [7-Zip](www.7-zip.org/) 7-Zip or a similar tool that can uncompress `.tar.bz2` files
 * macOS
-    * [Xcode](https://developer.apple.com/xcode/) version 8.2.1 or later 
+    * [Xcode](https://developer.apple.com/xcode/) version 10 or later 
     * [CMake](https://cmake.org/) version 3.6.3 or later
 
 ## How do I build CEF?
@@ -70,11 +70,11 @@ Before you can build Dullahan, you will need to build a version of CEF. There ar
 * Windows
     * Grab a Windows 32 or 64 bit build of CEF from [http://opensource.spotify.com/cefbuilds/index.html](http://opensource.spotify.com/cefbuilds/index.html)
     * Extract the archive to a local folder - I use the Windows Desktop
-    * Edit the `tools/make_dullahan_cef_pkg.bat` batch file - specifically, the lines at the top of the file that set the `SRC_DIR_32/64` (location of uncompressed CEF package you just downloaded) and `DST_DIR_32/64` (location where you want to generate a build).
+    * Edit the `tools/make_dullahan_cef_pkg.bat` batch file - specifically, the lines at the top of the file that set the `CEF_VERSION` (match the version you downloaded), `SRC_DIR_32/64` (location of uncompressed CEF package you just downloaded) and `DST_DIR_32/64` (location where you want to generate a build).
     * From a command prompt, run `tools\make_dullahan_cef_pkg.bat` with a parameter of either 32 or 64 to set the bit-width to build
     * If all goes well, you will end up with a set of libs, headers and binary files in the `DST_DIR_32/64` folder that you can use to build Dullahan
 * macOS
-    * Edit the `tools/make_dullahan_cef_pkg.sh` shell script and make sure the `CEF_BUILD` variable is set to the version you want and make sure the `DST_DIR` points to somewhere sensible. This is where the build will be generated.
+    * Edit the `tools/make_dullahan_cef_pkg.sh` shell script and make sure the `CEF_VERSION` variable is set to the version you want and make sure the `DST_DIR` points to somewhere sensible. This is where the build will be generated.
     * From a terminal prompt, run `tools/make_dullahan_cef_pkg.sh`. This will download the right version of CEF, build it and create a set of libs, frameworks, headers etc. that you need to build Dullahan
 
 ## Do I need to build Chromium?
@@ -85,15 +85,15 @@ The easy answer is no - CEF builds against [Chromium](https://www.chromium.org/)
 
 * Download or clone the Dullahan source code
 * Windows
-    * Edit the `tools\build_win.bat` filer and change the `CEF_32_DIR` and `CEF_64_DIR` variables at the top to point to the appropriate build of CEF you just built.
+    * Edit the `tools\build_win.bat` filer and change the `CEF_VERSION` variable to match the one you want to use and the `CEF_32_DIR` and `CEF_64_DIR` variables at the top to point to the appropriate build of CEF you just built.
     * From a command prompt, run `tools/build_win.bat` with a parameter of either 32 or 64 to set the bit-width to build
-    * If Dullahan builds correctly, the example application in `Release/examples/webcube` will start
-    * You can open the Visual Studio 2013 solution file in `build` or `build64` as normal and edit files if you want to experiment 
+    * If Dullahan builds correctly, Visual Studio 2013 solution file in `build` or `build64` will open and you can run the examples like `WebCube` in the normal way
+
 * macOS
-    * Edit the `tools/build_mac.sh` file and edit the `cef_base_dir` variable to point to the version of CEF you just built.
+    * Edit the `tools/build_mac.sh` file and edit the `CEF_VERSION` variable to match the one you want to use and the `CEF_BUILDS_DIR` variable to point to the version of CEF you just built.
     * From a terminal prompt, run `tools/build_mac.sh`. 
     * If it builds correctly, you can try to the run the included macOS example application (`open build64/Release/osxgl.app`)
-    * You can open the Xcode 8 project file `build64/dullahan.xcodeproj` and edit files if you want to experiment
+    * You can open the Xcode project file `build64/dullahan.xcodeproj` and edit files if you want to experiment
 
 ## Which files do I need in my own project?
 
