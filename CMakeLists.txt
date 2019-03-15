@@ -191,6 +191,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         ${CEF_INCLUDE_DIR}
         ${CEF_INCLUDE_DIR}/..
     )
+    # Info.plist.in template adds a new key called "LSUIElement" with value "true"
+    # to surpress the appearance of the DullahanHelper app icon in the dock
+    set_target_properties(DullahanHelper PROPERTIES
+        MACOSX_BUNDLE_BUNDLE_NAME "DullahanHelper"
+        MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/src/host/Info.plist.in")
 endif()
 
 # define which libs to link against
