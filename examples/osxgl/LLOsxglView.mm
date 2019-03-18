@@ -111,6 +111,7 @@ static void onRequestExitCallback() {
     settings.cookie_store_path = "/tmp/cef_cookiez";
     settings.user_agent_substring = "osxgl";
     settings.accept_language_list = "en-us";
+    settings.autoplay_without_gesture = true;
 
     bool result = _mDullahan->init(settings);
     if (result) {

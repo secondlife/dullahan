@@ -52,6 +52,7 @@ dullahan_impl::dullahan_impl() :
     mForceWaveAudio(false),
     mDisableGPU(true),
     mDisableWebSecurity(false),
+    mAutoPlayWithoutGesture(false),
     mFlipPixelsY(false),
     mFlipMouseY(false),
     mRequestedPageZoom(1.0)
@@ -101,6 +102,11 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         if (mDisableWebSecurity)
         {
             command_line->AppendSwitch("--disable-web-security");
+        }
+
+        if (mAutoPlayWithoutGesture)
+        {
+            command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
         }
     }
 }
@@ -194,6 +200,10 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     // in the viewer to open a web page that references locally generated images without
     // needing a web server.
     mDisableWebSecurity = user_settings.disable_web_security;
+
+    // this flag, if set, allows video/audio to autoplay if the URL parameters are configured
+    // correctly to do so. (by default as of Chrome 70, audio/video does not autoplay)
+    mAutoPlayWithoutGesture = user_settings.autoplay_without_gesture;
 
     // if true, this setting inverts the pixels in Y direction - useful if your texture
     // coords are upside down compared to default for Dullahan

@@ -149,6 +149,7 @@ class dullahan_impl :
         bool mForceWaveAudio;
         bool mDisableGPU;
         bool mDisableWebSecurity;
+        bool mAutoPlayWithoutGesture;
         bool mFlipPixelsY;
         bool mFlipMouseY;
         double mRequestedPageZoom;
