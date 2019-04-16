@@ -355,6 +355,11 @@ class dullahan
         // file picker shown
         void setOnFileDialogCallback(std::function<const std::vector<std::string>(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default)> callback);
 
+        // JS dialog shown (alert)
+        void setOnJSDialogCallback(std::function<bool(const std::string origin_url,
+                                   const std::string message_text,
+                                   const std::string default_prompt_text)> callback);
+
     private:
         std::unique_ptr <dullahan_impl> mImpl;
 };

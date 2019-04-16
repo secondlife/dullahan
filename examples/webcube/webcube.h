@@ -132,6 +132,7 @@ class app
         const std::vector<std::string> onFileDialog(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default);
         void onFileDownloadProgress(int percent, bool complete);
         bool onHTTPAuth(const std::string host, const std::string realm, std::string& username, std::string& password);
+        bool onJSDialogCallback(const std::string origin_url, const std::string message_text, const std::string default_prompt_text);
         void onLoadEnd(int status, const std::string url);
         void onLoadError(int status, const std::string error_text);
         void onLoadStart();

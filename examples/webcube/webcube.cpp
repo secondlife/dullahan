@@ -113,6 +113,7 @@ void app::init_dullahan()
     mDullahan->setOnRequestExitCallback(std::bind(&app::onRequestExitCallback, this));
     mDullahan->setOnStatusMessageCallback(std::bind(&app::onStatusMessage, this, std::placeholders::_1));
     mDullahan->setOnTitleChangeCallback(std::bind(&app::onTitleChange, this, std::placeholders::_1));
+    mDullahan->setOnJSDialogCallback(std::bind(&app::onJSDialogCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
     std::vector<std::string> custom_schemes(1, "secondlife");
     mDullahan->setCustomSchemes(custom_schemes);
@@ -750,6 +751,19 @@ void app::onPageChangedCallback(const unsigned char* pixels, int x, int y,
                         GL_UNSIGNED_BYTE,
                         pixels);
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+bool app::onJSDialogCallback(const std::string origin_url, const std::string message_text, const std::string default_prompt_text)
+{
+    std::cout << "JavaScript dialog triggered:" << std::endl;
+    std::cout << "    URL: " << origin_url << std::endl;
+    std::cout << "    message: " << message_text << std::endl;
+    std::cout << "    prompt: " << default_prompt_text << std::endl;
+
+    // cancel the dialog automatically
+    return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////

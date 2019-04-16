@@ -415,3 +415,19 @@ bool dullahan_browser_client::OnFileDialog(CefRefPtr<CefBrowser> browser,
 
     return true;
 }
+
+// CefJSDialogHandler overrides
+bool dullahan_browser_client::OnJSDialog(CefRefPtr<CefBrowser> browser,
+        const CefString& origin_url,
+        JSDialogType dialog_type,
+        const CefString& message_text,
+        const CefString& default_prompt_text,
+        CefRefPtr<CefJSDialogCallback> callback,
+        bool& suppress_message)
+{
+    suppress_message = mParent->getCallbackManager()->onJSDialogCallback(std::string(origin_url),
+                       std::string(message_text),
+                       std::string(default_prompt_text));
+
+    return false;
+}

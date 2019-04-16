@@ -373,3 +373,9 @@ void dullahan::setOnFileDialogCallback(std::function<const std::vector<std::stri
 {
     mImpl->getCallbackManager()->setOnFileDialogCallback(callback);
 }
+
+
+void dullahan::setOnJSDialogCallback(std::function<bool(const std::string origin_url, const std::string message_text, const std::string default_prompt_text)> callback)
+{
+    mImpl->getCallbackManager()->setOnJSDialogCallback(callback);
+}

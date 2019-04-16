@@ -244,3 +244,21 @@ const std::vector<std::string> dullahan_callback_manager::onFileDialog(dullahan:
 
     return std::vector<std::string>();
 }
+
+void dullahan_callback_manager::setOnJSDialogCallback(
+    std::function<bool(const std::string origin_url, const std::string message_text, const std::string default_prompt_text)> callback)
+{
+    mOnJSDialogCallbackFunc = callback;
+}
+
+bool dullahan_callback_manager::onJSDialogCallback(const std::string origin_url, const std::string message_text, const std::string default_prompt_text)
+{
+    if (mOnJSDialogCallbackFunc)
+    {
+        return mOnJSDialogCallbackFunc(origin_url, message_text, default_prompt_text);
+    }
+
+    // default to cancel request if no callback set up
+    return false;
+}
+

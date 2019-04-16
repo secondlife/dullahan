@@ -41,7 +41,8 @@ class dullahan_browser_client :
     public CefLoadHandler,
     public CefRequestHandler,
     public CefDownloadHandler,
-    public CefDialogHandler
+    public CefDialogHandler,
+    public CefJSDialogHandler
 {
     public:
         dullahan_browser_client(dullahan_impl* parent,
@@ -137,6 +138,19 @@ class dullahan_browser_client :
         bool OnFileDialog(CefRefPtr<CefBrowser> browser, FileDialogMode mode, const CefString& title,
                           const CefString& default_file_path, const std::vector<CefString>& accept_filters, int selected_accept_filter,
                           CefRefPtr<CefFileDialogCallback> callback) override;
+
+        // CefJSDialogHandler overrides
+        CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override
+        {
+            return this;
+        }
+        bool OnJSDialog(CefRefPtr<CefBrowser> browser,
+                        const CefString& origin_url,
+                        JSDialogType dialog_type,
+                        const CefString& message_text,
+                        const CefString& default_prompt_text,
+                        CefRefPtr<CefJSDialogCallback> callback,
+                        bool& suppress_message) override;
 
     private:
         dullahan_impl* mParent;
