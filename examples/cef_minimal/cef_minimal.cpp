@@ -214,8 +214,12 @@ class CefMinimal : public CefApp
         {
             CefSettings settings;
 
-            CefMainArgs args(GetModuleHandle(nullptr));
             CefString(&settings.browser_subprocess_path) = "dullahan_host.exe";
+			settings.windowless_rendering_enabled = true;
+			settings.no_sandbox = true;
+			settings.multi_threaded_message_loop = false;
+
+			CefMainArgs args(GetModuleHandle(nullptr));
 
             if (CefInitialize(args, settings, this, nullptr))
             {
@@ -322,22 +326,6 @@ int main(int argc, char* argv[])
 
             if (gExitFlag == false)
             {
-                static bool switched_to_test_page = false;
-                if (switched_to_test_page == false && time(nullptr) > start_time + 2)
-                {
-                    switched_to_test_page = true;
-                    std::cout << "Navigating to test URL page" << std::endl;
-                    cm->navigate("https://callum-linden.s3.amazonaws.com/bigclick.html");
-                }
-
-                static bool clicked_on_test_page = false;
-                if (clicked_on_test_page == false && time(nullptr) > start_time + 4)
-                {
-                    clicked_on_test_page = true;
-                    std::cout << "Clicking on test URL page" << std::endl;
-                    cm->clickCenter();
-                }
-
                 if (time(nullptr) > start_time + 10)
                 {
                     cm->requestExit();

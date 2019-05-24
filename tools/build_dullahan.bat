@@ -15,8 +15,8 @@ rem set VS_CMD=Visual Studio 14 2015
 rem Edit these variables to match the version of CEF & Chromium you want to use after
 rem deciding on the version you want to use from the Spotify open source build page
 rem here http://opensource.spotify.com/cefbuilds/index.html
-set CEF_VERSION=73.1.12+gee4b49f
-set CHROMIUM_VERSION=73.0.3683.75
+set CEF_VERSION=74.1.19+gb62bacf
+set CHROMIUM_VERSION=74.0.3729.157
 
 rem Edit this variable to point to the directory where you stored the download and 
 rem where you would like to store the resulting Dullahan compatible CEF build

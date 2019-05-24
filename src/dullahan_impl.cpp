@@ -139,6 +139,9 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
           @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
 #endif
 
+    // required for CEF 72+ to indicate headless
+    settings.windowless_rendering_enabled = true;
+
     // explicitly disable sandbox
     settings.no_sandbox = true;
 
@@ -158,14 +161,12 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     if (user_settings.user_agent_substring.length())
     {
         std::string user_agent(user_settings.user_agent_substring);
-        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(),
-                                 &settings.product_version);
+        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.product_version);
     }
     else
     {
         std::string user_agent = makeCompatibleUserAgentString("");
-        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(),
-                                 &settings.product_version);
+        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.product_version);
     }
 
     // list of language locale codes used to configure the Accept-Language HTTP header value
@@ -767,8 +768,7 @@ void dullahan_impl::postData(const std::string url, const std::string data,
         // TODO - get this from the headers parameter
         CefRequest::HeaderMap headerMap;
         headerMap.insert(std::make_pair("Accept", "*/*"));
-        headerMap.insert(std::make_pair("Content-Type",
-                                        "application/x-www-form-urlencoded"));
+        headerMap.insert(std::make_pair("Content-Type", "application/x-www-form-urlencoded"));
         request->SetHeaderMap(headerMap);
 
         // set up data
