@@ -219,6 +219,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS "/ignore:4099")
+
+    add_custom_command(
+        TARGET dullahan_host POST_BUILD
+        COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
+        COMMENT "Adding custom manifest...")
+
 endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 # Windows commands to copy CEF 'bin', 'resources' folders to executable dir (needed at runtime)
@@ -291,6 +297,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     endif()
 
+    add_custom_command(
+        TARGET webcube POST_BUILD
+        COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
+        COMMENT "Adding custom manifest...")
+
     ################################################################################
     ## simplegl example application using FreeGLUT
 
@@ -339,6 +350,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set_target_properties(simplegl PROPERTIES LINK_FLAGS "/ignore:4099")
     endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
+    add_custom_command(
+        TARGET simplegl POST_BUILD
+        COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
+        COMMENT "Adding custom manifest...")
+
     ################################################################################
     ## console example application
 
@@ -367,6 +383,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set_target_properties(console PROPERTIES LINK_FLAGS "/ignore:4099")
     endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+
+    add_custom_command(
+        TARGET console POST_BUILD
+        COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
+        COMMENT "Adding custom manifest...")
 
     ################################################################################
     ## minimal CEF console example (doesn't use Dullahan)
@@ -399,6 +420,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set_target_properties(cef_minimal PROPERTIES LINK_FLAGS "/ignore:4099")
     endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+
+    add_custom_command(
+        TARGET cef_minimal POST_BUILD
+        COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
+        COMMENT "Adding custom manifest...")
 
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
@@ -447,7 +473,6 @@ endif()
 ################################################################################
 # generic commands that have to go after everything else
 
-###### set only a Release configuration
 if(CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 endif()
