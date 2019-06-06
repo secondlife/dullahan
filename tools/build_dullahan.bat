@@ -112,7 +112,6 @@ msbuild libcef_dll_wrapper.vcxproj /property:Configuration="Release" %PLATFORM_C
 @popd
 
 @rem ******** bin folder ********
-@copy "%SRC_DIR%\Release\d3dcompiler_43.dll" "%DST_DIR%\bin\release"
 @copy "%SRC_DIR%\Release\d3dcompiler_47.dll" "%DST_DIR%\bin\release"
 @copy "%SRC_DIR%\Release\chrome_elf.dll" "%DST_DIR%\bin\release"
 @copy "%SRC_DIR%\Release\libcef.dll" "%DST_DIR%\bin\release"
@@ -124,7 +123,6 @@ msbuild libcef_dll_wrapper.vcxproj /property:Configuration="Release" %PLATFORM_C
 @copy "%SRC_DIR%\Release\swiftshader\libEGL.dll" "%DST_DIR%\bin\release\swiftshader"
 @copy "%SRC_DIR%\Release\swiftshader\libGLESv2.dll" "%DST_DIR%\bin\release\swiftshader"
 
-@copy "%SRC_DIR%\Debug\d3dcompiler_43.dll" "%DST_DIR%\bin\debug"
 @copy "%SRC_DIR%\Debug\d3dcompiler_47.dll" "%DST_DIR%\bin\debug"
 @copy "%SRC_DIR%\Debug\chrome_elf.dll" "%DST_DIR%\bin\debug"
 @copy "%SRC_DIR%\Debug\libcef.dll" "%DST_DIR%\bin\debug"
