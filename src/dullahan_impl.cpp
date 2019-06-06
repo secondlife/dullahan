@@ -40,6 +40,8 @@
 #include "include/wrapper/cef_library_loader.h"
 #endif
 
+
+
 dullahan_impl::dullahan_impl() :
     mInitialized(false),
     mBrowser(0),
@@ -144,6 +146,9 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     // explicitly disable sandbox
     settings.no_sandbox = true;
+
+    // CEF header file suggest that we need this now
+    settings.external_message_pump = true;
 
     // use a single thread for the message loop
     settings.multi_threaded_message_loop = false;

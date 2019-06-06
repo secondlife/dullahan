@@ -106,6 +106,7 @@ class app
 
         const std::string get_title();
         void set_homepage_url(std::string url);
+        bool isAllFinished();
 
     private:
         FILE* mConsole;
@@ -122,6 +123,7 @@ class app
         std::string mHomePageURL;
         dullahan* mDullahan;
         const std::string getHomePageURL();
+        bool mAllFinished;
 
         void init_dullahan();
 
@@ -142,6 +144,8 @@ class app
         void onRequestExitCallback();
         void onStatusMessage(const std::string message);
         void onTitleChange(const std::string title);
+
+
 };
 
 #endif // _WEBCUBE_EXAMPLE

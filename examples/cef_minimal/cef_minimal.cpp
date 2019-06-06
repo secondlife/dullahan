@@ -43,257 +43,259 @@
 bool gExitFlag = false;
 
 class RenderHandler :
-	public CefRenderHandler
+    public CefRenderHandler
 {
-public:
-	void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override
-	{
-		CEF_REQUIRE_UI_THREAD();
+    public:
+        void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) override
+        {
+            CEF_REQUIRE_UI_THREAD();
 
-		int width = 1024;
-		int height = 1024;
-		rect = CefRect(0, 0, width, height);
-		//std::cout << "GetViewRect() given size: " << width << " x " << height << std::endl;
-	}
+            int width = 1024;
+            int height = 1024;
+            rect = CefRect(0, 0, width, height);
 
-	void OnPaint(CefRefPtr<CefBrowser> browser,
-		PaintElementType type,
-		const RectList& dirtyRects,
-		const void* buffer,
-		int width, int height) override
-	{
-		CEF_REQUIRE_UI_THREAD();
+            std::cout << "GetViewRect() offered size: " << width << " x " << height << std::endl;
+        }
 
-		//std::cout << "OnPaint() called for size: " << width << " x " << height << std::endl;
-	}
+        void OnPaint(CefRefPtr<CefBrowser> browser,
+                     PaintElementType type,
+                     const RectList& dirtyRects,
+                     const void* buffer,
+                     int width, int height) override
+        {
+            CEF_REQUIRE_UI_THREAD();
 
-	IMPLEMENT_REFCOUNTING(RenderHandler);
+            std::cout << "OnPaint() called with size: " << width << " x " << height << std::endl;
+        }
+
+        IMPLEMENT_REFCOUNTING(RenderHandler);
 };
 
 class BrowserClient :
-	public CefClient,
-	public CefLifeSpanHandler
+    public CefClient,
+    public CefLifeSpanHandler
 {
-public:
-	BrowserClient(RenderHandler* render_handler) :
-		render_handler_(render_handler)
-	{
-	}
+    public:
+        BrowserClient(RenderHandler* render_handler) :
+            render_handler_(render_handler)
+        {
+        }
 
-	CefRefPtr<CefRenderHandler> GetRenderHandler() override
-	{
-		return render_handler_;
-	}
+        CefRefPtr<CefRenderHandler> GetRenderHandler() override
+        {
+            return render_handler_;
+        }
 
-	CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override
-	{
-		return this;
-	}
+        CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override
+        {
+            return this;
+        }
 
-	void OnAfterCreated(CefRefPtr<CefBrowser> browser) override
-	{
-		CEF_REQUIRE_UI_THREAD();
+        void OnAfterCreated(CefRefPtr<CefBrowser> browser) override
+        {
+            CEF_REQUIRE_UI_THREAD();
 
-		browser_list_.push_back(browser);
-	}
+            browser_list_.push_back(browser);
+        }
 
-	void OnBeforeClose(CefRefPtr<CefBrowser> browser) override
-	{
-		CEF_REQUIRE_UI_THREAD();
+        void OnBeforeClose(CefRefPtr<CefBrowser> browser) override
+        {
+            CEF_REQUIRE_UI_THREAD();
 
-		BrowserList::iterator bit = browser_list_.begin();
-		for (; bit != browser_list_.end(); ++bit)
-		{
-			if ((*bit)->IsSame(browser))
-			{
-				browser_list_.erase(bit);
-				break;
-			}
-		}
+            BrowserList::iterator bit = browser_list_.begin();
+            for (; bit != browser_list_.end(); ++bit)
+            {
+                if ((*bit)->IsSame(browser))
+                {
+                    browser_list_.erase(bit);
+                    break;
+                }
+            }
 
-		if (browser_list_.empty())
-		{
-			gExitFlag = true;
-		}
-	}
+            if (browser_list_.empty())
+            {
+                gExitFlag = true;
+            }
+        }
 
-	IMPLEMENT_REFCOUNTING(BrowserClient);
+        IMPLEMENT_REFCOUNTING(BrowserClient);
 
-private:
-	CefRefPtr<CefRenderHandler> render_handler_;
-	typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
-	BrowserList browser_list_;
+    private:
+        CefRefPtr<CefRenderHandler> render_handler_;
+        typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
+        BrowserList browser_list_;
 };
 
 class CefMinimal : public CefApp
 {
-public:
-	CefMinimal()
-	{
-		mInitialized = false;
-	}
+    public:
+        CefMinimal()
+        {
+            mInitialized = false;
+        }
 
-	bool init(int argc, char* argv[])
-	{
-		CefSettings settings;
-		settings.multi_threaded_message_loop = false;
-		settings.windowless_rendering_enabled = true;
+        bool init(int argc, char* argv[])
+        {
+            CefSettings settings;
+            settings.multi_threaded_message_loop = false;
+            settings.windowless_rendering_enabled = true;
 
-		CefEnableHighDPISupport();
+            CefEnableHighDPISupport();
 
-		CefMainArgs args(GetModuleHandle(nullptr));
+            CefMainArgs args(GetModuleHandle(nullptr));
 
-		if (CefInitialize(args, settings, this, nullptr))
-		{
-			std::cout << "CefMinimal initialized okay" << std::endl;
+            if (CefInitialize(args, settings, this, nullptr))
+            {
+                std::cout << "CefMinimal initialized okay" << std::endl;
 
-			CefWindowInfo window_info;
-			window_info.windowless_rendering_enabled = true;
-			window_info.shared_texture_enabled = false;
+                CefWindowInfo window_info;
+                window_info.windowless_rendering_enabled = true;
+                window_info.shared_texture_enabled = false;
 
-			CefBrowserSettings browser_settings;
-			browser_settings.windowless_frame_rate = 60;
-			browser_settings.background_color = 0xffffffff;
+                CefBrowserSettings browser_settings;
+                browser_settings.windowless_frame_rate = 60;
+                browser_settings.background_color = 0xffffffff;
 
-			render_handler_ = new RenderHandler();
+                render_handler_ = new RenderHandler();
 
-			browser_client_ = new BrowserClient(render_handler_);
+                browser_client_ = new BrowserClient(render_handler_);
 
-			CefString url = "https://news.google.com";
-			browser_ = CefBrowserHost::CreateBrowserSync(window_info, browser_client_.get(), url, browser_settings, nullptr);
+                CefString url = "https://news.google.com";
+                browser_ = CefBrowserHost::CreateBrowserSync(window_info, browser_client_.get(), url, browser_settings, nullptr);
 
-			if (browser_.get() && browser_->GetHost())
-			{
-				browser_->GetHost()->WasResized();
-			}
+                if (browser_.get() && browser_->GetHost())
+                {
+                    browser_->GetHost()->WasResized();
+                }
 
-			mInitialized = true;
+                mInitialized = true;
 
-			return true;
-		}
+                return true;
+            }
 
-		std::cout << "Unable to initialize" << std::endl;
-		return false;
-	}
+            std::cout << "Unable to initialize" << std::endl;
+            return false;
+        }
 
-	void update()
-	{
-		if (!mInitialized)
-		{
-			return;
-		}
+        void update()
+        {
+            if (!mInitialized)
+            {
+                return;
+            }
 
-		CefDoMessageLoopWork();
-	}
+            CefDoMessageLoopWork();
+        }
 
-	void navigate(std::string url)
-	{
-		if (browser_.get() && browser_->GetMainFrame())
-		{
-			std::cout << "Navigating to " << url << std::endl;
-			browser_->GetMainFrame()->LoadURL(url);
-		}
-	}
+        void navigate(std::string url)
+        {
+            if (browser_.get() && browser_->GetMainFrame())
+            {
+                std::cout << "Navigating to " << url << std::endl;
+                browser_->GetMainFrame()->LoadURL(url);
+            }
+        }
 
-	void requestExit()
-	{
-		if (browser_.get() && browser_->GetHost())
-		{
-			browser_->GetHost()->CloseBrowser(true);
-		}
-	}
+        void requestExit()
+        {
+            if (browser_.get() && browser_->GetHost())
+            {
+                browser_->GetHost()->CloseBrowser(true);
+            }
+        }
 
-	void shutdown()
-	{
-		render_handler_ = nullptr;
-		browser_client_ = nullptr;
-		browser_ = nullptr;
+        void shutdown()
+        {
+            render_handler_ = nullptr;
+            browser_client_ = nullptr;
+            browser_ = nullptr;
 
-		CefShutdown();
-	}
+            CefShutdown();
+        }
 
-	IMPLEMENT_REFCOUNTING(CefMinimal);
+        IMPLEMENT_REFCOUNTING(CefMinimal);
 
-private:
-	CefRefPtr<RenderHandler> render_handler_;
-	CefRefPtr<BrowserClient> browser_client_;
-	CefRefPtr<CefBrowser> browser_;
-	bool mInitialized;
+    private:
+        CefRefPtr<RenderHandler> render_handler_;
+        CefRefPtr<BrowserClient> browser_client_;
+        CefRefPtr<CefBrowser> browser_;
+        bool mInitialized;
 };
 
 int main(int argc, char* argv[])
 {
-	CefMainArgs main_args(GetModuleHandle(NULL));
-	int exit_code = CefExecuteProcess(main_args, NULL, nullptr);
-	if (exit_code >= 0)
-	{
-		return exit_code;
-	}
+    CefMainArgs main_args(GetModuleHandle(NULL));
+    int exit_code = CefExecuteProcess(main_args, NULL, nullptr);
+    if (exit_code >= 0)
+    {
+        return exit_code;
+    }
 
-	CefRefPtr<CefMinimal> cm = new CefMinimal();
+    CefRefPtr<CefMinimal> cm = new CefMinimal();
 
-	cm->init(argc, argv);
+    cm->init(argc, argv);
 
-	time_t start_time;
-	time(&start_time);
+    time_t start_time;
+    time(&start_time);
 
-	MSG msg;
-	int state = 0;
-	do
-	{
-		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-		else
-		{
-			cm->update();
+    MSG msg;
+    int state = 0;
+    do
+    {
+        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        else
+        {
+            cm->update();
 
-			if (gExitFlag == false)
-			{
-				if (time(nullptr) > start_time + 2)
-				{
-					if (state == 0)
-					{
-						cm->navigate("https://news.bbc.co.uk");
-						state = 1;
-					}
-				}
+            if (gExitFlag == false)
+            {
+                if (time(nullptr) > start_time + 2)
+                {
+                    if (state == 0)
+                    {
+                        cm->navigate("https://news.bbc.co.uk");
+                        state = 1;
+                    }
+                }
 
-				if (time(nullptr) > start_time + 4)
-				{
-					if (state == 1)
-					{
-						cm->navigate("https://www.imdb.com");
-						state = 2;
-					}
-				}
+                if (time(nullptr) > start_time + 4)
+                {
+                    if (state == 1)
+                    {
+                        cm->navigate("https://www.imdb.com");
+                        state = 2;
+                    }
+                }
 
-				if (time(nullptr) > start_time + 6)
-				{
-					if (state == 2)
-					{
-						cm->navigate("https://www.reddit.com");
-						state = 3;
-					}
-				}
+                if (time(nullptr) > start_time + 6)
+                {
+                    if (state == 2)
+                    {
+                        cm->navigate("https://www.reddit.com");
+                        state = 3;
+                    }
+                }
 
-				if (time(nullptr) > start_time + 15)
-				{
-					cm->requestExit();
-				}
-			}
-			else
-			{
-				PostQuitMessage(0);
-			}
-		}
-	} while (msg.message != WM_QUIT);
+                if (time(nullptr) > start_time + 15)
+                {
+                    cm->requestExit();
+                }
+            }
+            else
+            {
+                PostQuitMessage(0);
+            }
+        }
+    }
+    while (msg.message != WM_QUIT);
 
-	cm->shutdown();
+    cm->shutdown();
 
-	cm = nullptr;
+    cm = nullptr;
 
-	return 0;
+    return 0;
 }

@@ -69,6 +69,7 @@ app::app()
 
     mTextureWidth = 1024;
     mTextureHeight = 1024;
+    mAllFinished = false;
 
     // empty string means go load the page of test URLs
     // may be overridden by command line arg --homepage="URL"
@@ -785,6 +786,11 @@ void app::onPdfPrintFinished(const std::string path, bool ok)
 //
 void app::onRequestExitCallback()
 {
+    mAllFinished = true;
+
+    // posted a quit message no longer works as of CEF 74. Not sure why - I
+    // think it swallows the message before the app (like this one) gets to
+    // see it. Now we need to use an explicit flag
     PostQuitMessage(0);
 }
 
@@ -1136,6 +1142,13 @@ void app::closeConsole()
 
 /////////////////////////////////////////////////////////////////////////////////
 //
+bool app::isAllFinished()
+{
+    return mAllFinished;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     gApp = new app();
@@ -1236,7 +1249,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             SwapBuffers(hDC);
         }
     }
-    while (msg.message != WM_QUIT);
+    while (gApp->isAllFinished() == false);
 
     wglMakeCurrent(nullptr, nullptr);
     wglDeleteContext(hRC);
