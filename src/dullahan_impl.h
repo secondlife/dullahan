@@ -76,7 +76,7 @@ class dullahan_impl :
         void mouseButton(dullahan::EMouseButton mouse_button,
                          dullahan::EMouseEvent mouse_event, int x, int y);
         void mouseMove(int x, int y);
-        void mouseWheel(int deltaX, int deltaY);
+        void mouseWheel(int x, int y, int deltaX, int deltaY);
 
         void nativeKeyboardEventWin(uint32_t msg, uint32_t wparam, uint64_t lparam);
         void nativeKeyboardEventOSX(void* event);

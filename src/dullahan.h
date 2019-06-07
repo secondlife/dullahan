@@ -244,7 +244,7 @@ class dullahan
                          EMouseEvent mouse_event,
                          int x, int y);
         void mouseMove(int x, int y);
-        void mouseWheel(int delta_x, int delta_y);
+        void mouseWheel(int x, int y, int delta_x, int delta_y);
 
         // keyboard input
         void nativeKeyboardEventWin(uint32_t msg, uint32_t wparam, uint64_t lparam);

@@ -80,12 +80,14 @@ void dullahan_impl::mouseMove(int x, int y)
     }
 };
 
-void dullahan_impl::mouseWheel(int deltaX, int deltaY)
+void dullahan_impl::mouseWheel(int x, int y, int deltaX, int deltaY)
 {
     if (mBrowser && mBrowser->GetHost())
     {
         CefMouseEvent mouse_event;
-        mouse_event.modifiers = 0;
-        mBrowser->GetHost()->SendMouseWheelEvent(mouse_event, 0, deltaY);
+        mouse_event.x = x;
+        mouse_event.y = getFlipMouseY() ? (mViewHeight - y) : y;
+        mouse_event.modifiers = EVENTFLAG_LEFT_MOUSE_BUTTON;
+        mBrowser->GetHost()->SendMouseWheelEvent(mouse_event, deltaX, deltaY);
     }
 }

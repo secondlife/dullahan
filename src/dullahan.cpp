@@ -152,9 +152,9 @@ void dullahan::mouseButton(EMouseButton mouse_button,
     mImpl->mouseButton(mouse_button, mouse_event, x, y);
 }
 
-void dullahan::mouseWheel(int delta_x, int delta_y)
+void dullahan::mouseWheel(int x, int y, int delta_x, int delta_y)
 {
-    mImpl->mouseWheel(delta_x, delta_y);
+    mImpl->mouseWheel(x, y, delta_x, delta_y);
 }
 
 void dullahan::nativeKeyboardEventWin(uint32_t msg,
