@@ -78,7 +78,7 @@ class app
         void on_left_mouse_down(int x, int y, int face);
         void on_left_mouse_up(int x, int y, int face);
         void on_mouse_move(int x, int y, int face, bool left_button_down);
-        void on_mouse_wheel(int  delta_x, int delta_y);
+        void on_mouse_wheel(int x, int y, int  delta_x, int delta_y);
         void native_keyboard_event(uint32_t msg, uint64_t wparam, uint64_t lparam);
 
     public:

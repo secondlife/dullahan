@@ -832,9 +832,9 @@ void app::on_mouse_move(int x, int y, int face, bool left_button_down)
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-void app::on_mouse_wheel(int delta_x, int delta_y)
+void app::on_mouse_wheel(int x, int y, int delta_x, int delta_y)
 {
-    mDullahan->mouseWheel(delta_x, delta_y);
+    mDullahan->mouseWheel(x, y, delta_x, delta_y);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -1080,9 +1080,18 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             else
             {
+                // location of mouse cursor when wheel was moved
+                int mouse_x = LOWORD(lParam);
+                int mouse_y = HIWORD(lParam);
+
+                // use the mouse position to get the position on a face in texture
+                int texture_x, texture_y, texture_face;
+                gApp->windowPosToTexturePos(mouse_x, mouse_y, texture_x, texture_y, texture_face);
+
+                // synthesize a virtual mouse wheel event (clamp X delta for now)
                 int delta_x = 0;
                 int delta_y = GET_WHEEL_DELTA_WPARAM(wParam);
-                gApp->on_mouse_wheel(delta_x, delta_y);
+                gApp->on_mouse_wheel(texture_x, texture_y, delta_x, delta_y);
             }
             return 0;
         };
