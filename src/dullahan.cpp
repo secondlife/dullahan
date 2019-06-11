@@ -359,6 +359,11 @@ void dullahan::setOnTitleChangeCallback(std::function<void(const std::string tit
     mImpl->getCallbackManager()->setOnTitleChangeCallback(callback);
 }
 
+void dullahan::setOnTooltipCallback(std::function<void(const std::string text)> callback)
+{
+    mImpl->getCallbackManager()->setOnTooltipCallback(callback);
+}
+
 void dullahan::setOnPdfPrintFinishedCallback(std::function<void(const std::string path, bool ok)> callback)
 {
     mImpl->getCallbackManager()->setOnPdfPrintFinishedCallback(callback);

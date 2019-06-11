@@ -80,6 +80,8 @@ class dullahan_browser_client :
                              const CefString& value) override;
         void OnTitleChange(CefRefPtr<CefBrowser> browser,
                            const CefString& title) override;
+        bool OnTooltip(CefRefPtr<CefBrowser> browser,
+                           CefString& text) override;
 
         // CefLoadHandler overrides
         CefRefPtr<CefLoadHandler> GetLoadHandler() override

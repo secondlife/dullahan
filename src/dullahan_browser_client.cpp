@@ -177,6 +177,16 @@ void dullahan_browser_client::OnTitleChange(CefRefPtr<CefBrowser> browser,
     mParent->getCallbackManager()->onTitleChange(std::string(title));
 }
 
+// CefDisplayhandler overrides
+bool dullahan_browser_client::OnTooltip(CefRefPtr<CefBrowser> browser,
+        CefString& text)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    mParent->getCallbackManager()->OnTooltip(std::string(text));
+    return false;
+}
+
 // CefLoadHandler override
 void dullahan_browser_client::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
         bool isLoading, bool canGoBack, bool canGoForward)

@@ -346,6 +346,8 @@ class dullahan
         // page title changes
         void setOnTitleChangeCallback(std::function<void(const std::string title)> callback);
 
+        void setOnTooltipCallback(std::function<void(const std::string text)> callback);
+
         // a call to printToPDF completed
         void setOnPdfPrintFinishedCallback(std::function<void(const std::string path, bool ok)> callback);
 

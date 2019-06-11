@@ -73,6 +73,9 @@ class dullahan_callback_manager
         void setOnTitleChangeCallback(std::function<void(const std::string title)> callback);
         void onTitleChange(const std::string title);
 
+        void setOnTooltipCallback(std::function<void(const std::string text)> callback);
+        void OnTooltip(const std::string text);
+
         void setOnPdfPrintFinishedCallback(std::function<void(const std::string path, bool ok)> callback);
         void onPdfPrintFinished(const std::string path, bool ok);
 
@@ -99,6 +102,7 @@ class dullahan_callback_manager
         std::function<void(const std::string)> mOnStatusMessageCallbackFunc;
         std::function<void()> mOnRequestExitCallbackFunc;
         std::function<void(const std::string)> mOnTitleChangeCallbackFunc;
+        std::function<void(const std::string)> mOnTooltipCallbackFunc;
         std::function<void(const std::string, bool)> mOnPdfPrintFinishedCallbackFunc;
         std::function<void(int percent, bool complete)> mOnFileDownloadProgressCallbackFunc;
         std::function<const std::vector<std::string>(dullahan::EFileDialogType, const std::string, const std::string, const std::string, bool&)> mOnFileDialogCallbackFunc;

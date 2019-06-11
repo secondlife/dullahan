@@ -204,6 +204,19 @@ void dullahan_callback_manager::onTitleChange(const std::string title)
     }
 }
 
+void dullahan_callback_manager::setOnTooltipCallback(std::function<void(const std::string text)> callback)
+{
+    mOnTooltipCallbackFunc = callback;
+}
+
+void dullahan_callback_manager::OnTooltip(const std::string text)
+{
+    if (mOnTooltipCallbackFunc)
+    {
+        mOnTooltipCallbackFunc(text);
+    }
+}
+
 void dullahan_callback_manager::setOnPdfPrintFinishedCallback(std::function<void(const std::string path, bool ok)> callback)
 {
     mOnPdfPrintFinishedCallbackFunc = callback;
