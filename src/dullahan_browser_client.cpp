@@ -179,7 +179,7 @@ void dullahan_browser_client::OnTitleChange(CefRefPtr<CefBrowser> browser,
 
 // CefDisplayhandler overrides
 bool dullahan_browser_client::OnTooltip(CefRefPtr<CefBrowser> browser,
-        CefString& text)
+                                        CefString& text)
 {
     CEF_REQUIRE_UI_THREAD();
 

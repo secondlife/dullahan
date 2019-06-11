@@ -65,7 +65,7 @@ class RenderHandler :
         {
             CEF_REQUIRE_UI_THREAD();
 
-            // display dirty rectangles - oddly each one comes in on its own (array size of 1) vs 
+            // display dirty rectangles - oddly each one comes in on its own (array size of 1) vs
             // collecting them together - probably a good reason :)
             std::cout << "OnPaint() called with size: " << width << " x " << height << std::endl;
             for (int r = 0; r < dirtyRects.size(); r++)

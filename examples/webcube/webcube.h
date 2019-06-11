@@ -144,8 +144,7 @@ class app
         void onRequestExitCallback();
         void onStatusMessage(const std::string message);
         void onTitleChange(const std::string title);
-
-
+        void onTooltip(const std::string title);
 };
 
 #endif // _WEBCUBE_EXAMPLE

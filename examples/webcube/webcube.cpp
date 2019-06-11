@@ -115,6 +115,7 @@ void app::init_dullahan()
     mDullahan->setOnStatusMessageCallback(std::bind(&app::onStatusMessage, this, std::placeholders::_1));
     mDullahan->setOnTitleChangeCallback(std::bind(&app::onTitleChange, this, std::placeholders::_1));
     mDullahan->setOnJSDialogCallback(std::bind(&app::onJSDialogCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    mDullahan->setOnTooltipCallback(std::bind(&app::onTooltip, this, std::placeholders::_1));
 
     std::vector<std::string> custom_schemes(1, "secondlife");
     mDullahan->setCustomSchemes(custom_schemes);
@@ -806,6 +807,13 @@ void app::onStatusMessage(const std::string message)
 void app::onTitleChange(const std::string title)
 {
     std::cout << "onTitleChange: " << title << std::endl;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+void app::onTooltip(const std::string tooltip)
+{
+    std::cout << "onTooltip: " << tooltip << std::endl;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
