@@ -36,10 +36,13 @@
 #define _DULLAHAN_VERSION
 
 // version of this package
-// TODO: find a way to set build number directly from hg
 #define DULLAHAN_VERSION_MAJOR 1
-#define DULLAHAN_VERSION_MINOR 1
-#define DULLAHAN_VERSION_BUILD 2222
+#define DULLAHAN_VERSION_MINOR 2
+
+// The build version number as of v1.2 is the number of "10 minutes since 2000-01-01"
+// Still not sure if this is a good idea but it was better than a value selected
+// randomly when the version needed to be bumped. To be continued...
+#define DULLAHAN_VERSION_BUILD 1022544
 
 // version numbers pulled from CEF build via Cmake
 @CEF_VERSION_STR@

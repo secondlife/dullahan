@@ -222,7 +222,6 @@ int main(int argc, char* argv[])
     settings.background_color = 0x80ffffff;
     settings.cache_enabled = true;
     settings.cache_path = ".\\cache";
-    settings.cookie_store_path = ".\\cookies";
     settings.cookies_enabled = true;
     settings.disable_gpu = false;
     settings.disable_web_security = false;

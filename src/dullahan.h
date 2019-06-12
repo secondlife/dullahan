@@ -162,11 +162,8 @@ class dullahan
             bool plugins_enabled = true;                // all plugins
             bool webgl_enabled = true;                  // webgl
 
-            // path to browser cache
+            // path to browser cache - cookies (if enabled) are also stored here as of Chrome 75
             std::string cache_path = "";
-
-            // path to cookie store
-            std::string cookie_store_path = "";
 
             // list of language locale codes used to configure the Accept-Language HTTP header value
             // and change the default language of the browser

@@ -168,7 +168,7 @@ class CefMinimal : public CefApp
                 browser_client_ = new BrowserClient(render_handler_);
 
                 CefString url = "https://news.google.com";
-                browser_ = CefBrowserHost::CreateBrowserSync(window_info, browser_client_.get(), url, browser_settings, nullptr);
+                browser_ = CefBrowserHost::CreateBrowserSync(window_info, browser_client_.get(), url, browser_settings, nullptr, nullptr);
 
                 if (browser_.get() && browser_->GetHost())
                 {

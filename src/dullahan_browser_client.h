@@ -57,12 +57,18 @@ class dullahan_browser_client :
         {
             return this;
         }
-        bool OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                           const CefString& target_url, const CefString& target_frame_name,
+        bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<CefFrame> frame,
+                           const CefString& target_url,
+                           const CefString& target_frame_name,
                            CefLifeSpanHandler::WindowOpenDisposition target_disposition,
-                           bool user_gesture, const CefPopupFeatures& popupFeatures,
-                           CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client,
-                           CefBrowserSettings& settings, bool* no_javascript_access) override;
+                           bool user_gesture,
+                           const CefPopupFeatures& popupFeatures,
+                           CefWindowInfo& windowInfo,
+                           CefRefPtr<CefClient>& client,
+                           CefBrowserSettings& settings,
+                           CefRefPtr<CefDictionaryValue>& extra_info,
+                           bool* no_javascript_access) override;
         void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
         void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
         bool DoClose(CefRefPtr<CefBrowser> browser) override;
@@ -114,10 +120,6 @@ class dullahan_browser_client :
                             const CefString& origin_url,
                             int64 new_size,
                             CefRefPtr<CefRequestCallback> callback) override;
-        CefRequestHandler::ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
-                CefRefPtr<CefFrame> frame,
-                CefRefPtr<CefRequest> request,
-                CefRefPtr<CefRequestCallback> callback) override;
 
         // CefDownloadHandler overrides
         CefRefPtr<CefDownloadHandler> GetDownloadHandler() override

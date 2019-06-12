@@ -55,11 +55,16 @@ CefRefPtr<CefRenderHandler> dullahan_browser_client::GetRenderHandler()
 // CefLifeSpanHandler override
 bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
         CefRefPtr<CefFrame> frame,
-        const CefString& target_url, const CefString& target_frame_name,
+        const CefString& target_url,
+        const CefString& target_frame_name,
         CefLifeSpanHandler::WindowOpenDisposition target_disposition,
-        bool user_gesture, const CefPopupFeatures& popupFeatures,
-        CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client,
-        CefBrowserSettings& settings, bool* no_javascript_access)
+        bool user_gesture,
+        const CefPopupFeatures& popupFeatures,
+        CefWindowInfo& windowInfo,
+        CefRefPtr<CefClient>& client,
+        CefBrowserSettings& settings,
+        CefRefPtr<CefDictionaryValue>& extra_info,
+        bool* no_javascript_access)
 {
     CEF_REQUIRE_UI_THREAD();
 
@@ -317,18 +322,6 @@ bool dullahan_browser_client::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
 
     callback->Continue(new_size <= max_size);
     return true;
-}
-
-// CefRequestHandler override
-CefRequestHandler::ReturnValue dullahan_browser_client::OnBeforeResourceLoad(
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefFrame> frame,
-    CefRefPtr<CefRequest> request,
-    CefRefPtr<CefRequestCallback> callback)
-{
-    CEF_REQUIRE_IO_THREAD();
-
-    return RV_CONTINUE;
 }
 
 // CefDownloadHandler overrides

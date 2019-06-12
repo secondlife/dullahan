@@ -13,8 +13,8 @@
 @rem Edit these variables to match the version of CEF & Chromium you want to use after
 @rem deciding on the version you want to use from the Spotify open source build page
 @rem here http://opensource.spotify.com/cefbuilds/index.html
-@set CEF_VERSION=74.1.19+gb62bacf
-@set CHROMIUM_VERSION=74.0.3729.157
+@set CEF_VERSION=75.0.1+gb5e74dd
+@set CHROMIUM_VERSION=75.0.3770.80
 
 @rem Edit this variable to point to the directory where you stored the download and 
 @rem where you would like to store the resulting Dullahan compatible CEF build

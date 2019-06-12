@@ -123,8 +123,6 @@ add_library(
     src/dullahan_browser_client.h
     src/dullahan_callback_manager.cpp
     src/dullahan_callback_manager.h
-    src/dullahan_context_handler.cpp
-    src/dullahan_context_handler.h
     src/dullahan_debug.h
     src/dullahan_impl.cpp
     src/dullahan_impl.h

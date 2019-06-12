@@ -32,7 +32,6 @@
 #include "dullahan_render_handler.h"
 #include "dullahan_browser_client.h"
 #include "dullahan_callback_manager.h"
-#include "dullahan_context_handler.h"
 
 #include "include/cef_waitable_event.h"
 
@@ -153,6 +152,9 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     // use a single thread for the message loop
     settings.multi_threaded_message_loop = false;
 
+    // act like a browser and do not persist session cookies ever
+    settings.persist_session_cookies = false;
+
     // turn on only for Windows 7+
     CefEnableHighDPISupport();
 
@@ -256,22 +258,13 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     CefRefPtr<CefCookieManager> manager = CefCookieManager::GetGlobalManager(nullptr);
     if (manager)
     {
-        // act like a browser and do not persist session cookies ever
-        bool persist_session_coookies = false;
-
-        if (user_settings.cookies_enabled == true)
+        if (user_settings.cookies_enabled == false)
         {
-            std::string cookie_path = ".\\cookies";
-            if (user_settings.cookie_store_path.length())
-            {
-                cookie_path = std::string(user_settings.cookie_store_path);
-            }
-            manager->SetStoragePath(cookie_path, persist_session_coookies, nullptr);
-        }
-        else
-        {
-            // setting empty storage path causes cookies to only be stored in memory and not persisted to disk
-            manager->SetStoragePath("", persist_session_coookies, nullptr);
+            // this appears to be the way to disable cookies - empty list of schemes to accept and no defaults
+            const std::vector<CefString> empty_list;
+            const bool include_defaults = false;
+            CefRefPtr<CefCompletionCallback> callback = nullptr;
+            manager->SetSupportedSchemes(empty_list, include_defaults, callback);
         }
     }
 
@@ -280,7 +273,8 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     CefString url = std::string();
     CefRefPtr<CefRequestContext> request_context = nullptr;
-    mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), url, browser_settings, request_context);
+    CefRefPtr<CefDictionaryValue> extra_info = nullptr;
+    mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), url, browser_settings, extra_info, request_context);
 
     // important: set the size *after* we create a browser
     setSize(user_settings.initial_width, user_settings.initial_height);
@@ -297,7 +291,6 @@ void dullahan_impl::shutdown()
     mBrowser = nullptr;
     mRenderHandler = nullptr;
     mBrowserClient = nullptr;
-    mContextHandler = nullptr;
 
     CefShutdown();
 }

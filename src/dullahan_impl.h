@@ -137,7 +137,6 @@ class dullahan_impl :
         CefRefPtr<dullahan_browser_client> mBrowserClient;
         CefRefPtr<dullahan_render_handler> mRenderHandler;
         CefRefPtr<CefBrowser> mBrowser;
-        CefRefPtr<dullahan_context_handler> mContextHandler;
         dullahan_callback_manager* mCallbackManager;
 
         bool mInitialized;
