@@ -39,10 +39,14 @@
 #define DULLAHAN_VERSION_MAJOR 1
 #define DULLAHAN_VERSION_MINOR 2
 
-// The build version number as of v1.2 is the number of "10 minutes since 2000-01-01"
-// Still not sure if this is a good idea but it was better than a value selected
-// randomly when the version needed to be bumped. To be continued...
-#define DULLAHAN_VERSION_BUILD 1022544
+// The build version number as of v1.2 is now the date/time the build was made
+// It is only regenerated if the constructed version header (dullahan_version.h)
+// is not present when the Cmake script is executed. Not perfect - one can still
+// have different build numbers for same set of source files - but it thankfully
+// removed the requirement to remember to change the version/build number each
+// time a change is made to the Dullahan source (which was often missed).
+// Credit for suggestion to Henri Beauchamp
+@BUILDNUMBER@
 
 // version numbers pulled from CEF build via Cmake
 @CEF_VERSION_STR@

@@ -148,16 +148,27 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 ################################################################################
-## parse CEF version header and process into dullahan header
-FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CEF_VERSION_STR REGEX "\#define CEF_VERSION ")
-FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MAJOR_STR REGEX "\#define CHROME_VERSION_MAJOR ")
-FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MINOR_STR REGEX "\#define CHROME_VERSION_MINOR ")
-FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_BUILD_STR REGEX "\#define CHROME_VERSION_BUILD ")
-FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_PATCH_STR REGEX "\#define CHROME_VERSION_PATCH ")
-CONFIGURE_FILE (
-  "${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in"
-  "${PROJECT_SOURCE_DIR}/src/dullahan_version.h"
-)
+## Parse CEF version header and process into dullahan header.
+## Only do this if it's a clean build (try to keep version/build number
+## the same for the same set of source files)
+if (NOT EXISTS "${PROJECT_SOURCE_DIR}/src/dullahan_version.h")
+
+    # Extract CEF/Chrome version info from CEF header 
+    FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CEF_VERSION_STR REGEX "\#define CEF_VERSION ")
+    FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MAJOR_STR REGEX "\#define CHROME_VERSION_MAJOR ")
+    FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MINOR_STR REGEX "\#define CHROME_VERSION_MINOR ")
+    FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_BUILD_STR REGEX "\#define CHROME_VERSION_BUILD ")
+    FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_PATCH_STR REGEX "\#define CHROME_VERSION_PATCH ")
+ 
+    # Create a build number based on the actual build date/time
+    string(TIMESTAMP BUILDNUMBER "#define DULLAHAN_VERSION_BUILD %Y%m%d%H%M")
+
+    # Parse the version input file into the Dullahan version header
+    CONFIGURE_FILE (
+      "${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in"
+      "${PROJECT_SOURCE_DIR}/src/dullahan_version.h"
+    )
+endif ()
 
 ################################################################################
 ## dullahan host executable
