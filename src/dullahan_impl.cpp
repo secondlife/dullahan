@@ -158,6 +158,9 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     // turn on only for Windows 7+
     CefEnableHighDPISupport();
 
+    // explicitly set the path to the locales folder since defaults no longer work on some systems
+    CefString(&settings.locales_dir_path) = user_settings.locales_dir_path;
+
     // set path to cache if enabled and set
     if (user_settings.cache_enabled && user_settings.cache_path.length())
     {

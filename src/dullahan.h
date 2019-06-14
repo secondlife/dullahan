@@ -162,6 +162,9 @@ class dullahan
             bool plugins_enabled = true;                // all plugins
             bool webgl_enabled = true;                  // webgl
 
+            // explicitly set the path to the locales folder since defaults no longer work on some systems
+            std::string locales_dir_path = "";
+
             // path to browser cache - cookies (if enabled) are also stored here as of Chrome 75
             std::string cache_path = "";
 
