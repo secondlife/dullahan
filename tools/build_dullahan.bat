@@ -13,7 +13,7 @@
 @rem Edit these variables to match the version of CEF & Chromium you want to use after
 @rem deciding on the version you want to use from the Spotify open source build page
 @rem here http://opensource.spotify.com/cefbuilds/index.html
-@set CEF_VERSION=75.0.7+g19229b6
+@set CEF_VERSION=75.0.8+g5da93a1
 @set CHROMIUM_VERSION=75.0.3770.80
 
 @rem Edit this variable to point to the directory where you stored the download and 
