@@ -2,10 +2,10 @@
 @rem See the README.md file in this directory for how to download or build 
 @rem a compatible version.
 @rem
-@rem Usage: tools\build_win.bat <cef_build_dir> <bit width>
+@rem Usage: tools\build_dullahan_win.bat <cef_build_dir> <bit width>
 @rem
-@rem Example: tools\build_win.bat ".\cef\76.1.13+gf19c584" 64
-@rem          tools\build_win.bat "c:\cef_builds\sandbox\cef77.4" 32
+@rem Example: tools\build_dullahan_win.bat ".\cef\76.1.13+gf19c584" 64
+@rem          tools\build_dullahan_win.bat "c:\cef_builds\sandbox\cef77.4" 32
 @rem
 @rem Note: There is a .\cef directory present in this repo - that's a good
 @rem       location to put CEF builds since it's ignored by Mercurial.
@@ -57,14 +57,14 @@
 @if "%BIT_WIDTH%"=="32" (
     @set BUILD_DIR=build
     @set CMAKE_CMD="%VS_CMD%"
-    @set PLATFORM_CMD="/property:Platform=x86"
+    @set PLATFORM_CMD="/property:PlatformTarget=x86"
 )
 
 @rem Set up build parameters for 64 bit builds
 @if "%BIT_WIDTH%"=="64" (
     @set BUILD_DIR=build64
     @set CMAKE_CMD="%VS_CMD% Win64"
-    @set PLATFORM_CMD="/property:Platform=x64"
+    @set PLATFORM_CMD="/property:PlatformTarget=x64"
 )
 
 @rem Helpful, reassuring description of what we are doing....
@@ -93,11 +93,12 @@
 @if errorlevel 1 goto End
 
 @rem Build the Debug configuration of Dullahan
-@msbuild dullahan.sln /p:Configuration=Debug %PLATFORM_CMD%
+@pause here 1
+@msbuild dullahan.sln /property:Configuration="Debug" %PLATFORM_CMD%
 @if errorlevel 1 goto End
 
 @rem Build the Release configuration of Dullahan
-@msbuild dullahan.sln /p:Configuration=Release %PLATFORM_CMD%
+@msbuild dullahan.sln /property:Configuration="Release" %PLATFORM_CMD%
 @if errorlevel 1 goto End
 
 @rem Looks like everything worked - open our Visual Studio solution
