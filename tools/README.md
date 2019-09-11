@@ -1,24 +1,21 @@
 # Tools that are useful for working with CEF and Dullahan
 
-`build_dullahan.bat`
+`build_cef_wrapper_win.bat`
 
-Simple batch file to build CEF then Dullahan as well as an example applications. Pass in 32 or 64 for 32/64bit versions.
+Batch file that builds the Windows 32/64 version of Dullahan as well as some example applications. See the notes at the top of the file for usage etc.
 
-`build_mac.sh`
+`build_dullahan_mac.sh`
 
-Simple shell script to build 64 bit macOS version of Dullahan.
+Shell script that builds the macOS 64 version of Dullahan as well as some example applications. See the notes at the top of the file for usage etc.
 
-`make_dullahan_cef_pkg.sh`
+`build_dullahan_win.bat`
 
-A simple macOS shell script that uses a CEF build from the [Spotify](http://opensource.spotify.com/cefbuilds/index.html) CEF site and extracts files (headers, libs, frameworks etc.) that Dullahan needs.
+Batch file that builds a version of the CEF wrapper which is compatible with Dullahan given a Spotify open source CEF build or a local build of Chromium/CEF you have completed yourself. See the notes at the top of the file for usage etc.
+
+`build_dullahan_mac.sh`
+
+Shell script that builds a version of the CEF wrapper which is compatible with Dullahan given a Spotify open source CEF build or a local build of Chromium/CEF you have completed yourself. See the notes at the top of the file for usage etc.
 
 `astyle.bat`
 
 I find it useful to use [Artistic Style](http://astyle.sourceforge.net/) to reformat the code occasionally and maintain control of tabs/space and line endings. This batch file assumes astyle is installed on your system and runs it with selected command line options.
-
-`generate_build_version_number.bat`
-
-I wanted a way to version small changes over time and everything else I looked at didn't do the trick.
-I am going to try using the "integer number of 10 minutes's since 2000-01-01" and see how that goes.
-Each time I want to increase the build version number, I run this script and paste the output into
-the DULLAHAN_VERSION_BUILD value in src/dullahan_version.h.in. We will see if this is a good idea...

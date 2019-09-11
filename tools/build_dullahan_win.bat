@@ -93,7 +93,6 @@
 @if errorlevel 1 goto End
 
 @rem Build the Debug configuration of Dullahan
-@pause here 1
 @msbuild dullahan.sln /property:Configuration="Debug" %PLATFORM_CMD%
 @if errorlevel 1 goto End
 
