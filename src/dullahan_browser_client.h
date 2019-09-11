@@ -112,10 +112,10 @@ class dullahan_browser_client :
         }
         bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                             CefRefPtr<CefRequest> request, bool user_gesture, bool isRedirect) override;
-        bool GetAuthCredentials(CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefFrame> frame,
-                                bool isProxy, const CefString& host, int port, const CefString& realm,
+        bool GetAuthCredentials(CefRefPtr<CefBrowser> browser, const CefString& origin_url, bool isProxy,
+                                const CefString& host, int port, const CefString& realm,
                                 const CefString& scheme, CefRefPtr<CefAuthCallback> callback) override;
+
         bool OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                             const CefString& origin_url,
                             int64 new_size,

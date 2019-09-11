@@ -6,6 +6,10 @@
 build/
 build64/
 
+# CEF builds folder
+./cef/*
+!cef/README.md
+
 glob:*.wwdb
 
 # misc files

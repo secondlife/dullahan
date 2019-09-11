@@ -260,7 +260,10 @@ bool dullahan_browser_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
     std::string url = request->GetURL();
 
     // for conmparison
-    std::transform(url.begin(), url.end(), url.begin(), ::tolower);
+    std::transform(url.begin(), url.end(), url.begin(), [](char c)
+    {
+        return static_cast<char>(tolower(c));
+    });
 
     std::vector<std::string>::iterator iter = mParent->getCustomSchemes().begin();
     while (iter != mParent->getCustomSchemes().end())
@@ -282,9 +285,8 @@ bool dullahan_browser_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
 }
 
 // CefRequestHandler override
-bool dullahan_browser_client::GetAuthCredentials(CefRefPtr<CefBrowser> browser,
-        CefRefPtr<CefFrame> frame,
-        bool isProxy, const CefString& host, int port, const CefString& realm,
+bool dullahan_browser_client::GetAuthCredentials(CefRefPtr<CefBrowser> browser, const CefString& origin_url, bool isProxy,
+        const CefString& host, int port, const CefString& realm,
         const CefString& scheme, CefRefPtr<CefAuthCallback> callback)
 {
     CEF_REQUIRE_IO_THREAD();

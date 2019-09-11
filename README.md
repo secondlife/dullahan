@@ -7,6 +7,9 @@ A headless browser SDK that uses the [Chromium Embedded Framework](https://en.wi
 #### **Important note**: 
 This is a __very__ early release - more than alpha quality but less than beta. I have high hopes this will develop into something useful but there is still a lot of work to do first.
 
+#### **Documentation needs updating**:
+The parts of this document that relate to building CEF are outdated as of 2019-09-11 and need to be updated. Once I have all the scripts working again on both Windows and macOS, I will update this document accordingly.
+
 ## What could I use it for?
 
 It might be useful in a number of situations - for example:

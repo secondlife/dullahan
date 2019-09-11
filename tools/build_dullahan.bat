@@ -1,3 +1,10 @@
+@rem ####################################################
+@rem THIS FILE IS DEPRECATED AND WILL BE REMOVED SOON
+@rem ####################################################
+
+@echo This file is deprecated
+@exit
+
 @rem This new batch file builds the CEF wrapper and then Dullahan once
 @rem you set the variables below: CEF_VERSION, CHROMIUM_VERSION and CEF_SRC_DST_DIR
 @rem Eventually, it will replace both make_dullahan_cef_pkg.bat and build_win.bat.
@@ -5,7 +12,7 @@
 @rem have to specify a cef_builds folder, etc.) but this is a good start.
 
 @pushd .
-@set VS_CMD=Visual Studio 12 2013
+@set VS_CMD=Visual Studio 15 2017
 
 @rem uncomment this line or change one above for VS2015 builds
 @rem set VS_CMD=Visual Studio 14 2015
@@ -13,8 +20,8 @@
 @rem Edit these variables to match the version of CEF & Chromium you want to use after
 @rem deciding on the version you want to use from the Spotify open source build page
 @rem here http://opensource.spotify.com/cefbuilds/index.html
-@set CEF_VERSION=75.0.11+gf50b3c2
-@set CHROMIUM_VERSION=75.0.3770.100
+@set CEF_VERSION=76.1.13+gf19c584
+@set CHROMIUM_VERSION=76.0.3809.132
 
 @rem Edit this variable to point to the directory where you stored the download and 
 @rem where you would like to store the resulting Dullahan compatible CEF build
@@ -31,6 +38,13 @@
 @set DST_DIR_32=%SRC_DIR_32%_dullahan
 @set SRC_DIR_64=%CEF_SRC_DST_DIR%\%BASE_NAME%windows64
 @set DST_DIR_64=%SRC_DIR_64%_dullahan
+
+
+@set SRC_DIR_64=%CEF_SRC_DST_DIR%\cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows64
+@set SRC_DIR_64=%CEF_SRC_DST_DIR%\cef_src-76.1.13+gf19c584+chromium-76.0.3809.132-windows64-509660
+@set DST_DIR_64=%SRC_DIR_64%_dullahan_new
+
+
 
 @if "%1"=="32" goto BitWidth32
 @if "%1"=="64" goto BitWidth64
@@ -94,14 +108,13 @@ mkdir %DST_DIR%
 @if exist %BUILD_DIR% del /s /q %BUILD_DIR%
 @if exist %BUILD_DIR% rmdir /s /q %BUILD_DIR%
 
+
 @mkdir %BUILD_DIR%
 @cd /d %BUILD_DIR%
-@cmake -G %CMAKE_CMD% ..
+@rem Note that we invoke the option to use the dynamic runtime library for the CEF wrapper 
+@rem since that is what we use everywhere else - remove the -D flag to revert to /MT
+@cmake -G %CMAKE_CMD% .. -DCEF_RUNTIME_LIBRARY_FLAG=/MD
 @cd libcef_dll_wrapper
-
-@rem swap /MT for /MD because that's what we use (cringe - why isn't this an option in CMake)
-powershell -Command "(get-content libcef_dll_wrapper.vcxproj) | ForEach-Object { $_ -replace '>MultiThreadedDebug<', '>MultiThreadedDebugDLL<' } | set-content libcef_dll_wrapper.vcxproj"
-powershell -Command "(get-content libcef_dll_wrapper.vcxproj) | ForEach-Object { $_ -replace '>MultiThreaded<', '>MultiThreadedDLL<' } | set-content libcef_dll_wrapper.vcxproj"
 
 msbuild libcef_dll_wrapper.vcxproj /property:Configuration="Debug" %PLATFORM_CMD%
 msbuild libcef_dll_wrapper.vcxproj /property:Configuration="Release" %PLATFORM_CMD%
