@@ -53,6 +53,7 @@ dullahan_impl::dullahan_impl() :
     mForceWaveAudio(false),
     mDisableGPU(true),
     mDisableWebSecurity(false),
+    mDisableNetworkService(false),
     mAutoPlayWithoutGesture(false),
     mFlipPixelsY(false),
     mFlipMouseY(false),
@@ -103,6 +104,11 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         if (mDisableWebSecurity)
         {
             command_line->AppendSwitch("--disable-web-security");
+        }
+
+        if (mDisableNetworkService)
+        {
+            command_line->AppendSwitch("‘--disable-features=NetworkService");
         }
 
         if (mAutoPlayWithoutGesture)
@@ -211,6 +217,12 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     // in the viewer to open a web page that references locally generated images without
     // needing a web server.
     mDisableWebSecurity = user_settings.disable_web_security;
+
+    // this flag if set, adds a command line parameter that disables "network service" and
+    // is like adding --disable-features=NetworkService. This appears to be required after
+    // Chrome 75 to disable the "Chrome wants access to passwords" dialog on macOS that
+    // started to appear. May change later.
+    mDisableNetworkService = user_settings.disable_network_service;
 
     // this flag, if set, allows video/audio to autoplay if the URL parameters are configured
     // correctly to do so. (by default as of Chrome 70, audio/video does not autoplay)
@@ -878,6 +890,8 @@ const std::string dullahan_impl::dullahan_version(bool show_bitwidth)
     s << DULLAHAN_VERSION_MAJOR;
     s << ".";
     s << DULLAHAN_VERSION_MINOR;
+    s << ".";
+    s << DULLAHAN_VERSION_POINT;
     s << ".";
     s << DULLAHAN_VERSION_BUILD;
 

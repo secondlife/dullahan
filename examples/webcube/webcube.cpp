@@ -128,6 +128,7 @@ void app::init_dullahan()
     settings.cache_path = ".\\webcube_cache";
     settings.cookies_enabled = true;
     settings.disable_gpu = false;
+	settings.disable_network_service = false;
     settings.disable_web_security = false;
     settings.file_access_from_file_urls = false;
     settings.flash_enabled = false;
