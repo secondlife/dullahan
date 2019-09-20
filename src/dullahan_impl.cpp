@@ -108,7 +108,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 
         if (mDisableNetworkService)
         {
-            command_line->AppendSwitch("‘--disable-features=NetworkService");
+            command_line->AppendSwitch("--disable-features=NetworkService");
         }
 
         if (mAutoPlayWithoutGesture)
