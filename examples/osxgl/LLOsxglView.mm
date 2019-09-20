@@ -107,8 +107,8 @@ static void onRequestExitCallback() {
     settings.javascript_enabled = true;
     settings.cache_enabled = true;
     settings.cache_path = "/tmp/cef_cachez";
+    settings.disable_network_service = true;
     settings.cookies_enabled = true;
-    settings.cookie_store_path = "/tmp/cef_cookiez";
     settings.user_agent_substring = "osxgl";
     settings.accept_language_list = "en-us";
     settings.autoplay_without_gesture = true;
@@ -255,7 +255,7 @@ static void onRequestExitCallback() {
     if (self.mDullahan) {
         const int dx = 3 * theEvent.deltaX;
         const int dy = 3 * theEvent.deltaY;
-        self.mDullahan->mouseWheel(dx, dy);
+        self.mDullahan->mouseWheel(dx, dy, 10, 0);
     }
 }
 
