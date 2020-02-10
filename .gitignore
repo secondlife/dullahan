@@ -10,7 +10,7 @@ build64/
 ./cef/*
 !cef/README.md
 
-glob:*.wwdb
+*.wwdb
 
 # misc files
 dullahan.sdf
@@ -38,7 +38,7 @@ examples/simplegl/cache/*
 examples/simplegl/dullahan_test_urls.html
 
 # Astyle crud
-glob:*.orig
+*.orig
 
 # Windows RC crud
-glob:*.aps
+*.aps
