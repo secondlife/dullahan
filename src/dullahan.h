@@ -153,6 +153,7 @@ class dullahan
             bool file_access_from_file_urls = false;    // allow access files from local file system
             bool disable_web_security = false;          // like adding --disable-web-security to Chrome command line
             bool disable_network_service = false;       // like adding --disable-features=NetworkService to Chrome command line
+            bool use_mock_keychain = false;             // like adding --use-mock-keychain to Chrome command line
             bool autoplay_without_gesture = false;      // like adding --autoplay-policy=???? to Chrome command line
             bool flash_enabled = true;                  // system flash plugin
             bool force_wave_audio = false;              // forces Windows WaveOut/In audio

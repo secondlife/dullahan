@@ -149,6 +149,7 @@ class dullahan_impl :
         bool mDisableGPU;
         bool mDisableWebSecurity;
         bool mDisableNetworkService;
+        bool mUseMockKeyChain;
         bool mAutoPlayWithoutGesture;
         bool mFlipPixelsY;
         bool mFlipMouseY;
