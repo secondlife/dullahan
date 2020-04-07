@@ -8,7 +8,7 @@
  *         to manually parse the header file. The library might change the
  *         syntax with which it defines the version number, but we can assume
  *         it will remain valid C / C++.
- * 
+ *
  * $LicenseInfo:firstyear=2014&license=internal$
  * Copyright (c) 2017, Linden Research, Inc.
  * $/LicenseInfo$
@@ -17,7 +17,7 @@
 #include "dullahan.h"
 #include <iostream>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     std::cout << DULLAHAN_VERSION_MAJOR;
     std::cout << ".";
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     // CEF version strings now (as of v75) contain '+' symbols and since we use the
     // version string to compose the name of the package and therefore the download
     // URL in TeamCity/CodeTicket, this character (not URL escaped) breaks downloads.
-    // Rather than try to fix CodeTicket to URL escape the package name, we replace 
+    // Rather than try to fix CodeTicket to URL escape the package name, we replace
     // the bad characters with a good one that is allowed in a URL.
     std::string bad = "+";
     std::string good = "_";

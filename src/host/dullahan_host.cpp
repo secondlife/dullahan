@@ -51,26 +51,30 @@
   must be used  for browser and all sub processes (see cef_sandbox_win.h); but the viewer
   uses slplugin.exe and llceflib_host.exe.
 */
-void enablePPAPIFlashHack( LPSTR lpCmdLine )
+void enablePPAPIFlashHack(LPSTR lpCmdLine)
 {
-    if( !lpCmdLine )
+    if (!lpCmdLine)
+    {
         return;
+    }
 
     std::string strCmdLine = lpCmdLine;
 
     std::string strType = "--type=ppapi";
-    std::string::size_type i = strCmdLine.find( strType );
+    std::string::size_type i = strCmdLine.find(strType);
 
-    if( i == std::string::npos )
+    if (i == std::string::npos)
+    {
         return;
+    }
 
     HANDLE hJob = CreateJobObject(nullptr, nullptr);
     HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ::GetCurrentProcessId());
 
-    if( !AssignProcessToJobObject(hJob, hProc) )
+    if (!AssignProcessToJobObject(hJob, hProc))
     {
-        ::CloseHandle( hProc );
-        ::CloseHandle( hJob );
+        ::CloseHandle(hProc);
+        ::CloseHandle(hJob);
         return;
     }
 
@@ -80,8 +84,8 @@ void enablePPAPIFlashHack( LPSTR lpCmdLine )
 
     SetInformationJobObject(hJob, JobObjectBasicLimitInformation, &baseLimits, sizeof(baseLimits));
 
-    ::CloseHandle( hProc );
-    ::CloseHandle( hJob );
+    ::CloseHandle(hProc);
+    ::CloseHandle(hJob);
 }
 
 // taken from http://magpcss.org/ceforum/viewtopic.php?f=6&t=15817&start=10#p37820

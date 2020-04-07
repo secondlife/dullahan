@@ -114,7 +114,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 
         if (mUseMockKeyChain)
         {
-           command_line->AppendSwitch("--use-mock-keychain");
+            command_line->AppendSwitch("--use-mock-keychain");
         }
 
         if (mAutoPlayWithoutGesture)
@@ -231,7 +231,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     mDisableNetworkService = user_settings.disable_network_service;
 
     // this flag if set, adds a command line parameter that replaces disable_network_service
-    // flag to bypass the dialog on macOS that appears in Chrome 79+ to disable the 
+    // flag to bypass the dialog on macOS that appears in Chrome 79+ to disable the
     // "Chrome wants access to passwords" dialog on macOS that started to appear.
     mUseMockKeyChain = user_settings.use_mock_keychain;
 
