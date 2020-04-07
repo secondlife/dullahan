@@ -5,10 +5,7 @@
 # Build/output folders
 build/
 build64/
-
-# CEF builds folder
-./cef/*
-!cef/README.md
+stage/
 
 *.wwdb
 
