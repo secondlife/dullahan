@@ -108,6 +108,7 @@ static void onRequestExitCallback() {
     settings.cache_enabled = true;
     settings.cache_path = "/tmp/cef_cachez";
     settings.disable_network_service = true;
+    settings.use_mock_keychain = true;
     settings.cookies_enabled = true;
     settings.user_agent_substring = "osxgl";
     settings.accept_language_list = "en-us";
