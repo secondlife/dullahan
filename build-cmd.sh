@@ -21,10 +21,7 @@ fi
 
 top="$(pwd)"
 stage="$(pwd)/stage"
-
-DULLAHAN_DIR="$top"
-DULLAHAN_SOURCE_DIR="$DULLAHAN_DIR/src"
-BUILD_DIR="build"
+DULLAHAN_SOURCE_DIR="$top/src"
 
 # load autobuild provided shell functions and variables
 source_environment_tempfile="$stage/source_environment.sh"
@@ -38,10 +35,7 @@ pushd "$DULLAHAN_SOURCE_DIR"
         windows*)
             load_vsvars
 
-            # remove old project cruft
-            rm -rf "$DULLAHAN_DIR/$BUILD_DIR" 
-            mkdir "$DULLAHAN_DIR/$BUILD_DIR"
-            cd  "$DULLAHAN_DIR/$BUILD_DIR"
+            cd  "$stage"
 
             # create Visual Studio project files
             cmake .. \
@@ -77,8 +71,8 @@ pushd "$DULLAHAN_SOURCE_DIR"
             # Dullahan files
             cp "$DULLAHAN_SOURCE_DIR/dullahan.h" "$stage/include/cef/"
             cp "$DULLAHAN_SOURCE_DIR/dullahan_version.h" "$stage/include/cef/"
-            cp "$DULLAHAN_DIR/$BUILD_DIR/Release/dullahan.lib" "$stage/lib/release/"
-            cp "$DULLAHAN_DIR/$BUILD_DIR/Release/dullahan_host.exe" "$stage/bin/release/"
+            cp "$stage/Release/dullahan.lib" "$stage/lib/release/"
+            cp "$stage/Release/dullahan_host.exe" "$stage/bin/release/"
 
             # CEF libraries
             cp "$stage/packages/lib/Release/libcef.lib" "$stage/lib/release"
@@ -91,16 +85,13 @@ pushd "$DULLAHAN_SOURCE_DIR"
             cp -R "$stage/packages/resources/"* "$stage/resources/"
 
             # licenses
-            cp "$DULLAHAN_DIR/CEF_LICENSE.txt" "$stage/LICENSES"
-            cp "$DULLAHAN_DIR/LICENSE.txt" "$stage/LICENSES"
+            cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"
+            cp "$top/LICENSE.txt" "$stage/LICENSES"
         ;;
         darwin*)
-            # remove old project cruft
-            rm -rf "$DULLAHAN_DIR/$BUILD_DIR" 
-            mkdir "$DULLAHAN_DIR/$BUILD_DIR"
-            cd  "$DULLAHAN_DIR/$BUILD_DIR"
+            cd  "$stage"
 
-            # create project file
+            # create Xcode project files
             cmake -G Xcode \
                 -DCMAKE_OSX_ARCHITECTURES="$AUTOBUILD_CONFIGURE_ARCH" \
                 -DCEF_INCLUDE_DIR="$stage/packages/include/cef/include" \
@@ -128,20 +119,20 @@ pushd "$DULLAHAN_SOURCE_DIR"
             mkdir -p "$stage/include/cef"
             mkdir -p "$stage/lib/release"
             mkdir -p "$stage/LICENSES"
-            cp "$DULLAHAN_DIR/$BUILD_DIR/Release/libdullahan.a" "$stage/lib/release/"
+            cp "$stage/Release/libdullahan.a" "$stage/lib/release/"
             cp "$DULLAHAN_SOURCE_DIR/dullahan.h" "$stage/include/cef/"
             cp "$DULLAHAN_SOURCE_DIR/dullahan_version.h" "$stage/include/cef/"
-            cp -R "$DULLAHAN_DIR/$BUILD_DIR/Release/DullahanHelper.app" "$stage/lib/release"
-            cp -R "$DULLAHAN_DIR/$BUILD_DIR/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (GPU).app"
+            cp -R "$stage/Release/DullahanHelper.app" "$stage/lib/release"
+            cp -R "$stage/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (GPU).app"
             mv "$stage/lib/release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper (GPU)" 
-            cp -R "$DULLAHAN_DIR/$BUILD_DIR/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (Renderer).app"
+            cp -R "$stage/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (Renderer).app"
             mv "$stage/lib/release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper (Renderer)" 
-            cp -R "$DULLAHAN_DIR/$BUILD_DIR/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (Plugin).app"
+            cp -R "$stage/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (Plugin).app"
             mv "$stage/lib/release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper (Plugin)" 
             cp "$stage/packages/lib/release/libcef_dll_wrapper.a" "$stage/lib/release"
             cp -R "$stage/packages/bin/release/Chromium Embedded Framework.framework" "$stage/lib/release"
-            cp "$DULLAHAN_DIR/CEF_LICENSE.txt" "$stage/LICENSES"
-            cp "$DULLAHAN_DIR/LICENSE.txt" "$stage/LICENSES"
+            cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"
+            cp "$top/LICENSE.txt" "$stage/LICENSES"
         ;;
         linux*)
             echo "This project is not currently supported for $AUTOBUILD_PLATFORM" 1>&2 ; exit 1
