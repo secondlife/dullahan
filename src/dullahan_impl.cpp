@@ -104,7 +104,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 
         if (mDisableWebSecurity)
         {
-            command_line->AppendSwitch("--disable-web-security");
+            command_line->AppendSwitch("disable-web-security");
         }
 
         if (mDisableNetworkService)
@@ -114,7 +114,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 
         if (mUseMockKeyChain)
         {
-            command_line->AppendSwitch("--use-mock-keychain");
+            command_line->AppendSwitch("use-mock-keychain");
         }
 
         if (mAutoPlayWithoutGesture)
