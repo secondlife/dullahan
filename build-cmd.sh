@@ -51,7 +51,7 @@ pushd "$DULLAHAN_SOURCE_DIR"
                 /Fo"$(cygpath -w "$stage/version.obj")" \
                 /Fe"$(cygpath -w "$stage/version.exe")" \
                 /I "$(cygpath -w "$stage/packages/include/cef")"  \
-                /I "$(cygpath -w "$top/dullahan/src")"  \
+                /I "$(cygpath -w "$top/src")"  \
                 "$(cygpath -w "$top/version.cpp")"
             "$stage/version.exe" > "$stage/version.txt"
             rm "$stage"/version.{obj,exe}
