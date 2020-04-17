@@ -8,7 +8,10 @@ project(dullahan)
 ################################################################################
 ## generics
 
-# ensure location of CEF files is set at command line
+# ensure location of build dir and CEF files is set at command line
+if (BUILD_DIR STREQUAL "")
+    MESSAGE("BUILD_DIR not set" FATAL)
+endif()
 if (CEF_INCLUDE_DIR STREQUAL "")
     MESSAGE("CEF_INCLUDE_DIR not set" FATAL)
 endif()
@@ -27,51 +30,47 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     find_library(
         CEF_LIBRARY_DEBUG
         NAMES libcef.lib
-        PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+        PATHS "${CEF_LIB_DIR}/Debug"
     )
     find_library(
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.lib
-        PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+        PATHS "${CEF_LIB_DIR}/${BUILD_DIR}/libcef_dll_wrapper/Debug"
     )
     find_library(
         CEF_LIBRARY_RELEASE
         NAMES libcef.lib
-        PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+        PATHS "${CEF_LIB_DIR}/Release"
     )
     find_library(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.lib
-        PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+        PATHS "${CEF_LIB_DIR}/${BUILD_DIR}/libcef_dll_wrapper/Release"
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     find_library(
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.a
         PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+#        PATH_SUFFIXES debug
     )
     find_library(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.a
         PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+#        PATH_SUFFIXES release
     )
     find_library(
         CEF_FRAMEWORK_DEBUG
         NAMES "Chromium Embedded Framework"
         PATHS ${CEF_BIN_DIR}
-        PATH_SUFFIXES release
+#        PATH_SUFFIXES debug
     )
     find_library(
         CEF_FRAMEWORK_RELEASE
         NAMES "Chromium Embedded Framework"
         PATHS ${CEF_BIN_DIR}/release
-        PATH_SUFFIXES release
+#        PATH_SUFFIXES release
     )
     set(CEF_FRAMEWORK
         debug ${CEF_FRAMEWORK_DEBUG}

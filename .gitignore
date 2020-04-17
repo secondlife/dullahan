@@ -6,13 +6,13 @@
 build/
 build64/
 stage/
-cef_builds/
-
-*.wwdb
+cef_builds/*
+!cef_builds/README.md
 
 # misc files
 dullahan.sdf
 dullahan.v12.suo
+*.wwdb
 dullahan.opensdf
 cef.log
 

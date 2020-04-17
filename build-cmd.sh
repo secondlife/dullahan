@@ -21,7 +21,11 @@ fi
 
 top="$(pwd)"
 stage="$(pwd)/stage"
+build_dir="build$AUTOBUILD_ADDRSIZE"
 DULLAHAN_SOURCE_DIR="$top/src"
+
+CEF_PKG_URL_WINDOWS32="https://callum-linden.s3.amazonaws.com/cef/cef32m.tar.bz2"
+CEF_PKG_URL_WINDOWS64="https://callum-linden.s3.amazonaws.com/cef/cef64m.tar.bz2"
 
 # load autobuild provided shell functions and variables
 source_environment_tempfile="$stage/source_environment.sh"
@@ -37,28 +41,32 @@ pushd "$DULLAHAN_SOURCE_DIR"
 
             cd  "$stage"
 
-            # create Visual Studio project files
-            cmake .. \
-                -G "$AUTOBUILD_WIN_CMAKE_GEN" \
-                -DCEF_INCLUDE_DIR="$(cygpath -w "$stage/packages/include/cef/include")" \
-                -DCEF_LIB_DIR="$(cygpath -w "$stage/packages/lib")" \
-                -DCEF_BIN_DIR="$(cygpath -w "$stage/packages/bin")" \
-                -DCEF_RESOURCE_DIR="$(cygpath -w "$stage/packages/resources")" \
-                -DCMAKE_C_FLAGS="$LL_BUILD_RELEASE"
+            CEF_PKG_URL="CEF_PKG_URL_WINDOWS${AUTOBUILD_ADDRSIZE}"
+            CEF_PKG_LOCAL_NAME=cef_pkg_tmp.bz2
+            CEF_LOCAL_DIR=cef_$AUTOBUILD_ADDRSIZE
+            curl ${!CEF_PKG_URL} > $CEF_PKG_LOCAL_NAME
+            mkdir -p "${CEF_LOCAL_DIR}"
+            tar -xvf "${CEF_PKG_LOCAL_NAME}" --directory "${CEF_LOCAL_DIR}" --strip 1
+
+            pushd .
+
+            cd $top
+            tools/build_dullahan.bat \
+                "$(cygpath -w $stage/${CEF_LOCAL_DIR})" \
+                $AUTOBUILD_ADDRSIZE \
+                $build_dir
+            popd
 
             # populate version_file (after CMake runs)
             cl \
+                /EHsc \
                 /Fo"$(cygpath -w "$stage/version.obj")" \
                 /Fe"$(cygpath -w "$stage/version.exe")" \
-                /I "$(cygpath -w "$stage/packages/include/cef")"  \
-                /I "$(cygpath -w "$top/src")"  \
+                /I "$(cygpath -w "$top/src")" \
                 "$(cygpath -w "$top/version.cpp")"
+
             "$stage/version.exe" > "$stage/version.txt"
             rm "$stage"/version.{obj,exe}
-
-            # build individual projects but not examples
-            build_sln "dullahan.sln" "Release|$AUTOBUILD_WIN_VSPLATFORM" dullahan
-            build_sln "dullahan.sln" "Release|$AUTOBUILD_WIN_VSPLATFORM" dullahan_host
 
             # prepare the staging dirs
             cd ..
@@ -71,18 +79,21 @@ pushd "$DULLAHAN_SOURCE_DIR"
             # Dullahan files
             cp "$DULLAHAN_SOURCE_DIR/dullahan.h" "$stage/include/cef/"
             cp "$DULLAHAN_SOURCE_DIR/dullahan_version.h" "$stage/include/cef/"
-            cp "$stage/Release/dullahan.lib" "$stage/lib/release/"
-            cp "$stage/Release/dullahan_host.exe" "$stage/bin/release/"
+            cp "$top/$build_dir/Release/dullahan.lib" "$stage/lib/release/"
+            cp "$top/$build_dir/Release/dullahan_host.exe" "$stage/bin/release/"
 
-            # CEF libraries
-            cp "$stage/packages/lib/Release/libcef.lib" "$stage/lib/release"
-            cp "$stage/packages/lib/Release/libcef_dll_wrapper.lib" "$stage/lib/release"
+            # # CEF libraries
+            cp "$stage/$CEF_LOCAL_DIR/Release/libcef.lib" "$stage/lib/release"
+            cp "$stage/$CEF_LOCAL_DIR/$build_dir/libcef_dll_wrapper/Release/libcef_dll_wrapper.lib" "$stage/lib/release"
 
-            # CEF run time binaries
-            cp -R "$stage/packages/bin/release/"* "$stage/bin/release/"
+            # # CEF run time binaries
+            cp -R "$stage/$CEF_LOCAL_DIR/release/"* "$stage/bin/release/"
+            # (easier to copy whole dir and remove stuff we do not want or have elsewhere)
+            rm "$stage/bin/release/cef_sandbox.lib"
+            rm "$stage/bin/release/libcef.lib"
 
-            # CEF resources
-            cp -R "$stage/packages/resources/"* "$stage/resources/"
+            # # CEF resources
+            cp -R "$stage/$CEF_LOCAL_DIR/resources/"* "$stage/resources/"
 
             # licenses
             cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"

@@ -3,7 +3,7 @@
 <map>
     <key>installables</key>
     <map>
-      <key>cef-bin</key>
+      <key>cef</key>
       <map>
         <key>copyright</key>
         <string>Copyright (c) 2008-2014 Marshall A. Greenblatt. Portions Copyright (c) 2006-2009 Google Inc. All rights reserved</string>
@@ -12,7 +12,7 @@
         <key>license_file</key>
         <string>LICENSES/cef.txt</string>
         <key>name</key>
-        <string>cef-bin</string>
+        <string>cef</string>
         <key>platforms</key>
         <map>
           <key>darwin64</key>
@@ -44,16 +44,16 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>7ec05efdafe74ad7026adf0c89420ef6</string>
+              <string>c97836f45f370d9681c49e7b679211b2</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/56988/532003/cef_bin-81.2.16%2bgdacda4f%2bchromium-81.0.4044.92.540329-windows64-540329.tar.bz2</string>
+              <string>http://ll-build-secondlife-development.s3.amazonaws.com/ct2/9925/42890/cef-76.1.13_gf19c584_chromium-76.0.3809.132.509692-windows64-509692.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
         <key>version</key>
-        <string>81.2.16+gdacda4f+chromium-81.0.4044.92.540329</string>
+        <string>81.2.15_ge07275d_chromium-81.0.4044.92.539863</string>
       </map>
     </map>
     <key>package_description</key>
