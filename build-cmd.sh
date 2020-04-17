@@ -51,6 +51,7 @@ pushd "$DULLAHAN_SOURCE_DIR"
             pushd .
 
             cd $top
+            chmod u+x tools/build_dullahan.bat
             tools/build_dullahan.bat \
                 "$(cygpath -w $stage/${CEF_LOCAL_DIR})" \
                 $AUTOBUILD_ADDRSIZE \
