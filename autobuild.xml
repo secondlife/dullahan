@@ -32,9 +32,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>1ad9947357091a8c34b82822452b1c27</string>
+              <string>f98feff18e2eb8e2d1e6d1d3af346572</string>
               <key>url</key>
-              <string>http://ll-build-secondlife-development.s3.amazonaws.com/ct2/9926/42897/cef-76.1.13_gf19c584_chromium-76.0.3809.132.509692-windows-509692.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/57189/534470/cef_bin-81.2.17_gb382c62_chromium-81.0.4044.113-windows-540452.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
