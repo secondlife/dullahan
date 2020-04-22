@@ -94,7 +94,8 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         if (mForceWaveAudio == true)
         {
             command_line->AppendSwitch("force-wave-audio");
-        }
+			command_line->AppendSwitchWithValue("disable-features", "AudioServiceOutOfProcess");
+		}
 
         if (mDisableGPU == true)
         {
