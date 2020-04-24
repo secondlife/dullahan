@@ -50,7 +50,7 @@
 )
 
 @rem The CMake generator string to use
-@set VS_CMD=Visual Studio 15 2017
+@set VS_CMD=Visual Studio 12 2013
 
 @rem Get the bit width paramter from command line and if it's empty, try to guess the 
 @rem value based on the source directory name - Spotify CEF builds have windows32 or

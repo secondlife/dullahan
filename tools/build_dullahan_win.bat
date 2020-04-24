@@ -11,7 +11,7 @@
 @rem       location to put CEF builds since it's ignored by Mercurial.
  
 @rem The CMake generator string to use
-@set VS_CMD=Visual Studio 15 2017
+@set VS_CMD=Visual Studio 12 2013
 
 @pushd .
 

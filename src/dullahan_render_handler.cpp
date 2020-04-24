@@ -196,3 +196,13 @@ void dullahan_render_handler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefC
     DLNOUT("OnCursorChange called cursor: " << cursor << " and type " << type);
     mParent->getCallbackManager()->onCursorChanged((dullahan::ECursorType)type);
 }
+
+// CefRenderHandler override
+bool dullahan_render_handler::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info)
+{
+	// this is how the value for "color depth" in the User Agent string is populated
+    screen_info.depth = mBufferDepth * 8;
+
+    // indicate we changed the structure
+    return true;
+}

@@ -94,8 +94,8 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         if (mForceWaveAudio == true)
         {
             command_line->AppendSwitch("force-wave-audio");
-			command_line->AppendSwitchWithValue("disable-features", "AudioServiceOutOfProcess");
-		}
+            command_line->AppendSwitchWithValue("disable-features", "AudioServiceOutOfProcess");
+        }
 
         if (mDisableGPU == true)
         {
@@ -191,6 +191,11 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
         std::string user_agent = makeCompatibleUserAgentString("");
         cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.product_version);
     }
+
+    // commenting out but leaving this here for future reference - shows how you can explicitly set
+    // whole of user agent string versus adding to what is there already
+    //std::string user_agent_direct("user agent string");
+    //cef_string_utf8_to_utf16(user_agent_direct.c_str(), user_agent_direct.size(), &settings.user_agent);
 
     // list of language locale codes used to configure the Accept-Language HTTP header value
     if (user_settings.accept_language_list.length())
