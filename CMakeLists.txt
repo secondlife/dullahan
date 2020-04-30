@@ -28,13 +28,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         CEF_LIBRARY_DEBUG
         NAMES libcef.lib
         PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+        PATH_SUFFIXES debug
     )
     find_library(
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.lib
         PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+        PATH_SUFFIXES debug
     )
     find_library(
         CEF_LIBRARY_RELEASE
@@ -53,7 +53,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.a
         PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+        PATH_SUFFIXES debug
     )
     find_library(
         CEF_DLL_LIBRARY_RELEASE
@@ -65,7 +65,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         CEF_FRAMEWORK_DEBUG
         NAMES "Chromium Embedded Framework"
         PATHS ${CEF_BIN_DIR}
-        PATH_SUFFIXES release
+        PATH_SUFFIXES debug
     )
     find_library(
         CEF_FRAMEWORK_RELEASE
