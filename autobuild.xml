@@ -6,7 +6,7 @@
       <key>cef-bin</key>
       <map>
         <key>copyright</key>
-        <string>Copyright (c) 2008-2014 Marshall A. Greenblatt. Portions Copyright (c) 2006-2009 Google Inc. All rights reserved</string>
+        <string>Copyright (c) 2008-2020 Marshall A. Greenblatt. Portions Copyright (c) 2006-2009 Google Inc. All rights reserved</string>
         <key>license</key>
         <string>bsd</string>
         <key>license_file</key>
@@ -32,9 +32,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>25e4738c6ff4145229803f93cc9e415b</string>
+              <string>39785146317b64a0b9ba9c97a387226e</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/57268/534910/cef_bin-81.2.17_gb382c62_chromium-81.0.4044.113-windows-540501.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/58665/550661/cef_bin-81.2.17_gb382c62_chromium-81.0.4044.113-windows-541425.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
@@ -44,9 +44,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>23dd8e269767073b24241c57b50abe91</string>
+              <string>8ea24a472dc2d98e3e35d6c938bf5209</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/57269/534913/cef_bin-81.2.17_gb382c62_chromium-81.0.4044.113-windows64-540501.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/58663/550654/cef_bin-81.2.17_gb382c62_chromium-81.0.4044.113-windows64-541425.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows64</string>

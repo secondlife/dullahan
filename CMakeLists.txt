@@ -1,76 +1,105 @@
-################################################################################
+###############################################################################
 cmake_minimum_required(VERSION 3.4.3)
 
-################################################################################
+###############################################################################
 ## Dullahan main project/solution
 project(dullahan)
 
-################################################################################
+###############################################################################
+## functions
+FUNCTION(check_exists variable)
+    IF(NOT ${variable})
+        MESSAGE(FATAL_ERROR ${variable} " is not set")
+    ELSE()
+        MESSAGE(STATUS  "--> ${variable} is ${${variable}}")
+    ENDIF()
+ENDFUNCTION()
+
+###############################################################################
 ## generics
 
-# ensure location of CEF files is set at command line
-if (CEF_INCLUDE_DIR STREQUAL "")
-    MESSAGE("CEF_INCLUDE_DIR not set" FATAL)
-endif()
-if (CEF_LIB_DIR STREQUAL "")
-    MESSAGE("CEF_LIB_DIR not set" FATAL)
-endif()
-if (CEF_BIN_DIR STREQUAL "")
-    MESSAGE("CEF_BIN_DIR not set" FATAL)
-endif()
-if (CEF_RESOURCE_DIR STREQUAL "")
-    MESSAGE("CEF_RESOURCE_DIR not set" FATAL)
-endif()
+# Now that we have the base directories, we build the
+# others using what we were told
+SET(CEF_INCLUDE_DIR ${CEF_WRAPPER_DIR}/include)
+SET(CEF_DEBUG_LIB_DIR ${CEF_WRAPPER_DIR}/Debug)
+SET(CEF_DEBUG_DLL_LIB_DIR ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/Debug)
+SET(CEF_RELEASE_LIB_DIR ${CEF_WRAPPER_DIR}/Release)
+SET(CEF_RELEASE_DLL_LIB_DIR ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/Release)
+SET(CEF_DEBUG_BIN_DIR ${CEF_WRAPPER_DIR}/Debug)
+SET(CEF_RELEASE_BIN_DIR ${CEF_WRAPPER_DIR}/Release)
+SET(CEF_RESOURCES_DIR ${CEF_WRAPPER_DIR}/Resources)
+
+# Check if all our variables exist and bail with
+# a fatal error if any of them are missing
+check_exists(CEF_WRAPPER_DIR)
+check_exists(CEF_WRAPPER_BUILD_DIR)
+check_exists(CEF_INCLUDE_DIR)
+check_exists(CEF_DEBUG_LIB_DIR)
+check_exists(CEF_DEBUG_DLL_LIB_DIR)
+check_exists(CEF_RELEASE_LIB_DIR)
+check_exists(CEF_RELEASE_DLL_LIB_DIR)
+check_exists(CEF_DEBUG_BIN_DIR)
+check_exists(CEF_RELEASE_BIN_DIR)
+check_exists(CEF_RESOURCES_DIR)
 
 # location of CEF libraries we link against
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    find_library(
+
+    # Find both link libraries we need for Debug/Release
+    FIND_LIBRARY(
         CEF_LIBRARY_DEBUG
         NAMES libcef.lib
-        PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES debug
+        PATHS ${CEF_DEBUG_LIB_DIR}
+        NO_DEFAULT_PATH
     )
-    find_library(
+    FIND_LIBRARY(
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.lib
-        PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES debug
+        PATHS ${CEF_DEBUG_DLL_LIB_DIR}
+        NO_DEFAULT_PATH
     )
-    find_library(
+    FIND_LIBRARY(
         CEF_LIBRARY_RELEASE
         NAMES libcef.lib
-        PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+        PATHS ${CEF_RELEASE_LIB_DIR}
+        NO_DEFAULT_PATH
     )
-    find_library(
+    FIND_LIBRARY(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.lib
-        PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+        PATHS ${CEF_RELEASE_DLL_LIB_DIR}
+        NO_DEFAULT_PATH
     )
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    find_library(
+
+    # Check that we were able to find our link libs
+    check_exists(CEF_LIBRARY_DEBUG)
+    check_exists(CEF_DLL_LIBRARY_DEBUG)
+    check_exists(CEF_LIBRARY_RELEASE)
+    check_exists(CEF_DLL_LIBRARY_RELEASE)
+
+ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    FIND_LIBRARY(
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.a
         PATHS ${CEF_LIB_DIR}
         PATH_SUFFIXES debug
     )
-    find_library(
+    FIND_LIBRARY(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.a
         PATHS ${CEF_LIB_DIR}
         PATH_SUFFIXES release
     )
-    find_library(
+    FIND_LIBRARY(
         CEF_FRAMEWORK_DEBUG
         NAMES "Chromium Embedded Framework"
-        PATHS ${CEF_BIN_DIR}
+        PATHS ${FIXME_CEF_BIN_DIR}
         PATH_SUFFIXES debug
     )
-    find_library(
+    FIND_LIBRARY(
         CEF_FRAMEWORK_RELEASE
         NAMES "Chromium Embedded Framework"
-        PATHS ${CEF_BIN_DIR}/release
+        PATHS ${FIXME_CEF_BIN_DIR}/release
         PATH_SUFFIXES release
     )
     set(CEF_FRAMEWORK
@@ -82,15 +111,21 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     FIND_LIBRARY(COCOA_FRAMEWORK Cocoa)
 endif()
 
-set(CEF_LIBRARY
+###############################################################################
+# Final layer of finding the right libs for each combination
+# of name, platform, type etc.
+SET(CEF_LIBRARY
     debug ${CEF_LIBRARY_DEBUG}
     optimized ${CEF_LIBRARY_RELEASE}
 )
-set(CEF_DLL_LIBRARY
+SET(CEF_DLL_LIBRARY
     debug ${CEF_DLL_LIBRARY_DEBUG}
     optimized ${CEF_DLL_LIBRARY_RELEASE}
 )
+check_exists(CEF_LIBRARY)
+check_exists(CEF_DLL_LIBRARY)
 
+###############################################################################
 # set C and C++ flags
 # Warnings at level 4 (-W4 generates too much spew) but disable:
 #    4100 "unreferenced parameter" -  too much spew for cef code
@@ -104,7 +139,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11 -xobjective-c++")
 endif()
 
-################################################################################
+###############################################################################
 ## dullahan libary
 
 # add source files to library
@@ -147,7 +182,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(dullahan PROPERTIES LINK_FLAGS "/ignore:4099")
 endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
-################################################################################
+###############################################################################
 ## Parse CEF version header and process into dullahan header.
 ## Only do this if it's a clean build (try to keep version/build number
 ## the same for the same set of source files)
@@ -170,7 +205,7 @@ if (NOT EXISTS "${PROJECT_SOURCE_DIR}/src/dullahan_version.h")
     )
 endif ()
 
-################################################################################
+###############################################################################
 ## dullahan host executable
 
 # add source files to the application
@@ -237,27 +272,38 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 # Windows commands to copy CEF 'bin', 'resources' folders to executable dir (needed at runtime)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 add_custom_command(
     TARGET dullahan_host POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_directory
-            "${CEF_BIN_DIR}/$<CONFIGURATION>"
+            "${CEF_RELEASE_BIN_DIR}"
             "$<TARGET_FILE_DIR:dullahan_host>"
     COMMENT "Copying runtime files to executable directory")
 
 add_custom_command(
     TARGET dullahan_host POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_directory
-            "${CEF_RESOURCE_DIR}"
+            "${CEF_RESOURCES_DIR}"
             "$<TARGET_FILE_DIR:dullahan_host>"
     COMMENT "Copying resource files to executable directory")
 endif()
 
-################################################################################
+
+
+
+
+
+
+
+
+
+
+###############################################################################
 ## examples
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
-    ################################################################################
+    ###############################################################################
     ## webcube example application
 
     # add source file to application
@@ -311,7 +357,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
         COMMENT "Adding custom manifest...")
 
-    ################################################################################
+    ###############################################################################
     ## simplegl example application using FreeGLUT
 
     # add source file to application
@@ -364,7 +410,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
         COMMENT "Adding custom manifest...")
 
-    ################################################################################
+    ###############################################################################
     ## console example application
 
     # add source file to application
@@ -398,7 +444,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
         COMMENT "Adding custom manifest...")
 
-    ################################################################################
+    ###############################################################################
     ## minimal CEF console example (doesn't use Dullahan)
 
     # add source file to the application
@@ -437,7 +483,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
-    ################################################################################
+    ###############################################################################
     ## osxgl example application
 
     # add source file to application
@@ -479,7 +525,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/examples/osxgl/Info.plist.in")
 endif()
 
-################################################################################
+###############################################################################
 # generic commands that have to go after everything else
 
 if(CMAKE_CONFIGURATION_TYPES)
