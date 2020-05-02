@@ -1,14 +1,5 @@
 #!/usr/bin/env bash
 
-
-
-# TODO
-# fix up install_name
-# copy helpers apps around
-
-
-
-
 # extra tracing
 exec 4>&1; export BASH_XTRACEFD=4; set -x
 
@@ -78,3 +69,57 @@ cmake -G Xcode \
 xcodebuild -project dullahan.xcodeproj -target dullahan -configuration Release
 xcodebuild -project dullahan.xcodeproj -target DullahanHelper -configuration Release
 xcodebuild -project dullahan.xcodeproj -target osxgl -configuration 'Release'
+
+# repoint where to find framework
+install_name_tool -id \
+    "@executable_path/../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework" \
+    '$cef_dir/Release/Chromium Embedded Framework.framework/Chromium Embedded Framework"
+
+# I don't know how to make app bundles in CMake with spaces and '()' chars in name
+# so for now, I am copying base helper app bundle as needed and renaming
+cp -r "$top_build_dir/Release/DullahanHelper.app" "$top_build_dir/Release/DullahanHelper (GPU).app"
+mv "$top_build_dir/Release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper" "$top_build_dir/Release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper (GPU)"
+cp -r "$top_build_dir/Release/DullahanHelper.app" "$top_build_dir/Release/DullahanHelper (Renderer).app"
+mv "$top_build_dir/Release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper" "$top_build_dir/Release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper (Renderer)"
+cp -r "$top_build_dir/Release/DullahanHelper.app" "$top_build_dir/Release/DullahanHelper (Plugin).app"
+mv "$top_build_dir/Release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper" "$top_build_dir/Release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper (Plugin)"
+
+mkdir "$top_build_dir/Release/osxgl.app/Contents/Frameworks"
+
+# copy helper apps to the right place
+cp -r "$top_build_dir/Release/DullahanHelper.app" "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper.app"
+cp -r "$top_build_dir/Release/DullahanHelper (GPU).app" "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper (GPU).app"
+cp -r "$top_build_dir/Release/DullahanHelper (Renderer).app" "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper (Renderer).app"
+cp -r "$top_build_dir/Release/DullahanHelper (Plugin).app" "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper (Plugin).app"
+
+# copy framework to right place
+cp -r "$/Release/Chromium\ Embedded\ Framework.framework" "top_build_dir/Release/osxgl.app/Contents/Frameworks/Chromium\ Embedded\ Framework.framework"
+
+# all the helper apps needs the framework too so make a symbolic link to existing one
+pushd .
+mkdir "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks"
+cd "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper.app/Contents/Frameworks"
+ln -s "../../../../Frameworks/Chromium Embedded Framework.framework" "Chromium Embedded Framework.framework"
+popd
+
+pushd .
+mkdir "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper (GPU).app/Contents/Frameworks"
+cd "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper (GPU).app/Contents/Frameworks"
+ln -s "../../../../Frameworks/Chromium Embedded Framework.framework" "Chromium Embedded Framework.framework"
+popd
+
+pushd .
+mkdir "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper (Renderer).app/Contents/Frameworks"
+cd "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper (Renderer).app/Contents/Frameworks"
+ln -s "../../../../Frameworks/Chromium Embedded Framework.framework" "Chromium Embedded Framework.framework"
+popd
+
+pushd .
+mkdir "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper (Plugin).app/Contents/Frameworks"
+cd "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper (Plugin).app/Contents/Frameworks"
+ln -s "../../../../Frameworks/Chromium Embedded Framework.framework" "Chromium Embedded Framework.framework"
+popd
+
+# copy nib file
+mkdir "$top_build_dir/Release/osxgl.app/Contents/Resources"
+cp -r "$top/examples/osxgl/Resources/"* "$top_build_dir/Release/osxgl.app/Contents/Resources"
