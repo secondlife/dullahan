@@ -20,9 +20,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>ec0b42b9f65bdf358807dae97a69b7f5</string>
+              <string>bf001d69cec082e51db8abac4503d8c0</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/57267/534901/cef_bin-81.2.15_ge07275d_chromium-81.0.4044.92-darwin64-540501.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/58771/552178/cef_bin-81.2.15_ge07275d_chromium-81.0.4044.92-darwin64-541508.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
@@ -32,9 +32,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>39785146317b64a0b9ba9c97a387226e</string>
+              <string>b681a14b1d59f1dedca2935870a6a51e</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/58665/550661/cef_bin-81.2.17_gb382c62_chromium-81.0.4044.113-windows-541425.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/58774/552192/cef_bin-81.2.17_gb382c62_chromium-81.0.4044.113-windows-541508.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
@@ -44,9 +44,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>8ea24a472dc2d98e3e35d6c938bf5209</string>
+              <string>b3b8e2a4323045cef1b4278eac0667be</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/58663/550654/cef_bin-81.2.17_gb382c62_chromium-81.0.4044.113-windows64-541425.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/58772/552186/cef_bin-81.2.17_gb382c62_chromium-81.0.4044.113-windows64-541508.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows64</string>
