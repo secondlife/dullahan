@@ -73,7 +73,7 @@ xcodebuild -project dullahan.xcodeproj -target osxgl -configuration 'Release'
 # repoint where to find framework
 install_name_tool -id \
     "@executable_path/../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework" \
-    '$cef_dir/Release/Chromium Embedded Framework.framework/Chromium Embedded Framework"
+    "$cef_dir/Release/Chromium Embedded Framework.framework/Chromium Embedded Framework"
 
 # I don't know how to make app bundles in CMake with spaces and '()' chars in name
 # so for now, I am copying base helper app bundle as needed and renaming
@@ -93,7 +93,8 @@ cp -r "$top_build_dir/Release/DullahanHelper (Renderer).app" "$top_build_dir/Rel
 cp -r "$top_build_dir/Release/DullahanHelper (Plugin).app" "$top_build_dir/Release/osxgl.app/Contents/Frameworks/DullahanHelper (Plugin).app"
 
 # copy framework to right place
-cp -r "$/Release/Chromium\ Embedded\ Framework.framework" "top_build_dir/Release/osxgl.app/Contents/Frameworks/Chromium\ Embedded\ Framework.framework"
+cp -r "$cef_dir/Release/Chromium Embedded Framework.framework" \
+      "$top_build_dir/Release/osxgl.app/Contents/Frameworks/Chromium Embedded Framework.framework"
 
 # all the helper apps needs the framework too so make a symbolic link to existing one
 pushd .
@@ -123,3 +124,5 @@ popd
 # copy nib file
 mkdir "$top_build_dir/Release/osxgl.app/Contents/Resources"
 cp -r "$top/examples/osxgl/Resources/"* "$top_build_dir/Release/osxgl.app/Contents/Resources"
+
+echo "Dullahan build is in $top_build_dir/Release"
