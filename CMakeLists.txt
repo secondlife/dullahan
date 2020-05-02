@@ -52,18 +52,21 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         PATHS ${CEF_DEBUG_LIB_DIR}
         NO_DEFAULT_PATH
     )
+
     FIND_LIBRARY(
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.lib
         PATHS ${CEF_DEBUG_DLL_LIB_DIR}
         NO_DEFAULT_PATH
     )
+
     FIND_LIBRARY(
         CEF_LIBRARY_RELEASE
         NAMES libcef.lib
         PATHS ${CEF_RELEASE_LIB_DIR}
         NO_DEFAULT_PATH
     )
+
     FIND_LIBRARY(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.lib
@@ -81,27 +84,27 @@ ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     FIND_LIBRARY(
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.a
-        PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES debug
+        PATHS ${CEF_DEBUG_DLL_LIB_DIR}
     )
+
     FIND_LIBRARY(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.a
-        PATHS ${CEF_LIB_DIR}
-        PATH_SUFFIXES release
+        PATHS ${CEF_RELEASE_DLL_LIB_DIR}
     )
+
     FIND_LIBRARY(
         CEF_FRAMEWORK_DEBUG
         NAMES "Chromium Embedded Framework"
-        PATHS ${FIXME_CEF_BIN_DIR}
-        PATH_SUFFIXES debug
+        PATHS ${CEF_DEBUG_BIN_DIR}
     )
+
     FIND_LIBRARY(
         CEF_FRAMEWORK_RELEASE
         NAMES "Chromium Embedded Framework"
-        PATHS ${FIXME_CEF_BIN_DIR}/release
-        PATH_SUFFIXES release
+        PATHS ${CEF_RELEASE_BIN_DIR}
     )
+
     set(CEF_FRAMEWORK
         debug ${CEF_FRAMEWORK_DEBUG}
         optimized ${CEF_FRAMEWORK_RELEASE}
@@ -109,6 +112,16 @@ ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
     FIND_LIBRARY(OPENGL_FRAMEWORK OpenGL)
     FIND_LIBRARY(COCOA_FRAMEWORK Cocoa)
+
+    # Check that we were able to find our build components
+    check_exists(CEF_DLL_LIBRARY_DEBUG)
+    check_exists(CEF_DLL_LIBRARY_RELEASE)
+    check_exists(CEF_FRAMEWORK_DEBUG)
+    check_exists(CEF_FRAMEWORK_RELEASE)
+    check_exists(CEF_FRAMEWORK)
+    check_exists(OPENGL_FRAMEWORK)
+    check_exists(COCOA_FRAMEWORK)
+
 endif()
 
 ###############################################################################
@@ -188,20 +201,20 @@ endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 ## the same for the same set of source files)
 if (NOT EXISTS "${PROJECT_SOURCE_DIR}/src/dullahan_version.h")
 
-    # Extract CEF/Chrome version info from CEF header 
+    # Extract CEF/Chrome version info from CEF header
     FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CEF_VERSION_STR REGEX "\#define CEF_VERSION ")
     FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MAJOR_STR REGEX "\#define CHROME_VERSION_MAJOR ")
     FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MINOR_STR REGEX "\#define CHROME_VERSION_MINOR ")
     FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_BUILD_STR REGEX "\#define CHROME_VERSION_BUILD ")
     FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_PATCH_STR REGEX "\#define CHROME_VERSION_PATCH ")
- 
+
     # Create a build number based on the actual build date/time
     string(TIMESTAMP BUILDNUMBER "#define DULLAHAN_VERSION_BUILD %Y%m%d%H%M")
 
     # Parse the version input file into the Dullahan version header
     CONFIGURE_FILE (
-      "${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in"
-      "${PROJECT_SOURCE_DIR}/src/dullahan_version.h"
+        "${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in"
+        "${PROJECT_SOURCE_DIR}/src/dullahan_version.h"
     )
 endif ()
 
@@ -288,16 +301,6 @@ add_custom_command(
             "$<TARGET_FILE_DIR:dullahan_host>"
     COMMENT "Copying resource files to executable directory")
 endif()
-
-
-
-
-
-
-
-
-
-
 
 ###############################################################################
 ## examples

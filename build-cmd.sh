@@ -26,12 +26,12 @@ top="$(pwd)"
 stage="$(pwd)/stage"
 dullahan_source_dir=$top/src
 
-# The name of the directory that `autobuild install` drops the 
-# CEF package into - no way to share this name between CEF and 
+# The name of the directory that `autobuild install` drops the
+# CEF package into - no way to share this name between CEF and
 # Dullahan so they have to be kept in lock step manually
 cef_no_wrapper_dir="$stage/packages/cef"
 
-# The name of the directory that the libcef_dll_wrapper gets 
+# The name of the directory that the libcef_dll_wrapper gets
 # built in - we also need to refer to it to get the build result
 # libraries for Dullahan so we must specify it exactly once here.
 cef_no_wrapper_build_dir="$cef_no_wrapper_dir/build"
@@ -53,8 +53,8 @@ case "$AUTOBUILD_PLATFORM" in
         mkdir -p "$cef_no_wrapper_build_dir"
         cd "$cef_no_wrapper_build_dir"
         cmake -G "$AUTOBUILD_WIN_CMAKE_GEN" -DCEF_RUNTIME_LIBRARY_FLAG=/MD ..
-        build_sln cef.sln "Debug|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
         build_sln cef.sln "Release|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
+        build_sln cef.sln "Debug|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
 
         # generate the project files for Dullahan
         cd "$stage"
@@ -65,8 +65,6 @@ case "$AUTOBUILD_PLATFORM" in
             -DCMAKE_C_FLAGS="$LL_BUILD_RELEASE"
 
         # build individual dullahan libraries but not examples
-        build_sln "dullahan.sln" "Debug|$AUTOBUILD_WIN_VSPLATFORM" dullahan
-        build_sln "dullahan.sln" "Debug|$AUTOBUILD_WIN_VSPLATFORM" dullahan_host
         build_sln "dullahan.sln" "Release|$AUTOBUILD_WIN_VSPLATFORM" dullahan
         build_sln "dullahan.sln" "Release|$AUTOBUILD_WIN_VSPLATFORM" dullahan_host
 
@@ -89,7 +87,7 @@ case "$AUTOBUILD_PLATFORM" in
         cp "$cef_no_wrapper_dir/Release/libcef.lib" "$stage/lib/release"
         cp "$cef_no_wrapper_build_dir/libcef_dll_wrapper/Release/libcef_dll_wrapper.lib" "$stage/lib/release"
 
-        # CEF run time binaries (copy individually except SwiftShader so it's 
+        # CEF run time binaries (copy individually except SwiftShader so it's
         # obvious when a file is removed and this part of the script fails)
         cp -R "$cef_no_wrapper_dir/Release/swiftshader/"* "$stage/bin/release/swiftshader/"
         cp "$cef_no_wrapper_dir/Release/chrome_elf.dll" "$stage/bin/release/"
@@ -118,31 +116,26 @@ case "$AUTOBUILD_PLATFORM" in
         rm "$stage"/version.{obj,exe}
     ;;
     darwin*)
-        cd  "$stage"
+        # build the CEF c->C++ wrapper "libcef_dll_wrapper"
+        cd "$cef_no_wrapper_dir"
+        rm -rf "$cef_no_wrapper_build_dir"
+        mkdir -p "$cef_no_wrapper_build_dir"
+        cd "$cef_no_wrapper_build_dir"
+        cmake -G Xcode -DPROJECT_ARCH="x86_64" ..
+        xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration Debug
+        xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration Release
 
-        # create Xcode project files
+        # build Dullahan
+        cd  "$stage"
         cmake -G Xcode \
             -DCMAKE_OSX_ARCHITECTURES="$AUTOBUILD_CONFIGURE_ARCH" \
-            -DCEF_INCLUDE_DIR="$stage/packages/include/cef/include" \
-            -DCEF_LIB_DIR="$stage/packages/lib" \
-            -DCEF_BIN_DIR="$stage/packages/bin" \
-            -DCEF_RESOURCES_DIR="$stage/packages/resources" \
+            -DCEF_WRAPPER_DIR="$cef_no_wrapper_dir" \
+            -DCEF_WRAPPER_BUILD_DIR="$cef_no_wrapper_build_dir" \
             -DCMAKE_C_FLAGS:STRING="$LL_BUILD_RELEASE" \
             -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE" \
             ..
-
-        # populate version_file (after CMake runs)
-        g++ \
-            -I "$stage/packages/include/cef" \
-            -I "$dullahan_source_dir" \
-            -o "$stage/version" \
-            "$top/version.cpp"
-        "$stage/version" > "$stage/version.txt"
-        rm "$stage/version"
-
-        # build projects
-        xcodebuild -project dullahan.xcodeproj -target dullahan -configuration 'Release'
-        xcodebuild -project dullahan.xcodeproj -target DullahanHelper -configuration 'Release'
+        xcodebuild -project dullahan.xcodeproj -target dullahan -configuration Release
+        xcodebuild -project dullahan.xcodeproj -target DullahanHelper -configuration Release
 
         # copy files to staging ready to be packaged
         mkdir -p "$stage/include/cef"
@@ -153,15 +146,24 @@ case "$AUTOBUILD_PLATFORM" in
         cp "$dullahan_source_dir/dullahan_version.h" "$stage/include/cef/"
         cp -R "$stage/Release/DullahanHelper.app" "$stage/lib/release"
         cp -R "$stage/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (GPU).app"
-        mv "$stage/lib/release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper (GPU)" 
+        mv "$stage/lib/release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper (GPU)"
         cp -R "$stage/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (Renderer).app"
-        mv "$stage/lib/release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper (Renderer)" 
+        mv "$stage/lib/release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper (Renderer)"
         cp -R "$stage/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (Plugin).app"
-        mv "$stage/lib/release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper (Plugin)" 
-        cp "$stage/packages/lib/release/libcef_dll_wrapper.a" "$stage/lib/release"
-        cp -R "$stage/packages/bin/release/Chromium Embedded Framework.framework" "$stage/lib/release"
+        mv "$stage/lib/release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper (Plugin)"
+        cp "$cef_no_wrapper_build_dir/libcef_dll_wrapper/Release/libcef_dll_wrapper.a" "$stage/lib/release"
+        cp -R "$cef_no_wrapper_dir/Release/Chromium Embedded Framework.framework" "$stage/lib/release"
         cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"
         cp "$top/LICENSE.txt" "$stage/LICENSES"
+
+        # populate version_file (after CMake runs)
+        g++ \
+            -I "$cef_no_wrapper_dir/include/" \
+            -I "$top/src" \
+            -o "$stage/version" \
+            "$top/version.cpp"
+        "$stage/version" > "$stage/version.txt"
+        rm "$stage/version"
     ;;
     linux*)
         echo "This project is not currently supported for $AUTOBUILD_PLATFORM" 1>&2 ; exit 1
