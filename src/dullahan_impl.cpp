@@ -35,11 +35,11 @@
 
 #include "include/cef_waitable_event.h"
 
+#include "dullahan_version.h"
+
 #ifdef __APPLE__
 #include "include/wrapper/cef_library_loader.h"
 #endif
-
-
 
 dullahan_impl::dullahan_impl() :
     mInitialized(false),

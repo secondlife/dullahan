@@ -32,8 +32,6 @@
 #include <functional>
 #include <vector>
 
-#include "dullahan_version.h"
-
 class dullahan_impl;
 
 class dullahan
