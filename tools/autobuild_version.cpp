@@ -14,8 +14,9 @@
  * $/LicenseInfo$
  */
 
-#include "dullahan.h"
+#include "dullahan_version.h"
 #include <iostream>
+#include <string>
 
 int main(int argc, char* argv[])
 {
