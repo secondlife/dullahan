@@ -48,11 +48,6 @@
     @goto End
 )
 
-@rem todo remove me :)
-@rem     rm -rd ./buildwin64
-goto skip1
-
-
 @rem Record the specified build directory - this is useful as it lets us 
 @rem build multiple versions in different build directories 
 @set BUILD_DIR=%~f2
@@ -71,8 +66,6 @@ goto skip1
     @echo *** ERROR: Build directory '%BUILD_DIR%' exists - delete first ***
     @goto End
 )
-
-:skip1
 
 @rem Record the bit width we have been asked to build [32 or 64]
 @set BIT_WIDTH=%3
@@ -105,16 +98,17 @@ goto skip1
 @mkdir %DST_CEF_DIR%
 @set CEF_BUILD_DIR=%DST_CEF_DIR%\build
 @mkdir %CEF_BUILD_DIR%
+@set DULLAHAN_DIR=%cd%
 
 @rem Display the parameters we specified and calculated
 @echo Build parameters:
+@echo   Dullahan project dir: %DULLAHAN_DIR%
 @echo   CEF source dir: %SRC_CEF_DIR%
 @echo   Bit width: %BIT_WIDTH%
 @echo   Build dir: %BUILD_DIR%
 @echo   Destination CEF dir: %DST_CEF_DIR%
 @echo   CEF build dir: %CEF_BUILD_DIR%
 
-goto skip2
 @rem Copy over the CEF package files from the source directory provided
 @rem so that we do not build in the original source location. By the way,
 @rem who knew that robocopy existed in Windows! Specify all the /Nxx options
@@ -126,15 +120,29 @@ goto skip2
 @rem to it and will fail without it so we must build
 @cd %CEF_BUILD_DIR%
 @cmake -G %CMAKE_CMD% .. -DCEF_RUNTIME_LIBRARY_FLAG=/MD
+@if errorlevel 1 goto End
 @cd libcef_dll_wrapper
 @msbuild libcef_dll_wrapper.vcxproj /property:Configuration="Debug" %PLATFORM_CMD%
+@if errorlevel 1 goto End
 @msbuild libcef_dll_wrapper.vcxproj /property:Configuration="Release" %PLATFORM_CMD%
+@if errorlevel 1 goto End
 
-:skip2
+@rem Build the Dullahan solution which includes the SDK as well as the examples 
+@rem Note: we remove the Dullahan version header file since it is created each
+@rem time to include the latest information by the CMake script 
+@cd %BUILD_DIR%
+@del %DULLAHAN_DIR%\src\version.h
+@cmake -G %CMAKE_CMD% ^
+       -DCEF_WRAPPER_DIR=%DST_CEF_DIR% ^
+       -DCEF_WRAPPER_BUILD_DIR=%CEF_BUILD_DIR% ^
+       ..
+@if errorlevel 1 goto End
+@rem @msbuild dullahan.sln /property:Configuration="Debug" %PLATFORM_CMD%
+@rem @if errorlevel 1 goto End
+@msbuild dullahan.sln /property:Configuration="Release" %PLATFORM_CMD%
+@if errorlevel 1 goto End
 
-@cd %DST_CEF_DIR%
-
-dir
+@echo Build succeeded: Visual Studio solution file is %BUILD_DIR%\Dullahan.sln
 
 :End
 
