@@ -131,14 +131,13 @@
 @rem Note: we remove the Dullahan version header file since it is created each
 @rem time to include the latest information by the CMake script 
 @cd %BUILD_DIR%
-@del %DULLAHAN_DIR%\src\version.h
 @cmake -G %CMAKE_CMD% ^
        -DCEF_WRAPPER_DIR=%DST_CEF_DIR% ^
        -DCEF_WRAPPER_BUILD_DIR=%CEF_BUILD_DIR% ^
        ..
 @if errorlevel 1 goto End
-@rem @msbuild dullahan.sln /property:Configuration="Debug" %PLATFORM_CMD%
-@rem @if errorlevel 1 goto End
+@msbuild dullahan.sln /property:Configuration="Debug" %PLATFORM_CMD%
+@if errorlevel 1 goto End
 @msbuild dullahan.sln /property:Configuration="Release" %PLATFORM_CMD%
 @if errorlevel 1 goto End
 
