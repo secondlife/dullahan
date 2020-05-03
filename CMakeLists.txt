@@ -290,7 +290,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 add_custom_command(
     TARGET dullahan_host POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_directory
-            "${CEF_RELEASE_BIN_DIR}"
+            "$<$<CONFIG:debug>:${CEF_DEBUG_BIN_DIR}>$<$<CONFIG:release>:${CEF_RELEASE_BIN_DIR}>"
             "$<TARGET_FILE_DIR:dullahan_host>"
     COMMENT "Copying runtime files to executable directory")
 
