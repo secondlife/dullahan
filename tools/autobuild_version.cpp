@@ -1,7 +1,7 @@
 /**
  * @file   version.cpp
  * @author Callum Prentice
- * @date   2017-02-13
+ * @date   2020-05-02
  * @brief  Report library version number - C++ version
  *         For a library whose version number is tracked in a C++ header
  *         file, it's more robust to build a helper program to report it than

@@ -111,7 +111,7 @@ case "$AUTOBUILD_PLATFORM" in
             /Fe"$(cygpath -w "$stage/version.exe")" \
             /I "$(cygpath -w "$cef_no_wrapper_dir/include/")"  \
             /I "$(cygpath -w "$top/src")"  \
-            "$(cygpath -w "$top/version.cpp")"
+            "$(cygpath -w "$top/tools/autobuild_version.cpp")"
         "$stage/version.exe" > "$stage/version.txt"
         rm "$stage"/version.{obj,exe}
     ;;
@@ -161,7 +161,7 @@ case "$AUTOBUILD_PLATFORM" in
             -I "$cef_no_wrapper_dir/include/" \
             -I "$top/src" \
             -o "$stage/version" \
-            "$top/version.cpp"
+            "$top/tools/autobuild_version.cpp"
         "$stage/version" > "$stage/version.txt"
         rm "$stage/version"
     ;;
