@@ -1,33 +1,34 @@
 ###############################################################################
+# Dullahan CMake file - Callum Prentice - 2020-05-03
+
+###############################################################################
 cmake_minimum_required(VERSION 3.4.3)
 
 ###############################################################################
-## Dullahan main project/solution
+# Dullahan main project/solution
 project(dullahan)
 
 ###############################################################################
-## functions
-FUNCTION(check_exists variable)
-    IF(NOT ${variable})
-        MESSAGE(FATAL_ERROR ${variable} " is not set")
-    ELSE()
-        MESSAGE(STATUS  "--> ${variable} is ${${variable}}")
-    ENDIF()
-ENDFUNCTION()
+# functions
+function(check_exists variable)
+    if(NOT ${variable})
+        message(FATAL_ERROR ${variable} " is not set")
+    else()
+        message(STATUS "--> ${variable} is ${${variable}}")
+    endif()
+endfunction()
 
 ###############################################################################
-## generics
-
-# Now that we have the base directories, we build the
-# others using what we were told
-SET(CEF_INCLUDE_DIR ${CEF_WRAPPER_DIR}/include)
-SET(CEF_DEBUG_LIB_DIR ${CEF_WRAPPER_DIR}/Debug)
-SET(CEF_DEBUG_DLL_LIB_DIR ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/Debug)
-SET(CEF_RELEASE_LIB_DIR ${CEF_WRAPPER_DIR}/Release)
-SET(CEF_RELEASE_DLL_LIB_DIR ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/Release)
-SET(CEF_DEBUG_BIN_DIR ${CEF_WRAPPER_DIR}/Debug)
-SET(CEF_RELEASE_BIN_DIR ${CEF_WRAPPER_DIR}/Release)
-SET(CEF_RESOURCES_DIR ${CEF_WRAPPER_DIR}/Resources)
+# The user must pass in CEF_WRAPPER_DIR and CEF_WRAPPER_BUILD_DIR then we
+# derrive all the other ones we need based on those
+set(CEF_INCLUDE_DIR ${CEF_WRAPPER_DIR}/include)
+set(CEF_DEBUG_LIB_DIR ${CEF_WRAPPER_DIR}/Debug)
+set(CEF_DEBUG_DLL_LIB_DIR ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/Debug)
+set(CEF_RELEASE_LIB_DIR ${CEF_WRAPPER_DIR}/Release)
+set(CEF_RELEASE_DLL_LIB_DIR ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/Release)
+set(CEF_DEBUG_BIN_DIR ${CEF_WRAPPER_DIR}/Debug)
+set(CEF_RELEASE_BIN_DIR ${CEF_WRAPPER_DIR}/Release)
+set(CEF_RESOURCES_DIR ${CEF_WRAPPER_DIR}/Resources)
 
 # Check if all our variables exist and bail with
 # a fatal error if any of them are missing
@@ -42,64 +43,65 @@ check_exists(CEF_DEBUG_BIN_DIR)
 check_exists(CEF_RELEASE_BIN_DIR)
 check_exists(CEF_RESOURCES_DIR)
 
+###############################################################################
 # location of CEF libraries we link against
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     # Find both link libraries we need for Debug/Release
-    FIND_LIBRARY(
+    find_library(
         CEF_LIBRARY_DEBUG
         NAMES libcef.lib
         PATHS ${CEF_DEBUG_LIB_DIR}
         NO_DEFAULT_PATH
     )
 
-    FIND_LIBRARY(
+    find_library(
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.lib
         PATHS ${CEF_DEBUG_DLL_LIB_DIR}
         NO_DEFAULT_PATH
     )
 
-    FIND_LIBRARY(
+    find_library(
         CEF_LIBRARY_RELEASE
         NAMES libcef.lib
         PATHS ${CEF_RELEASE_LIB_DIR}
         NO_DEFAULT_PATH
     )
 
-    FIND_LIBRARY(
+    find_library(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.lib
         PATHS ${CEF_RELEASE_DLL_LIB_DIR}
         NO_DEFAULT_PATH
     )
 
-    # Check that we were able to find our link libs
+    # Confirm that we were able to find our link libs
     check_exists(CEF_LIBRARY_DEBUG)
     check_exists(CEF_DLL_LIBRARY_DEBUG)
     check_exists(CEF_LIBRARY_RELEASE)
     check_exists(CEF_DLL_LIBRARY_RELEASE)
 
-ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    FIND_LIBRARY(
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    find_library(
         CEF_DLL_LIBRARY_DEBUG
         NAMES libcef_dll_wrapper.a
         PATHS ${CEF_DEBUG_DLL_LIB_DIR}
     )
 
-    FIND_LIBRARY(
+    find_library(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.a
         PATHS ${CEF_RELEASE_DLL_LIB_DIR}
     )
 
-    FIND_LIBRARY(
+    find_library(
         CEF_FRAMEWORK_DEBUG
         NAMES "Chromium Embedded Framework"
         PATHS ${CEF_DEBUG_BIN_DIR}
     )
 
-    FIND_LIBRARY(
+    find_library(
         CEF_FRAMEWORK_RELEASE
         NAMES "Chromium Embedded Framework"
         PATHS ${CEF_RELEASE_BIN_DIR}
@@ -110,8 +112,8 @@ ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         optimized ${CEF_FRAMEWORK_RELEASE}
     )
 
-    FIND_LIBRARY(OPENGL_FRAMEWORK OpenGL)
-    FIND_LIBRARY(COCOA_FRAMEWORK Cocoa)
+    find_library(OPENGL_FRAMEWORK OpenGL)
+    find_library(COCOA_FRAMEWORK Cocoa)
 
     # Check that we were able to find our build components
     check_exists(CEF_DLL_LIBRARY_DEBUG)
@@ -121,17 +123,16 @@ ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     check_exists(CEF_FRAMEWORK)
     check_exists(OPENGL_FRAMEWORK)
     check_exists(COCOA_FRAMEWORK)
-
 endif()
 
 ###############################################################################
 # Final layer of finding the right libs for each combination
-# of name, platform, type etc.
-SET(CEF_LIBRARY
+# of name, platform, configuration, type etc.
+set(CEF_LIBRARY
     debug ${CEF_LIBRARY_DEBUG}
     optimized ${CEF_LIBRARY_RELEASE}
 )
-SET(CEF_DLL_LIBRARY
+set(CEF_DLL_LIBRARY
     debug ${CEF_DLL_LIBRARY_DEBUG}
     optimized ${CEF_DLL_LIBRARY_RELEASE}
 )
@@ -148,12 +149,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -W4 -wd4100 -wd4127 -wd4505")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -W4 -wd4100 -wd4127 -wd4505")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11  -xobjective-c++")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11 -xobjective-c++")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11 -xobjective-c++")
 endif()
 
 ###############################################################################
-## dullahan libary
+# Dullahan libary
 
 # add source files to library
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -193,33 +194,33 @@ target_include_directories(
 # turn off spurious linker warnings
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(dullahan PROPERTIES LINK_FLAGS "/ignore:4099")
-endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+endif()
 
 ###############################################################################
-## Parse CEF version header and process into dullahan header.
-## Only do this if it's a clean build (try to keep version/build number
-## the same for the same set of source files)
-if (NOT EXISTS "${PROJECT_SOURCE_DIR}/src/dullahan_version.h")
+# Parse CEF version header and process into the Dullahan header file.
+# Only do this if the version input template changed to try to keep
+# version/build number the same for the same set of source files)
+if("${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in" IS_NEWER_THAN "${PROJECT_SOURCE_DIR}/src/dullahan_version.h")
 
     # Extract CEF/Chrome version info from CEF header
-    FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CEF_VERSION_STR REGEX "\#define CEF_VERSION ")
-    FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MAJOR_STR REGEX "\#define CHROME_VERSION_MAJOR ")
-    FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MINOR_STR REGEX "\#define CHROME_VERSION_MINOR ")
-    FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_BUILD_STR REGEX "\#define CHROME_VERSION_BUILD ")
-    FILE(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_PATCH_STR REGEX "\#define CHROME_VERSION_PATCH ")
+    file(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CEF_VERSION_STR REGEX "\#define CEF_VERSION ")
+    file(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MAJOR_STR REGEX "\#define CHROME_VERSION_MAJOR ")
+    file(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_MINOR_STR REGEX "\#define CHROME_VERSION_MINOR ")
+    file(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_BUILD_STR REGEX "\#define CHROME_VERSION_BUILD ")
+    file(STRINGS ${CEF_INCLUDE_DIR}/cef_version.h CHROME_VERSION_PATCH_STR REGEX "\#define CHROME_VERSION_PATCH ")
 
     # Create a build number based on the actual build date/time
     string(TIMESTAMP BUILDNUMBER "#define DULLAHAN_VERSION_BUILD %Y%m%d%H%M")
 
     # Parse the version input file into the Dullahan version header
-    CONFIGURE_FILE (
+    configure_file(
         "${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in"
         "${PROJECT_SOURCE_DIR}/src/dullahan_version.h"
     )
-endif ()
+endif()
 
 ###############################################################################
-## dullahan host executable
+# Dullahan host executable
 
 # add source files to the application
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -271,7 +272,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 
 # we are building Windows executable, not a console app (default) and turn off spurious linker warnings
-
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
@@ -281,10 +281,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         TARGET dullahan_host POST_BUILD
         COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
         COMMENT "Adding custom manifest...")
+endif()
 
-endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-
-# Windows commands to copy CEF 'bin', 'resources' folders to executable dir (needed at runtime)
+# Windows commands to copy CEF binaries and 'resources' folders to 
+# executable dir since they're needed at runtime
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 add_custom_command(
@@ -303,11 +303,11 @@ add_custom_command(
 endif()
 
 ###############################################################################
-## examples
+# examples
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     ###############################################################################
-    ## webcube example application
+    # webcube example application
 
     # add source file to application
     add_executable(
@@ -342,7 +342,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set_target_properties(webcube PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
         set_target_properties(webcube PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
         set_target_properties(webcube PROPERTIES LINK_FLAGS "/ignore:4099")
-    endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    endif()
 
     # webcube example dependes on main library and host executable
     add_dependencies(webcube dullahan)
@@ -351,8 +351,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # set the web cube example as the default startup project in Visual Studio
     if("${CMAKE_VERSION}" VERSION_GREATER 3.6.2)
         if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-            set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "webcube")
-        endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+            SET_PROPERTY(DIRECTORY PROPERTY VS_STARTUP_PROJECT "webcube")
+        endif()
     endif()
 
     add_custom_command(
@@ -361,7 +361,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMENT "Adding custom manifest...")
 
     ###############################################################################
-    ## simplegl example application using FreeGLUT
+    # simplegl example application using FreeGLUT
 
     # add source file to application
     add_executable(
@@ -406,7 +406,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # turn off spurious linker warnings
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set_target_properties(simplegl PROPERTIES LINK_FLAGS "/ignore:4099")
-    endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    endif()
 
     add_custom_command(
         TARGET simplegl POST_BUILD
@@ -414,7 +414,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMENT "Adding custom manifest...")
 
     ###############################################################################
-    ## console example application
+    # console example application
 
     # add source file to application
     add_executable(
@@ -440,7 +440,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # turn off spurious linker warnings
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set_target_properties(console PROPERTIES LINK_FLAGS "/ignore:4099")
-    endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    endif()
 
     add_custom_command(
         TARGET console POST_BUILD
@@ -448,7 +448,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMENT "Adding custom manifest...")
 
     ###############################################################################
-    ## minimal CEF console example (doesn't use Dullahan)
+    # minimal CEF console example (doesn't use Dullahan)
 
     # add source file to the application
     add_executable(
@@ -477,17 +477,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # turn off spurious linker warnings
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set_target_properties(cef_minimal PROPERTIES LINK_FLAGS "/ignore:4099")
-    endif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    endif()
 
     add_custom_command(
         TARGET cef_minimal POST_BUILD
         COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
         COMMENT "Adding custom manifest...")
 
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
     ###############################################################################
-    ## osxgl example application
+    # osxgl example application
 
     # add source file to application
     add_executable(
@@ -532,5 +532,5 @@ endif()
 # generic commands that have to go after everything else
 
 if(CMAKE_CONFIGURATION_TYPES)
-  set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
+    set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 endif()
