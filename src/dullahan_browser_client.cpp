@@ -127,6 +127,8 @@ void dullahan_browser_client::OnBeforeClose(CefRefPtr<CefBrowser> browser)
             Sleep(sleep_time_between_calls);
 #elif __APPLE__
             sleep(sleep_time_between_calls);
+#elif __linux__
+            sleep(sleep_time_between_calls);
 #endif
         }
 

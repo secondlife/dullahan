@@ -28,6 +28,26 @@
 #import <Cocoa/Cocoa.h>
 #endif
 
+#ifdef __linux__
+#include <math.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <libgen.h>
+#include <pwd.h>
+#include <string>
+std::string getExeCwd( )
+{
+  char path[ 4096 ];
+  int len = readlink ("/proc/self/exe", path, sizeof(path) );
+  if( len != -1 )
+    {
+      path[len] = 0;
+      return dirname(path) ;
+    }
+  return "";
+}
+#endif
 #include "dullahan_impl.h"
 #include "dullahan_render_handler.h"
 #include "dullahan_browser_client.h"
@@ -126,6 +146,23 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         {
             command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
         }
+        // <ND> For Linux autodetection does not work, we need to pass ppapi-flash-path/version.
+        // We're getting this via environment variables from either the parent process or the user
+#ifdef __linux__
+        std::string strPlugin, strVersion;
+
+        if( getenv( "FS_FLASH_PLUGIN" ) && getenv( "FS_FLASH_VERSION" ) )
+        {
+            strPlugin = getenv( "FS_FLASH_PLUGIN" );
+            strVersion = getenv( "FS_FLASH_VERSION" );
+        }
+
+        if( strPlugin.size() && strVersion.size() && mSystemFlashEnabled )
+        {
+            command_line->AppendSwitchWithValue( "ppapi-flash-path", strPlugin );
+            command_line->AppendSwitchWithValue( "ppapi-flash-version", strVersion );
+        }
+#endif
     }
 }
 
@@ -144,6 +181,9 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     CefMainArgs args(0, nullptr);
 #endif
+#ifdef __linux__
+    CefMainArgs args(0, nullptr);
+#endif
 
     CefSettings settings;
 
@@ -156,7 +196,20 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
         [[NSString stringWithFormat:
           @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
 #endif
+#ifdef __linux__
+    CefString(&settings.browser_subprocess_path) = getExeCwd() + "/dullahan_host";
+    bool useSandbox = false;
+    std::string sandboxName = getExeCwd() + "/chrome-sandbox";
+    struct stat st;
 
+    if( !stat( sandboxName.c_str(), &st ) )
+      {
+	// Sandbox must be owned by root:root and has the suid bit set, otherwise cef won't use it.
+	if( st.st_uid == 0 && st.st_gid == 0 && (st.st_mode&S_ISUID) == S_ISUID )
+	  useSandbox = true;
+      }
+    settings.no_sandbox = !useSandbox;
+#endif
     // required for CEF 72+ to indicate headless
     settings.windowless_rendering_enabled = true;
 
