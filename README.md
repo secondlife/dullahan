@@ -13,7 +13,7 @@ It might be useful in a number of situations - for example:
 * HTML/JavaScript based user interfaces E.G. a tablet based paradigm for VR
 * Integration with JavaScript for automated site testing
 * Web page contents analysis - E.G:
-    * Capture images the most popular 500 web pages and count the top 5 colors in each.
+    * Capture images from the most popular 500 web pages and count the top 5 colors in each.
     * Capture a Google Maps traffic map of where you live for 24 hours and see how *really* miserable your commute is :)
 * Web page capture to an image or a PDF file
 * Lots more I haven't thought of yet
@@ -34,13 +34,11 @@ An essential site to visit when developing a CEF based application is the [CEF f
 
 ## How do I build CEF?
 
-In order to build Dullahan, you need to build CEF. You can acquire or build a compatible version of CEF in a number of ways:
+In order to build Dullahan, you need a build of CEF. You can acquire or build a compatible version of CEF in a number of ways:
 
 * Use the CEF package from the Spotify Automated CEF Builds page
     * Look at `build_dullahan_mac.sh` and `build_dullahan_mac.bat`in the `tools` directory
-* Use a Linden Lab autobuild package for CEF
-    * Look at the `extract_3p_cef_wrapper_mac.sh` and `extract_3p_cef_wrapper_mac.bat` in the `tools` directory
-* Build CEF from source entirely. This also means building Chromium from source too which takes a long time and needs to be done on a higher end spec computer
+* Build CEF from source entirely. This also means building Chromium from source too which takes a long time and needs to be done on a higher end spec computer (E.G. builds take 12-16 hours on my 2019 MacBook Pro)
     * Look at the `build_cef_src_mac.sh` and `build_cef_src_win.bat` in the `tools` directory
     * You will have to do this if you want to enable the `media_codec` option in builds that enables support for sites like Twitch, YouTube Live and Zoom
 
@@ -50,9 +48,24 @@ In order to build Dullahan, you need to build CEF. You can acquire or build a co
 
 Once you have a build of CEF in hand using one of the steps above, you can proceed with a build of Dullahan:
 
-* Use `build_dullahan_mac.sh` and `build_dullahan_mac.bat` to build Dullahan and the examples
-* Pass in the location of the CEF build you made earlier as the first parameter
-* For example: `tools/build_dullahan_mac.sh ./cef_builds/cef80.1.0.6`
+* Mac
+	* Use the `tools.build.sh` script
+	* Pass in:
+		* The URL of the CEF `.tar.bz2` package that you want to use
+		* The name of a folder to use for the build
+	* For example: `tools/build.sh https://http://opensource.spotify.com/cefbuilds/cef_binary_81.3.1%2Bgb2b49f1%2Bchromium-81.0.4044.113_macosx64.tar.bz2 ./build_cef`
+	* The CEF `libcef_dll_wrapper` will be built first followed by the Dullahan SDK and an example application called `osxgl` found here (in this example) `./build_cef/Release/osxgl.app`
+	* Note: There is no option yet to build directly from a local folder containing an uncompressed copy of CEF (as per the Windows version) - this would be very useful, especially when building CEF locally too and is high on my list of things to do.
+
+* Windiows
+	* Use the `tools.build.bat` batch file
+	* Pass in:
+		* The name of the directory containing the CEF uncompressed `.tar.bz2` package that you want to use
+		* The name of a folder to use for the build
+		* The bit width to build for - 32 or 64
+	* For example: `tools/build.bat https://http://opensource.spotify.com/cefbuilds/cef_binary_81.3.1%2Bgb2b49f1%2Bchromium-81.0.4044.113_macosx64.tar.bz2 ./build_81 64` 
+	* The CEF `libcef_dll_wrapper` will be built first followed by the Dullahan SDK and the examples which can be found here (in this example) `./build_81/Release/`
+	* Note: There is no option yet to build directly from a URL that points to an online CEF package (as per the macOS version) - this would be very useful, especially when building Dullahan from a version of CEF you find on the [Spotify Automated Builds](http://opensource.spotify.com/cefbuilds/index.html) site.
 
 ## What are the system requirements for building CEF and Dullahan?
 
@@ -62,7 +75,7 @@ Once you have a build of CEF in hand using one of the steps above, you can proce
 
 ## What are those odd files in the root directory
 
-You might notice some rather unusual files in the root directory of the Dullahan repository - for example: `build-cmd.sh`, `BuildParams`, `version.cpp` They are used to build the Linden Lab [autobuild](http://wiki.secondlife.com/wiki/Autobuild) version of the Dullahan package that is then used in our product which is called [Second Life](https://secondlife.com). The [autobuild](http://wiki.secondlife.com/wiki/Autobuild) system is what we use to build all of our internal software and requires that those files be there in the root directory. You can safely ingore them if you are using Dullahan for something outside Second Life.
+You might notice some rather unusual files in the root directory of the Dullahan repository - for example: `build-cmd.sh`, `BuildParams` etc. They are used to build the Linden Lab [autobuild](http://wiki.secondlife.com/wiki/Autobuild) version of the Dullahan package that is then used in our product: [Second Life](https://secondlife.com). The [autobuild](http://wiki.secondlife.com/wiki/Autobuild) system is what we use to build all of our internal software and requires that those files be there in the root directory. You can safely ingore them if you are using Dullahan for something outside of Second Life.
 
 ## Which version of the C++ runtime library does it use on Windows?
 
@@ -78,7 +91,7 @@ The short answer is look at the code in the `examples` folder and `dullahan.h`. 
 
 ## Are there examples?
 
-Why yes there is - take a look in the `examples` subdirectory of this repository. There are some screen shots and short descriptions in the [README](https://bitbucket.org/lindenlab/dullahan/src/default/examples/README.md) file too 
+Why yes there is - take a look in the `examples` subdirectory of this repository. There are some screen shots and short descriptions in the [README](https://bitbucket.org/lindenlab/dullahan/src/master/examples/README.md) file too 
 
 ## Alternatives
 
