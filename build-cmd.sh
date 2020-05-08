@@ -176,7 +176,7 @@ case "$AUTOBUILD_PLATFORM" in
 		
         cd "$stage"
         cmake .. -G  Ninja -DCEF_WRAPPER_DIR="${cef_no_wrapper_dir}" \
-            -DCEF_WRAPPER_BUILD_DIR="$}cef_no_wrapper_build_dir}" \
+            -DCEF_WRAPPER_BUILD_DIR="${cef_no_wrapper_build_dir}" \
 			  -DCMAKE_C_FLAGS:STRING="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}" \
 			  -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}"
 
