@@ -326,7 +326,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     // off with it's head
     CefWindowInfo window_info;
-    window_info.SetAsWindowless(nullptr);
+    window_info.SetAsWindowless(0);
     window_info.windowless_rendering_enabled = true;
     window_info.x = 0;
     window_info.y = 0;
