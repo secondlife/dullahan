@@ -128,13 +128,13 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_library(
         CEF_LIBRARY_RELEASE
         NAMES libcef.so
-        PATHS ${CEF_LIB_DIR}
+        PATHS ${CEF_RELEASE_LIB_DIR}
         PATH_SUFFIXES release
     )
     find_library(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.a
-        PATHS ${CEF_LIB_DIR}
+        PATHS ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/
         PATH_SUFFIXES release
     )
 endif()
@@ -142,14 +142,20 @@ endif()
 ###############################################################################
 # Final layer of finding the right libs for each combination
 # of name, platform, configuration, type etc.
-set(CEF_LIBRARY
-    debug ${CEF_LIBRARY_DEBUG}
-    optimized ${CEF_LIBRARY_RELEASE}
-)
-set(CEF_DLL_LIBRARY
-    debug ${CEF_DLL_LIBRARY_DEBUG}
-    optimized ${CEF_DLL_LIBRARY_RELEASE}
-)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set(CEF_LIBRARY ${CEF_LIBRARY_RELEASE} )
+  set(CEF_DLL_LIBRARY ${CEF_DLL_LIBRARY_RELEASE} )
+else()
+  set(CEF_LIBRARY
+      debug ${CEF_LIBRARY_DEBUG}
+      optimized ${CEF_LIBRARY_RELEASE}
+  )
+  set(CEF_DLL_LIBRARY
+      debug ${CEF_DLL_LIBRARY_DEBUG}
+      optimized ${CEF_DLL_LIBRARY_RELEASE}
+  )
+endif()
+
 check_exists(CEF_LIBRARY)
 check_exists(CEF_DLL_LIBRARY)
 
