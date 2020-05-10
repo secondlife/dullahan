@@ -20,9 +20,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>f20aee58b77b017e89f98c1c860edc69</string>
+              <string>ba820e47d84e3451989cfc8a485aef90</string>
               <key>url</key>
-              <string>http://192.168.1.115/dev/pkg/cef_bin-81.3.1_gb2b49f1_chromium-81.0.4044.113.201281453-linux64-201281453.tar.bz2</string>
+              <string>http://192.168.1.115/dev/pkg/cef_bin-81.3.3_g072a5f5_chromium-81.0.4044.147.201311226-linux64-201311226.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
