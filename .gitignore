@@ -2,3 +2,4 @@ src/dullahan_version.h
 build
 build64
 stage
+*.tar.bz2
