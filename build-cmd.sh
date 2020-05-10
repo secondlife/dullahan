@@ -166,6 +166,9 @@ case "$AUTOBUILD_PLATFORM" in
         rm "$stage/version"
     ;;
     linux64)
+		#Force version regeneration.
+		rm -f src/dullahan_version.h
+
         # build the CEF c->C++ wrapper "libcef_dll_wrapper"
 		cd "${cef_no_wrapper_dir}"
         rm -rf "${cef_no_wrapper_build_dir}"
