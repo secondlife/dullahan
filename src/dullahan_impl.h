@@ -31,7 +31,9 @@
 #include <sstream>
 
 #include "cef_app.h"
+#ifndef CEF_INCLUDE_CEF_VERSION_H_
 #include "cef_version.h"
+#endif
 
 #include "dullahan.h"
 #include "dullahan_debug.h"
