@@ -44,16 +44,16 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>855937274bd477e4def0cf1551d8a2ec</string>
+              <string>a626a1d3c3e8ed7bfea07d8b1e643d9c</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/59148/556143/cef_bin-81.2.17_gb382c62_chromium-81.0.4044.113-windows64-541757.tar.bz2</string>
+              <string>http://ll-build-secondlife-development.s3.amazonaws.com/ct2/10047/43394/cef_bin-81.3.10_gb223419_chromium-81.0.4044.138-windows64-509768.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
         <key>version</key>
-        <string>81.2.17_gb382c62_chromium-81.0.4044.113</string>
+        <string>81.3.10_gb223419_chromium-81.0.4044.138</string>
       </map>
     </map>
     <key>package_description</key>
