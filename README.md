@@ -36,13 +36,10 @@ An essential site to visit when developing a CEF based application is the [CEF f
 
 In order to build Dullahan, you need a build of CEF. You can acquire or build a compatible version of CEF in a number of ways:
 
-* Use the CEF package from the Spotify Automated CEF Builds page
-    * Look at `build_dullahan_mac.sh` and `build_dullahan_mac.bat`in the `tools` directory
-* Build CEF from source entirely. This also means building Chromium from source too which takes a long time and needs to be done on a higher end spec computer (E.G. builds take 12-16 hours on my 2019 MacBook Pro)
-    * Look at the `build_cef_src_mac.sh` and `build_cef_src_win.bat` in the `tools` directory
-    * You will have to do this if you want to enable the `media_codec` option in builds that enables support for sites like Twitch, YouTube Live and Zoom
-
-* Lots more information about building CEF on all platforms can be found on the `cef / MasterBuildQuickStart` page [here](https://bitbucket.org/chromiumembedded/cef/wiki/MasterBuildQuickStart#markdown-header-mac-os-x-setup)
+* Use the CEF package from the [Spotify Automated CEF Builds page](https://http://opensource.spotify.com/cefbuilds)
+* Clone the Linden [CEF source repository](https://bitbucket.org/lindenlab/cef) and use the batch file (Windows) and Shell script (macOS) to build CEF from source code. This means building Chromium from source too which takes a long time and needs to be done on a powerful machine (E.G. builds take 12-16 hours on my 2019 MacBook Pro/BootCamp)
+* You will have to build from source if you want to enable the `media_codec` option in builds that enables support for sites like Twitch, YouTube Live and Zoom - the Spotify packages do not have that option enabled
+* Lots more information about building CEF on all platforms can be found on the `cef / MasterBuildQuickStart` page [here](https://bitbucket.org/chromiumembedded/cef/wiki/MasterBuildQuickStart)
 
 ## How do I build Dullahan?
 
@@ -79,7 +76,7 @@ You might notice some rather unusual files in the root directory of the Dullahan
 
 ## Which version of the C++ runtime library does it use on Windows?
 
-For historical reasons, both Dullahan and the version of CEF it consumes are built with the C++ runtime library set to `Multi-threaded DLL` / `Multi-threaded Debug DLL`
+For historical reasons, both Dullahan and the version of CEF it consumes are built with the C++ runtime library set to `Multi-threaded DLL` / `Multi-threaded Debug DLL`. If you want to build it with a different runtime library, you should examine instances of `CEF_RUNTIME_LIBRARY_FLAG` in the build scripts
 
 ## Is there a binary version I can download? ##
 
