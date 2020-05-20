@@ -141,7 +141,7 @@
 @msbuild dullahan.sln /property:Configuration="Release" %PLATFORM_CMD%
 @if errorlevel 1 goto End
 
-@echo Build succeeded: Visual Studio solution file is %BUILD_DIR%\Dullahan.sln
+@echo Build succeeded: Visual Studio solution file is %BUILD_DIR%\dullahan.sln
 
 :End
 
