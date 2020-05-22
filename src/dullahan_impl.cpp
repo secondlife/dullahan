@@ -203,18 +203,19 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     struct stat st;
 
     if( !stat( sandboxName.c_str(), &st ) )
-      {
-	// Sandbox must be owned by root:root and has the suid bit set, otherwise cef won't use it.
-	if( st.st_uid == 0 && st.st_gid == 0 && (st.st_mode&S_ISUID) == S_ISUID )
-	  useSandbox = true;
-      }
+    {
+        // Sandbox must be owned by root:root and has the suid bit set, otherwise cef won't use it.
+        if( st.st_uid == 0 && st.st_gid == 0 && (st.st_mode&S_ISUID) == S_ISUID )
+            useSandbox = true;
+    }
+
     settings.no_sandbox = !useSandbox;
+#else
+    // explicitly disable sandbox
+    settings.no_sandbox = true;
 #endif
     // required for CEF 72+ to indicate headless
     settings.windowless_rendering_enabled = true;
-
-    // explicitly disable sandbox
-    settings.no_sandbox = true;
 
     // CEF header file suggest that we need this now
     settings.external_message_pump = true;
