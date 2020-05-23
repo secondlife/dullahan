@@ -171,10 +171,8 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
     }
 }
 
-bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
+bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
 {
-    DLNOUT("dullahan_impl::init()");
-
 #ifdef WIN32
     CefMainArgs args(GetModuleHandle(nullptr));
 #elif __APPLE__
@@ -327,10 +325,15 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     // initiaize CEF
     bool result = CefInitialize(args, settings, this, nullptr);
-    if (!result)
-    {
-        return false;
-    }
+	return result;
+}
+
+bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
+{
+    DLNOUT("dullahan_impl::init()");
+
+	if( !initCEF( user_settings) )
+		return false;
 
     CefBrowserSettings browser_settings;
     browser_settings.windowless_frame_rate = user_settings.frame_rate;

@@ -141,7 +141,9 @@ class dullahan_impl :
         void OnPdfPrintFinished(const CefString& path, bool ok) override;
 
     private:
-        CefRefPtr<dullahan_browser_client> mBrowserClient;
+        bool initCEF(dullahan::dullahan_settings& user_settings);
+
+	    CefRefPtr<dullahan_browser_client> mBrowserClient;
         CefRefPtr<dullahan_render_handler> mRenderHandler;
         CefRefPtr<CefBrowser> mBrowser;
         dullahan_callback_manager* mCallbackManager;
