@@ -111,6 +111,9 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
             command_line->AppendSwitch("enable-begin-frame-scheduling");
         }
 
+        // <ND> n.b. be careful enabling this. At least on Linux it will break sites like twitch.tv mixer.com, dlive.com.
+        // Probably this also makes only sense for Win32?
+#ifdef WIN32
         if (mForceWaveAudio == true)
         {
 			// Grouping these together since they're interconnected.
@@ -120,6 +123,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
             command_line->AppendSwitch("force-wave-audio");
             command_line->AppendSwitchWithValue("disable-features", "AudioServiceOutOfProcess");
         }
+#endif
 
         if (mDisableGPU == true)
         {
@@ -146,6 +150,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         {
             command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
         }
+
         // <ND> For Linux autodetection does not work, we need to pass ppapi-flash-path/version.
         // We're getting this via environment variables from either the parent process or the user
 #ifdef __linux__
@@ -273,8 +278,10 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     // this flag needed for some video cards to force onPaints to work - off by default
     mBeginFrameScheduling = user_settings.begin_frame_scheduling;
 
+#ifdef WIN32
     // this flag forces Windows WaveOut/In audio API even if Core Audio is supported
     mForceWaveAudio = user_settings.force_wave_audio;
+#endif
 
     // this flag if set, adds command line options to disable the GPU and GPU compositing.
     // Appears to be needed to make sites like Google Maps work now. The GPU compositing
