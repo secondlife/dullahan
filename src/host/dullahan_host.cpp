@@ -26,6 +26,13 @@
 
 #include "cef_app.h"
 
+#ifdef __linux__
+int main(int argc, char* argv[])
+{
+  CefMainArgs main_args(argc, argv);
+  return CefExecuteProcess(main_args, NULL, NULL);
+}
+#endif
 #ifdef WIN32
 #include <windows.h>
 

@@ -31,7 +31,9 @@
 #include <sstream>
 
 #include "cef_app.h"
+#ifndef CEF_INCLUDE_CEF_VERSION_H_
 #include "cef_version.h"
+#endif
 
 #include "dullahan.h"
 #include "dullahan_debug.h"
@@ -78,10 +80,15 @@ class dullahan_impl :
         void mouseMove(int x, int y);
         void mouseWheel(int x, int y, int deltaX, int deltaY);
 
+#ifndef __linux__
         void nativeKeyboardEventWin(uint32_t msg, uint32_t wparam, uint64_t lparam);
         void nativeKeyboardEventOSX(void* event);
         void nativeKeyboardEventOSX(dullahan::EKeyEvent event_type, uint32_t event_modifiers, uint32_t event_keycode,
                                     uint32_t event_chars, uint32_t event_umodchars, bool event_isrepeat);
+#else
+        void nativeKeyboardEvent( dullahan::EKeyEvent key_event, uint32_t native_scan_code, uint32_t native_virtual_key, uint32_t native_modifiers );
+        void nativeKeyboardEventSDL2( dullahan::EKeyEvent key_event, uint32_t key_data, uint32_t key_modifiers, bool keypad_input );
+#endif
 
         void navigate(const std::string url);
         void setFocus();
@@ -134,7 +141,9 @@ class dullahan_impl :
         void OnPdfPrintFinished(const CefString& path, bool ok) override;
 
     private:
-        CefRefPtr<dullahan_browser_client> mBrowserClient;
+        bool initCEF(dullahan::dullahan_settings& user_settings);
+
+	    CefRefPtr<dullahan_browser_client> mBrowserClient;
         CefRefPtr<dullahan_render_handler> mRenderHandler;
         CefRefPtr<CefBrowser> mBrowser;
         dullahan_callback_manager* mCallbackManager;

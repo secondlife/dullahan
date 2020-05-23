@@ -15,6 +15,18 @@
         <string>cef-bin</string>
         <key>platforms</key>
         <map>
+          <key>linux64</key>
+          <map>
+            <key>archive</key>
+            <map>
+              <key>hash</key>
+              <string>ba820e47d84e3451989cfc8a485aef90</string>
+              <key>url</key>
+              <string>http://192.168.1.115/dev/pkg/cef_bin-81.3.3_g072a5f5_chromium-81.0.4044.147.201311226-linux64-201311226.tar.bz2</string>
+            </map>
+            <key>name</key>
+            <string>darwin64</string>
+          </map>
           <key>darwin64</key>
           <map>
             <key>archive</key>
@@ -149,6 +161,32 @@
           </array>
           <key>name</key>
           <string>windows</string>
+        </map>
+        <key>linux64</key>
+        <map>
+          <key>configurations</key>
+          <map>
+            <key>Release</key>
+            <map>
+              <key>build</key>
+              <map>
+              </map>
+              <key>default</key>
+              <boolean>true</boolean>
+              <key>name</key>
+              <string>Release</string>
+            </map>
+          </map>
+          <key>manifest</key>
+          <array>
+            <string>lib/release/*</string>
+            <string>bin/release/*</string>
+            <string>lib/debug/*</string>
+            <string>bin/debug/*</string>
+            <string>resources/*</string>
+          </array>
+          <key>name</key>
+          <string>linux</string>
         </map>
       </map>
       <key>source_directory</key>
