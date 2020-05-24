@@ -191,26 +191,20 @@ case "$AUTOBUILD_PLATFORM" in
 		rm "$stage/version"
 		
 		mkdir -p "$stage/LICENSES"
-		mkdir -p "$stage/bin/debug/"
 		mkdir -p "$stage/bin/release/"
 		mkdir -p "$stage/include"
 		mkdir -p "$stage/include/cef"
-		mkdir -p "$stage/lib/debug/swiftshader"
 		mkdir -p "$stage/lib/release/swiftshader"
 		mkdir -p "$stage/resources"
 		 
 		cp libdullahan.a ${stage}/lib/release/
 		cp ${cef_no_wrapper_build_dir}/libcef_dll_wrapper/libcef_dll_wrapper.a $stage/lib/release
 
-		cp -a ${cef_no_wrapper_dir}/Debug/*.so ${stage}/lib/debug/
-		cp -a ${cef_no_wrapper_dir}/Debug/swiftshader/* ${stage}/lib/debug/swiftshader/
 		cp -a ${cef_no_wrapper_dir}/Release/*.so ${stage}/lib/release/
 		cp -a ${cef_no_wrapper_dir}/Release/swiftshader/* ${stage}/lib/release/swiftshader/
 
 		cp dullahan_host ${stage}/bin/release/
 
-		cp -a ${cef_no_wrapper_dir}/Debug/*.bin ${stage}/bin/debug/
-		cp -a ${cef_no_wrapper_dir}/Debug/chrome-sandbox ${stage}/bin/debug/
 		cp -a ${cef_no_wrapper_dir}/Release/*.bin ${stage}/bin/release/
 		cp -a ${cef_no_wrapper_dir}/Release/chrome-sandbox ${stage}/bin/release/
 

@@ -181,8 +181,6 @@
           <array>
             <string>lib/release/*</string>
             <string>bin/release/*</string>
-            <string>lib/debug/*</string>
-            <string>bin/debug/*</string>
             <string>resources/*</string>
           </array>
           <key>name</key>
