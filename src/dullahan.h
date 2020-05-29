@@ -42,7 +42,8 @@ class dullahan
         {
             KE_KEY_DOWN,
             KE_KEY_REPEAT,
-            KE_KEY_UP
+            KE_KEY_UP,
+            KE_KEY_CHAR,
         } EKeyEvent;
 
         typedef enum e_keyboard_modifier
@@ -247,10 +248,15 @@ class dullahan
         void mouseWheel(int x, int y, int delta_x, int delta_y);
 
         // keyboard input
+#ifndef __linux__
         void nativeKeyboardEventWin(uint32_t msg, uint32_t wparam, uint64_t lparam);
         void nativeKeyboardEventOSX(void* event);
         void nativeKeyboardEventOSX(dullahan::EKeyEvent event_type, uint32_t event_modifiers, uint32_t event_keycode,
                                     uint32_t event_chars, uint32_t event_umodchars, bool event_isrepeat);
+#else
+        void nativeKeyboardEvent( dullahan::EKeyEvent key_event, uint32_t native_scan_code, uint32_t native_virtual_key, uint32_t native_modifiers );
+        void nativeKeyboardEventSDL2( dullahan::EKeyEvent key_event, uint32_t key_data, uint32_t key_modifiers, bool keypad_input );
+#endif
 
         // navigate to a URL
         void navigate(const std::string url);

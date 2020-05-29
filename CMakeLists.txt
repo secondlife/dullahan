@@ -123,19 +123,39 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     check_exists(CEF_FRAMEWORK)
     check_exists(OPENGL_FRAMEWORK)
     check_exists(COCOA_FRAMEWORK)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(CMAKE_CXX_LINK_FLAGS "-Wl,--no-keep-memory -Wl,--build-id -Wl,-rpath,'$ORIGIN:$ORIGIN/../lib' -Wl,--exclude-libs,ALL")
+    find_library(
+        CEF_LIBRARY_RELEASE
+        NAMES libcef.so
+        PATHS ${CEF_RELEASE_LIB_DIR}
+        PATH_SUFFIXES release
+    )
+    find_library(
+        CEF_DLL_LIBRARY_RELEASE
+        NAMES libcef_dll_wrapper.a
+        PATHS ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/
+        PATH_SUFFIXES release
+    )
 endif()
 
 ###############################################################################
 # Final layer of finding the right libs for each combination
 # of name, platform, configuration, type etc.
-set(CEF_LIBRARY
-    debug ${CEF_LIBRARY_DEBUG}
-    optimized ${CEF_LIBRARY_RELEASE}
-)
-set(CEF_DLL_LIBRARY
-    debug ${CEF_DLL_LIBRARY_DEBUG}
-    optimized ${CEF_DLL_LIBRARY_RELEASE}
-)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set(CEF_LIBRARY ${CEF_LIBRARY_RELEASE} )
+  set(CEF_DLL_LIBRARY ${CEF_DLL_LIBRARY_RELEASE} )
+else()
+  set(CEF_LIBRARY
+      debug ${CEF_LIBRARY_DEBUG}
+      optimized ${CEF_LIBRARY_RELEASE}
+  )
+  set(CEF_DLL_LIBRARY
+      debug ${CEF_DLL_LIBRARY_DEBUG}
+      optimized ${CEF_DLL_LIBRARY_RELEASE}
+  )
+endif()
+
 check_exists(CEF_LIBRARY)
 check_exists(CEF_DLL_LIBRARY)
 
@@ -151,6 +171,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11 -xobjective-c++")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11 -xobjective-c++")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+    if( NOT ENABLE_CXX11_ABI ) 
+      add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+    endif()
 endif()
 
 ###############################################################################
@@ -161,6 +186,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(KEYBOARD_IMPL_SRC_FILE src/dullahan_impl_keyboard_win.cpp)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(KEYBOARD_IMPL_SRC_FILE src/dullahan_impl_keyboard_mac.mm)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(KEYBOARD_IMPL_SRC_FILE src/dullahan_impl_keyboard_linux.cpp)
 endif()
 
 add_library(
@@ -254,6 +281,17 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set_target_properties(DullahanHelper PROPERTIES
         MACOSX_BUNDLE_BUNDLE_NAME "DullahanHelper"
         MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/src/host/Info.plist.in")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    add_executable(
+        dullahan_host
+        src/host/dullahan_host.cpp
+    )
+    target_include_directories(
+        dullahan_host
+        PUBLIC
+        ${CEF_INCLUDE_DIR}
+        ${CEF_INCLUDE_DIR}/..
+    )
 endif()
 
 # define which libs to link against
@@ -268,6 +306,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         DullahanHelper
         ${CEF_DLL_LIBRARY}
         ${CEF_FRAMEWORK}
+    )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_link_libraries(
+        dullahan_host
+        ${CEF_DLL_LIBRARY}
+        ${CEF_LIBRARY}
     )
 endif()
 
