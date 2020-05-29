@@ -350,6 +350,8 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 {
     if (process_type.empty())
     {
+        // <ND> Enable HTMLImports to get youtube live chat to work
+        command_line->AppendSwitchWithValue("enable-blink-features", "HTMLImports");
         if (mMediaStreamEnabled == true)
         {
             command_line->AppendSwitch("disable-surfaces");
