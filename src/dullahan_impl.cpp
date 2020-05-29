@@ -667,6 +667,12 @@ void dullahan_impl::update()
         return;
 
     CefDoMessageLoopWork();
+
+    // CEF/Chromium resets page zoom in between pages
+    // so we continually try to set it to the value selected
+    // in calls to setPageZoom. Once the required zoom
+    // level is reached this call is almost free.
+    requestPageZoom();
 }
 
 bool dullahan_impl::canGoBack()
