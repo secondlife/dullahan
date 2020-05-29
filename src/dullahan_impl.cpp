@@ -350,6 +350,8 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 {
     if (process_type.empty())
     {
+        // <ND> Enable HTMLImports to get youtube live chat to work
+        command_line->AppendSwitchWithValue("enable-blink-features", "HTMLImports");
         if (mMediaStreamEnabled == true)
         {
             command_line->AppendSwitch("disable-surfaces");
@@ -376,7 +378,15 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
             // CEF using out of process audio which breaks ::waveOutSetVolume()
             // that ise used to control the volume of media in a web page
             command_line->AppendSwitch("force-wave-audio");
-            command_line->AppendSwitchWithValue("disable-features", "AudioServiceOutOfProcess");
+
+            // <ND> This breaks twitch and friends. Allow to not add this via env override (for debugging)
+            char const *pEnv { getenv( "nd_AudioServiceOutOfProcess" ) };
+            bool bDisableAudioServiceOutOfProcess { true };
+            if( pEnv && pEnv[0] == '1' )
+                bDisableAudioServiceOutOfProcess = false;
+
+            if( bDisableAudioServiceOutOfProcess )
+                command_line->AppendSwitchWithValue("disable-features", "AudioServiceOutOfProcess");
         }
 #endif
 
