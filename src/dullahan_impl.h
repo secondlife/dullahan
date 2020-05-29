@@ -86,8 +86,8 @@ class dullahan_impl :
         void nativeKeyboardEventOSX(dullahan::EKeyEvent event_type, uint32_t event_modifiers, uint32_t event_keycode,
                                     uint32_t event_chars, uint32_t event_umodchars, bool event_isrepeat);
 #else
-        void nativeKeyboardEvent( dullahan::EKeyEvent key_event, uint32_t native_scan_code, uint32_t native_virtual_key, uint32_t native_modifiers );
-        void nativeKeyboardEventSDL2( dullahan::EKeyEvent key_event, uint32_t key_data, uint32_t key_modifiers, bool keypad_input );
+        void nativeKeyboardEvent(dullahan::EKeyEvent key_event, uint32_t native_scan_code, uint32_t native_virtual_key, uint32_t native_modifiers);
+        void nativeKeyboardEventSDL2(dullahan::EKeyEvent key_event, uint32_t key_data, uint32_t key_modifiers, bool keypad_input);
 #endif
 
         void navigate(const std::string url);
@@ -143,7 +143,7 @@ class dullahan_impl :
     private:
         bool initCEF(dullahan::dullahan_settings& user_settings);
 
-	    CefRefPtr<dullahan_browser_client> mBrowserClient;
+        CefRefPtr<dullahan_browser_client> mBrowserClient;
         CefRefPtr<dullahan_render_handler> mRenderHandler;
         CefRefPtr<CefBrowser> mBrowser;
         dullahan_callback_manager* mCallbackManager;

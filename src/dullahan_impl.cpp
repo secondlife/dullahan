@@ -47,7 +47,7 @@
 
 #include "include/cef_waitable_event.h"
 #include "include/cef_web_plugin.h"
-#include "include/base/cef_logging.h" 
+#include "include/base/cef_logging.h"
 
 #include "dullahan_version.h"
 
@@ -57,53 +57,58 @@
 
 
 #ifdef __linux__
-namespace {
-    std::string getExeCwd( )
+namespace
+{
+std::string getExeCwd()
+{
+    char path[ 4096 ];
+    int len = readlink("/proc/self/exe", path, sizeof(path));
+    if (len != -1)
     {
-        char path[ 4096 ];
-        int len = readlink ("/proc/self/exe", path, sizeof(path) );
-        if( len != -1 )
-        {
-            path[len] = 0;
-            return dirname(path) ;
-        }
-        return "";
+        path[len] = 0;
+        return dirname(path) ;
     }
+    return "";
+}
 
-    bool testFileOrDir( std::string path, uint32_t mode )
+bool testFileOrDir(std::string path, uint32_t mode)
+{
+    if (path.empty())
     {
-        if( path.empty() )
-            return false;
-
-        struct stat st;
-
-        if( !stat( path.c_str(), &st ) )
-            return (st.st_mode & mode ) != 0;
-
         return false;
     }
 
-    bool isFile( std::string path )
+    struct stat st;
+
+    if (!stat(path.c_str(), &st))
     {
-        return testFileOrDir( path, S_IFREG );
+        return (st.st_mode & mode) != 0;
     }
 
-    bool isDir( std::string path )
-    {
-        return testFileOrDir( path, S_IFDIR );
-    }
+    return false;
+}
 
-    void copyFile( std::string source, std::string dest )
-    {
-        // std::filesystem would be neat here ...
-        // sadly not available till pretty recent GCC versions.
-        std::ifstream fSource(source, std::ios::binary);
-        std::ofstream fDest(dest, std::ios::binary);
+bool isFile(std::string path)
+{
+    return testFileOrDir(path, S_IFREG);
+}
 
-        fDest << fSource.rdbuf();
-    }
+bool isDir(std::string path)
+{
+    return testFileOrDir(path, S_IFDIR);
+}
 
-    std::string strManifest = { R"(
+void copyFile(std::string source, std::string dest)
+{
+    // std::filesystem would be neat here ...
+    // sadly not available till pretty recent GCC versions.
+    std::ifstream fSource(source, std::ios::binary);
+    std::ofstream fDest(dest, std::ios::binary);
+
+    fDest << fSource.rdbuf();
+}
+
+std::string strManifest = { R"(
     {
       "manifest_version": 2,
       "name": "WidevineCdm",
@@ -117,155 +122,194 @@ namespace {
       "x-cdm-supported-encryption-schemes": ["cenc","cbcs"],
       "arch": "x64",
       "os": "linux"
-     })" };
+     })" 
+                          };
 
 
-    void appendSlash( std::string &dir )
+void appendSlash(std::string& dir)
+{
+    if (dir.empty())
     {
-        if( dir.empty() )
-            return;
-
-        if( dir[ dir.length() - 1 ] != '/' )
-            dir += "/";
+        return;
     }
 
-    std::string getHomedir()
+    if (dir[ dir.length() - 1 ] != '/')
     {
-        char const *pHome = getenv( "HOME" );
-        if( pHome == nullptr )
-            pHome = getpwuid(getuid())->pw_dir;
+        dir += "/";
+    }
+}
 
-        if( !pHome )
-            return "";
-
-        std::string home{ pHome };
-
-        appendSlash( home );
-        return home;
+std::string getHomedir()
+{
+    char const* pHome = getenv("HOME");
+    if (pHome == nullptr)
+    {
+        pHome = getpwuid(getuid())->pw_dir;
     }
 
-
-    struct WidevineEntry
+    if (!pHome)
     {
-        std::string path;
-        std::string version;
-    };
+        return "";
+    }
 
-    std::string getFirefoxWidevine()
+    std::string home{ pHome };
+
+    appendSlash(home);
+    return home;
+}
+
+
+struct WidevineEntry
+{
+    std::string path;
+    std::string version;
+};
+
+std::string getFirefoxWidevine()
+{
+    std::string pathWidevine;
+    std::vector< WidevineEntry > foundVersions;
+    std::string home { getHomedir() };
+
+    if (home.empty())
     {
-        std::string pathWidevine;
-        std::vector< WidevineEntry > foundVersions;
-        std::string home { getHomedir() };
-
-        if( home.empty() )
-            return pathWidevine;
-
-        home += ".mozilla/firefox/";
-        if( !isDir( home ) )
-            return pathWidevine;
-
-        DIR *pDir{ opendir( home.c_str() ) };
-        if( pDir )
-        {
-            while( dirent *pEntry = readdir( pDir ) )
-            {
-                std::string dirName { home };
-
-                if( pEntry->d_name[ 0 ] == 0 ||
-                    std::string( pEntry->d_name ) == "." ||
-                    std::string( pEntry->d_name ) == ".." )
-                    continue;
-
-                dirName += pEntry->d_name;
-                if( !isDir( dirName ) )
-                    continue;
-
-                appendSlash( dirName );
-
-                dirName += "gmp-widevinecdm/";
-                if( !isDir( dirName ) )
-                    continue;
-
-                DIR *pSubdir{ opendir( dirName.c_str() ) };
-                if( pSubdir )
-                {
-                    while( dirent *pSubentry = readdir( pSubdir ) )
-                    {
-                        std::string subDir { dirName };
-                        if( pEntry->d_name[ 0 ] == 0 ||
-                            std::string( pEntry->d_name ) == "." ||
-                            std::string( pEntry->d_name ) == ".." )
-                            continue;
-
-                        subDir += pSubentry->d_name;
-                        if( !isDir( subDir ) )
-                            continue;
-
-                        appendSlash( subDir );
-                        if( isFile( subDir + "manifest.json" ) &&
-                            isFile( subDir + "libwidevinecdm.so" ) )
-                            foundVersions.push_back( { subDir, pSubentry->d_name } );
-                    }
-                    closedir( pSubdir );
-                }
-            }
-
-            closedir( pDir );
-        }
-
-        // Todo? check versions if multiple are found?
-
-        if( foundVersions.size() )
-            pathWidevine = foundVersions[0].path;
-
         return pathWidevine;
     }
 
-    std::string getChromeWidevine( std::string cachePath )
+    home += ".mozilla/firefox/";
+    if (!isDir(home))
     {
-        std::string strGooglePath {"/opt/google/chrome/WidevineCdm/" };
-        if( !isDir(strGooglePath) )
-            return "";
-
-        if( !isFile( strGooglePath + "_platform_specific/linux_x64/libwidevinecdm.so" ) )
-            return "";
-
-        if( !isDir(cachePath) )
-            return "";
-
-        if( cachePath[ cachePath.length() - 1 ] != '/' )
-            cachePath += "/widevine/";
-        else
-            cachePath += "widevine/";
-
-        if( !isDir( cachePath ) )
-            mkdir( cachePath.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
-
-        copyFile( strGooglePath + "_platform_specific/linux_x64/libwidevinecdm.so", cachePath + "libwidevinecdm.so" );
-        std::ofstream fManifest( cachePath + "manifest.json", std::ios::binary );
-        fManifest << strManifest;
-
-        return cachePath;
-
+        return pathWidevine;
     }
 
-    void initWidevine( std::string cachePath )
+    DIR* pDir{ opendir(home.c_str()) };
+    if (pDir)
     {
-        std::string strWDVPath { getFirefoxWidevine() };
-        if( strWDVPath.size() )
+        while (dirent* pEntry = readdir(pDir))
         {
-            CefRegisterWidevineCdm( strWDVPath.c_str(), nullptr );
-            return;
+            std::string dirName { home };
+
+            if (pEntry->d_name[ 0 ] == 0 ||
+                    std::string(pEntry->d_name) == "." ||
+                    std::string(pEntry->d_name) == "..")
+            {
+                continue;
+            }
+
+            dirName += pEntry->d_name;
+            if (!isDir(dirName))
+            {
+                continue;
+            }
+
+            appendSlash(dirName);
+
+            dirName += "gmp-widevinecdm/";
+            if (!isDir(dirName))
+            {
+                continue;
+            }
+
+            DIR* pSubdir{ opendir(dirName.c_str()) };
+            if (pSubdir)
+            {
+                while (dirent* pSubentry = readdir(pSubdir))
+                {
+                    std::string subDir { dirName };
+                    if (pEntry->d_name[ 0 ] == 0 ||
+                            std::string(pEntry->d_name) == "." ||
+                            std::string(pEntry->d_name) == "..")
+                    {
+                        continue;
+                    }
+
+                    subDir += pSubentry->d_name;
+                    if (!isDir(subDir))
+                    {
+                        continue;
+                    }
+
+                    appendSlash(subDir);
+                    if (isFile(subDir + "manifest.json") &&
+                            isFile(subDir + "libwidevinecdm.so"))
+                        foundVersions.push_back({ subDir, pSubentry->d_name });
+                }
+                closedir(pSubdir);
+            }
         }
 
-        strWDVPath = getChromeWidevine( cachePath );
-        if( strWDVPath.size() )
-            CefRegisterWidevineCdm( strWDVPath.c_str(), nullptr );
+        closedir(pDir);
     }
+
+    // Todo? check versions if multiple are found?
+
+    if (foundVersions.size())
+    {
+        pathWidevine = foundVersions[0].path;
+    }
+
+    return pathWidevine;
+}
+
+std::string getChromeWidevine(std::string cachePath)
+{
+    std::string strGooglePath {"/opt/google/chrome/WidevineCdm/" };
+    if (!isDir(strGooglePath))
+    {
+        return "";
+    }
+
+    if (!isFile(strGooglePath + "_platform_specific/linux_x64/libwidevinecdm.so"))
+    {
+        return "";
+    }
+
+    if (!isDir(cachePath))
+    {
+        return "";
+    }
+
+    if (cachePath[ cachePath.length() - 1 ] != '/')
+    {
+        cachePath += "/widevine/";
+    }
+    else
+    {
+        cachePath += "widevine/";
+    }
+
+    if (!isDir(cachePath))
+    {
+        mkdir(cachePath.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    }
+
+    copyFile(strGooglePath + "_platform_specific/linux_x64/libwidevinecdm.so", cachePath + "libwidevinecdm.so");
+    std::ofstream fManifest(cachePath + "manifest.json", std::ios::binary);
+    fManifest << strManifest;
+
+    return cachePath;
+
+}
+
+void initWidevine(std::string cachePath)
+{
+    std::string strWDVPath { getFirefoxWidevine() };
+    if (strWDVPath.size())
+    {
+        CefRegisterWidevineCdm(strWDVPath.c_str(), nullptr);
+        return;
+    }
+
+    strWDVPath = getChromeWidevine(cachePath);
+    if (strWDVPath.size())
+    {
+        CefRegisterWidevineCdm(strWDVPath.c_str(), nullptr);
+    }
+}
 }
 #else
 
-void initWidevine( std::string cachePath )
+void initWidevine(std::string cachePath)
 {
 }
 
@@ -327,10 +371,10 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 #ifdef WIN32
         if (mForceWaveAudio == true)
         {
-			// Grouping these together since they're interconnected.
-			// The pair, force use of WAV based audio and the second stops
-			// CEF using out of process audio which breaks ::waveOutSetVolume()
-			// that ise used to control the volume of media in a web page
+            // Grouping these together since they're interconnected.
+            // The pair, force use of WAV based audio and the second stops
+            // CEF using out of process audio which breaks ::waveOutSetVolume()
+            // that ise used to control the volume of media in a web page
             command_line->AppendSwitch("force-wave-audio");
             command_line->AppendSwitchWithValue("disable-features", "AudioServiceOutOfProcess");
         }
@@ -367,16 +411,16 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 #ifdef __linux__
         std::string strPlugin, strVersion;
 
-        if( getenv( "FS_FLASH_PLUGIN" ) && getenv( "FS_FLASH_VERSION" ) )
+        if (getenv("FS_FLASH_PLUGIN") && getenv("FS_FLASH_VERSION"))
         {
-            strPlugin = getenv( "FS_FLASH_PLUGIN" );
-            strVersion = getenv( "FS_FLASH_VERSION" );
+            strPlugin = getenv("FS_FLASH_PLUGIN");
+            strVersion = getenv("FS_FLASH_VERSION");
         }
 
-        if( strPlugin.size() && strVersion.size() && mSystemFlashEnabled )
+        if (strPlugin.size() && strVersion.size() && mSystemFlashEnabled)
         {
-            command_line->AppendSwitchWithValue( "ppapi-flash-path", strPlugin );
-            command_line->AppendSwitchWithValue( "ppapi-flash-version", strVersion );
+            command_line->AppendSwitchWithValue("ppapi-flash-path", strPlugin);
+            command_line->AppendSwitchWithValue("ppapi-flash-version", strVersion);
         }
 #endif
     }
@@ -416,11 +460,13 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     std::string sandboxName = getExeCwd() + "/chrome-sandbox";
     struct stat st;
 
-    if( !stat( sandboxName.c_str(), &st ) )
+    if (!stat(sandboxName.c_str(), &st))
     {
         // Sandbox must be owned by root:root and has the suid bit set, otherwise cef won't use it.
-        if( st.st_uid == 0 && st.st_gid == 0 && (st.st_mode&S_ISUID) == S_ISUID )
+        if (st.st_uid == 0 && st.st_gid == 0 && (st.st_mode & S_ISUID) == S_ISUID)
+        {
             useSandbox = true;
+        }
     }
 
     settings.no_sandbox = !useSandbox;
@@ -536,7 +582,7 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
 
     // initiaize CEF
     bool result = CefInitialize(args, settings, this, nullptr);
-	return result;
+    return result;
 }
 
 
@@ -545,10 +591,12 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 {
     DLNOUT("dullahan_impl::init()");
 
-	initWidevine( user_settings.cache_path );
-	
-	if( !initCEF( user_settings) )
-		return false;
+    initWidevine(user_settings.cache_path);
+
+    if (!initCEF(user_settings))
+    {
+        return false;
+    }
 
     CefBrowserSettings browser_settings;
     browser_settings.windowless_frame_rate = user_settings.frame_rate;
@@ -664,7 +712,9 @@ void dullahan_impl::run()
 void dullahan_impl::update()
 {
     if (! mInitialized)
+    {
         return;
+    }
 
     CefDoMessageLoopWork();
 

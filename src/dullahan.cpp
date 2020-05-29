@@ -182,13 +182,13 @@ void dullahan::nativeKeyboardEventOSX(EKeyEvent event_type,
                                   event_umodchars, event_isrepeat);
 }
 #else
-void dullahan::nativeKeyboardEvent( dullahan::EKeyEvent key_event, uint32_t native_scan_code, uint32_t native_virtual_key, uint32_t native_modifiers )
+void dullahan::nativeKeyboardEvent(dullahan::EKeyEvent key_event, uint32_t native_scan_code, uint32_t native_virtual_key, uint32_t native_modifiers)
 {
-  mImpl->nativeKeyboardEvent( key_event, native_scan_code, native_virtual_key, native_modifiers );
+    mImpl->nativeKeyboardEvent(key_event, native_scan_code, native_virtual_key, native_modifiers);
 }
-void dullahan::nativeKeyboardEventSDL2( dullahan::EKeyEvent key_event, uint32_t key_data, uint32_t key_modifiers, bool keypad_input )
+void dullahan::nativeKeyboardEventSDL2(dullahan::EKeyEvent key_event, uint32_t key_data, uint32_t key_modifiers, bool keypad_input)
 {
-  mImpl->nativeKeyboardEventSDL2( key_event, key_data, key_modifiers, keypad_input );
+    mImpl->nativeKeyboardEventSDL2(key_event, key_data, key_modifiers, keypad_input);
 }
 #endif
 
