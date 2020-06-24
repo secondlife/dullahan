@@ -47,6 +47,26 @@ case "$AUTOBUILD_PLATFORM" in
     windows*)
         load_vsvars
 
+        # We've observed some weird failures in which the PATH is too big to be
+        # passed to a child process! When that gets munged, we start seeing errors
+        # like failing to find the 'mt.exe' command. Thing is, by this point
+        # in the script we've acquired a shocking number of duplicate entries.
+        # Dedup the PATH using Python's OrderedDict, which preserves the order in
+        # which you insert keys.
+        # We find that some of the Visual Studio PATH entries appear both with and
+        # without a trailing slash, which is pointless. Strip those off and dedup
+        # what's left.
+        # Pass the existing PATH as an explicit argument rather than reading it
+        # from the environment to bypass the fact that cygwin implicitly converts
+        # PATH to Windows form when running a native executable. Since we're
+        # setting bash's PATH, leave everything in cygwin form. That means
+        # splitting and rejoining on ':' rather than on os.pathsep, which on
+        # Windows is ';'.
+        # Use python -u, else the resulting PATH will end with a spurious '\r'.
+        export PATH="$(python -u -c "import sys
+from collections import OrderedDict
+print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'))))" "$PATH")"
+
         # build the CEF c->C++ wrapper "libcef_dll_wrapper"
         cd "$cef_no_wrapper_dir"
         rm -rf "$cef_no_wrapper_build_dir"
