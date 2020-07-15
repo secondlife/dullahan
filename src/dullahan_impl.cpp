@@ -34,6 +34,8 @@
 #include "dullahan_browser_client.h"
 #include "dullahan_callback_manager.h"
 
+#include "include/cef_request_context.h"
+#include "include/cef_request_context_handler.h"
 #include "include/cef_waitable_event.h"
 #include "include/cef_web_plugin.h"
 #include "include/base/cef_logging.h"
@@ -52,6 +54,7 @@
 #include "dullahan_impl_mac.cpp"
 #endif
 
+
 dullahan_impl::dullahan_impl() :
     mInitialized(false),
     mBrowser(0),
@@ -69,6 +72,7 @@ dullahan_impl::dullahan_impl() :
     mAutoPlayWithoutGesture(false),
     mFlipPixelsY(false),
     mFlipMouseY(false),
+    mRequestContext(0),
     mRequestedPageZoom(1.0)
 {
     DLNOUT("dullahan_impl::dullahan_impl()");
@@ -203,6 +207,12 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     // explicitly set the path to the locales folder since defaults no longer work on some systems
     CefString(&settings.locales_dir_path) = user_settings.locales_dir_path;
 
+    // set path to root cache if enabled and set
+    if (user_settings.cache_enabled && user_settings.root_cache_path.length())
+    {
+        CefString(&settings.root_cache_path) = user_settings.root_cache_path;
+    }
+
     // set path to cache if enabled and set
     if (user_settings.cache_enabled && user_settings.cache_path.length())
     {
@@ -319,26 +329,48 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     browser_settings.file_access_from_file_urls = user_settings.file_access_from_file_urls ? STATE_ENABLED : STATE_DISABLED;
     browser_settings.image_shrink_standalone_to_fit = user_settings.image_shrink_standalone_to_fit ? STATE_ENABLED : STATE_DISABLED;
 
-    // set up how we handle cookies and persistance
-    CefRefPtr<CefCookieManager> manager = CefCookieManager::GetGlobalManager(nullptr);
-    if (manager)
-    {
-        if (user_settings.cookies_enabled == false)
-        {
-            // this appears to be the way to disable cookies - empty list of schemes to accept and no defaults
-            const std::vector<CefString> empty_list;
-            const bool include_defaults = false;
-            CefRefPtr<CefCompletionCallback> callback = nullptr;
-            manager->SetSupportedSchemes(empty_list, include_defaults, callback);
-        }
-    }
-
     mRenderHandler = new dullahan_render_handler(this);
     mBrowserClient = new dullahan_browser_client(this, mRenderHandler);
 
     CefString url = std::string();
-    CefRefPtr<CefRequestContext> request_context = nullptr;
     CefRefPtr<CefDictionaryValue> extra_info = nullptr;
+
+    if (user_settings.cache_enabled && user_settings.context_cache_path.length())
+    {
+        // Creating multiple contexts in same folder simultaneously will not share sessions!
+        CefRequestContextSettings contextSettings;
+        CefString(&contextSettings.cache_path) = user_settings.context_cache_path;
+        contextSettings.persist_session_cookies = user_settings.cookies_enabled;
+
+        mRequestContext = CefRequestContext::CreateContext(contextSettings, nullptr);
+    }
+    else
+    {
+        // Default context
+        // Since this reuses existing context when possible, all instances of browser will share cookies and sessions.
+        mRequestContext = nullptr;
+    }
+
+    CefRefPtr<CefCookieManager> manager;
+    if (mRequestContext)
+    {
+        manager = mRequestContext->GetCookieManager(nullptr);
+    }
+    else
+    {
+        // set up how we handle cookies and persistance for global context
+        // (we probably shouldn't do this globally and use some context instead)
+        manager = CefCookieManager::GetGlobalManager(nullptr);
+    }
+
+    if (manager && user_settings.cookies_enabled == false)
+    {
+        // this appears to be the way to fully disable cookies - empty list of schemes to accept and no defaults
+        const std::vector<CefString> empty_list;
+        const bool include_defaults = false;
+        CefRefPtr<CefCompletionCallback> callback = nullptr;
+        manager->SetSupportedSchemes(empty_list, include_defaults, callback);
+    }
 
     // off with it's head
     CefWindowInfo window_info;
@@ -349,7 +381,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     window_info.width = user_settings.initial_width;
     window_info.height = user_settings.initial_height;
 
-    mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), url, browser_settings, extra_info, request_context);
+    mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), url, browser_settings, extra_info, mRequestContext.get());
 
     // important: set the size *after* we create a browser
     setSize(user_settings.initial_width, user_settings.initial_height);
@@ -366,6 +398,7 @@ void dullahan_impl::shutdown()
     mBrowser = nullptr;
     mRenderHandler = nullptr;
     mBrowserClient = nullptr;
+    mRequestContext = nullptr;
 
     CefShutdown();
 }
@@ -681,7 +714,17 @@ bool dullahan_impl::setCookie(const std::string url, const std::string name,
                               const std::string value, const std::string domain,
                               const std::string path, bool httponly, bool secure)
 {
-    CefRefPtr<CefCookieManager> manager = CefCookieManager::GetGlobalManager(nullptr);
+    CefRefPtr<CefCookieManager> manager;
+
+    if (mRequestContext)
+    {
+        manager = mRequestContext->GetCookieManager(nullptr);
+    }
+    else
+    {
+        manager = CefCookieManager::GetGlobalManager(nullptr);
+    }
+
     if (manager)
     {
         CefCookie cookie;
@@ -765,7 +808,15 @@ const std::vector<std::string> dullahan_impl::getAllCookies()
     };
 
     std::vector<std::string> cookies;
-    CefRefPtr<CefCookieManager> manager = CefCookieManager::GetGlobalManager(nullptr);
+    CefRefPtr<CefCookieManager> manager;
+    if (mRequestContext)
+    {
+        manager = mRequestContext->GetCookieManager(nullptr);
+    }
+    else
+    {
+        manager = CefCookieManager::GetGlobalManager(nullptr);
+    }
     if (manager)
     {
         manager->VisitAllCookies(new CookieVisitor(cookies));
@@ -779,7 +830,15 @@ const std::vector<std::string> dullahan_impl::getAllCookies()
 
 void dullahan_impl::deleteAllCookies()
 {
-    CefRefPtr<CefCookieManager> manager = CefCookieManager::GetGlobalManager(nullptr);
+    CefRefPtr<CefCookieManager> manager;
+    if (mRequestContext)
+    {
+        manager = mRequestContext->GetCookieManager(nullptr);
+    }
+    else
+    {
+        manager = CefCookieManager::GetGlobalManager(nullptr);
+    }
     if (manager)
     {
         // empty URL deletes all cookies for all domains
@@ -792,7 +851,15 @@ void dullahan_impl::deleteAllCookies()
 
 void dullahan_impl::flushAllCookies()
 {
-    CefRefPtr<CefCookieManager> manager = CefCookieManager::GetGlobalManager(nullptr);
+    CefRefPtr<CefCookieManager> manager;
+    if (mRequestContext)
+    {
+        manager = mRequestContext->GetCookieManager(nullptr);
+    }
+    else
+    {
+        manager = CefCookieManager::GetGlobalManager(nullptr);
+    }
 
     if (manager)
     {

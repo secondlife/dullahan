@@ -166,8 +166,21 @@ class dullahan
             // explicitly set the path to the locales folder since defaults no longer work on some systems
             std::string locales_dir_path = "";
 
+            // The root directory that all cache_path and context_cache_path values
+            // must have in common.
+            // If this value is empty and cache_path is non-empty then this value
+            // will default to the cache_path value.
+            std::string root_cache_path = "";
+
             // path to browser cache - cookies (if enabled) are also stored here as of Chrome 75
+            // This will be used for global context
             std::string cache_path = "";
+
+            // As of version 75 cef doesn't allow storing cookies separately from cache, but context
+            // requests with individual cache path can be used to separate cookies.
+            // Context's cache always should be a child to root cache path, simultaneous contexts with
+            // same path do not share sessions.
+            std::string context_cache_path = "";
 
             // list of language locale codes used to configure the Accept-Language HTTP header value
             // and change the default language of the browser
