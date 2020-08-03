@@ -71,7 +71,7 @@
     <key>package_description</key>
     <map>
       <key>canonical_repo</key>
-      <string>https://bitbucket.org/lindenlab/3p-dullahan</string>
+      <string>https://bitbucket.org/lindenlab/dullahan</string>
       <key>copyright</key>
       <string>Copyright (c) 2017, Linden Research, Inc.</string>
       <key>description</key>
