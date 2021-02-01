@@ -154,8 +154,25 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
             -DCMAKE_C_FLAGS:STRING="$LL_BUILD_RELEASE" \
             -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE" \
             ..
+
+
+        CONFIG_FILE="$build_secrets_checkout/code-signing-osx/config.sh"
+        if [ -f "$CONFIG_FILE" ]; then
+            source $CONFIG_FILE
+        else
+            APPLE_SIGNATURE="-"
+            echo "No config file found; skipping codesign."
+        fi
+
         xcodebuild -project dullahan.xcodeproj -target dullahan -configuration Release
-        xcodebuild -project dullahan.xcodeproj -target DullahanHelper -configuration Release
+        xcodebuild \
+            -project dullahan.xcodeproj \
+            -target DullahanHelper \
+            -configuration Release \
+            -allowProvisioningUpdates \
+            "CODE_SIGN_IDENTITY=$APPLE_SIGNATURE" \
+            "OTHER_CODE_SIGN_FLAGS=--timestamp --options runtime" \
+	        "CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO"
 
         # copy files to staging ready to be packaged
         mkdir -p "$stage/include/cef"
