@@ -159,6 +159,17 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         CONFIG_FILE="$build_secrets_checkout/code-signing-osx/config.sh"
         if [ -f "$CONFIG_FILE" ]; then
             source $CONFIG_FILE
+
+            #sign CEF libs here
+            pushd "$cef_no_wrapper_dir/Release/Chromium Embedded Framework.framework/Libraries"
+                for dylib in lib*.dylib;
+                do
+                    if [ -f "$dylib" ]; then
+                        codesign --force --timestamp --sign "$APPLE_SIGNATURE" "$dylib"
+                    fi
+                done
+                codesign --force --timestamp --sign "$APPLE_SIGNATURE" "../Chromium Embedded Framework"
+            popd
         else
             APPLE_SIGNATURE="-"
             echo "No config file found; skipping codesign."
