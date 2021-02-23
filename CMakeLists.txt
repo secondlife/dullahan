@@ -323,7 +323,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     add_custom_command(
         TARGET dullahan_host POST_BUILD
-        COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
+        COMMAND "${CMAKE_MT}" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
         COMMENT "Adding custom manifest...")
 endif()
 
@@ -401,7 +401,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     add_custom_command(
         TARGET webcube POST_BUILD
-        COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
+        COMMAND "${CMAKE_MT}" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
         COMMENT "Adding custom manifest...")
 
     ###############################################################################
@@ -454,7 +454,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     add_custom_command(
         TARGET simplegl POST_BUILD
-        COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
+        COMMAND "${CMAKE_MT}" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
         COMMENT "Adding custom manifest...")
 
     ###############################################################################
@@ -488,7 +488,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     add_custom_command(
         TARGET console POST_BUILD
-        COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
+        COMMAND "${CMAKE_MT}" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
         COMMENT "Adding custom manifest...")
 
     ###############################################################################
@@ -525,7 +525,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     add_custom_command(
         TARGET cef_minimal POST_BUILD
-        COMMAND "mt.exe" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
+        COMMAND "${CMAKE_MT}" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
         COMMENT "Adding custom manifest...")
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")

@@ -137,7 +137,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
             command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
         }
 
-		platformAddCommandLines( command_line );		
+        platformAddCommandLines(command_line);
     }
 }
 
@@ -162,7 +162,19 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
 
     // point to host application
 #ifdef WIN32
-    CefString(&settings.browser_subprocess_path) = "dullahan_host.exe";
+    // Note: as of CEF 83, it appears that on Windows builds, the path to the host
+    // helper application must be an absolute path vs the existing, relative path.
+    char exe_path[MAX_PATH];
+    GetModuleFileName(NULL, exe_path, MAX_PATH);
+    std::string cur_exe_path = std::string(exe_path);
+    const size_t last_slash_idx = cur_exe_path.find_last_of("\\/");
+    if (last_slash_idx == std::string::npos)
+    {
+        return false;
+    }
+    std::string cur_path = cur_exe_path.erase(last_slash_idx + 1);
+    std::string host_path = cur_path + "dullahan_host.exe";
+    CefString(&settings.browser_subprocess_path) = host_path;
 #elif __APPLE__
     NSString* appBundlePath = [[NSBundle mainBundle] bundlePath];
     CefString(&settings.browser_subprocess_path) =
@@ -312,7 +324,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 {
     DLNOUT("dullahan_impl::init()");
 
-	platormInitWidevine(user_settings.cache_path);
+    platormInitWidevine(user_settings.cache_path);
 
     if (!initCEF(user_settings))
     {

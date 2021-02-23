@@ -15,18 +15,6 @@
         <string>cef-bin</string>
         <key>platforms</key>
         <map>
-          <key>linux64</key>
-          <map>
-            <key>archive</key>
-            <map>
-              <key>hash</key>
-              <string>fe4c980f5e42196e4ba554e2093dfb3a</string>
-              <key>url</key>
-              <string>http://192.168.1.115/dev/pkg/cef_bin-81.3.10_gb223419_chromium-81.0.4044.138.201451352-linux64-201451352.tar.bz2</string>
-            </map>
-            <key>name</key>
-            <string>darwin64</string>
-          </map>
           <key>darwin64</key>
           <map>
             <key>archive</key>
@@ -35,6 +23,18 @@
               <string>5848b70f8960e1b7f5594cc01aede8cc</string>
               <key>url</key>
               <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/60315/567240/cef_bin-81.3.10_gb223419_chromium-81.0.4044.138-darwin64-542664.tar.bz2</string>
+            </map>
+            <key>name</key>
+            <string>darwin64</string>
+          </map>
+          <key>linux64</key>
+          <map>
+            <key>archive</key>
+            <map>
+              <key>hash</key>
+              <string>fe4c980f5e42196e4ba554e2093dfb3a</string>
+              <key>url</key>
+              <string>http://192.168.1.115/dev/pkg/cef_bin-81.3.10_gb223419_chromium-81.0.4044.138.201451352-linux64-201451352.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
@@ -56,16 +56,16 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>bbadb8dce79fa7a850251ba2d26a3b26</string>
+              <string>15ea369c824a1289ad1d9285e16817e2</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/60314/566606/cef_bin-81.3.10_gb223419_chromium-81.0.4044.138-windows64-542664.tar.bz2</string>
+              <string>https://ll-build-secondlife-development.s3.amazonaws.com/ct2/10184/43904/cef_bin-88.2.8_ge484012_chromium-88.0.4324.150-windows64-509865.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
         <key>version</key>
-        <string>81.3.10_gb223419_chromium-81.0.4044.138</string>
+        <string>88.2.8_ge484012_chromium-88.0.4324.150</string>
       </map>
     </map>
     <key>package_description</key>
@@ -138,30 +138,6 @@
           <key>name</key>
           <string>darwin</string>
         </map>
-        <key>windows</key>
-        <map>
-          <key>configurations</key>
-          <map>
-            <key>Release</key>
-            <map>
-              <key>build</key>
-              <map>
-              </map>
-              <key>default</key>
-              <boolean>true</boolean>
-              <key>name</key>
-              <string>Release</string>
-            </map>
-          </map>
-          <key>manifest</key>
-          <array>
-            <string>lib/release/*</string>
-            <string>bin/release/*</string>
-            <string>resources/*</string>
-          </array>
-          <key>name</key>
-          <string>windows</string>
-        </map>
         <key>linux64</key>
         <map>
           <key>configurations</key>
@@ -185,6 +161,30 @@
           </array>
           <key>name</key>
           <string>linux</string>
+        </map>
+        <key>windows</key>
+        <map>
+          <key>configurations</key>
+          <map>
+            <key>Release</key>
+            <map>
+              <key>build</key>
+              <map>
+              </map>
+              <key>default</key>
+              <boolean>true</boolean>
+              <key>name</key>
+              <string>Release</string>
+            </map>
+          </map>
+          <key>manifest</key>
+          <array>
+            <string>lib/release/*</string>
+            <string>bin/release/*</string>
+            <string>resources/*</string>
+          </array>
+          <key>name</key>
+          <string>windows</string>
         </map>
       </map>
       <key>source_directory</key>

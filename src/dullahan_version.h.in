@@ -37,8 +37,8 @@
 
 // version of this package
 #define DULLAHAN_VERSION_MAJOR 1
-#define DULLAHAN_VERSION_MINOR 7
-#define DULLAHAN_VERSION_POINT 0
+#define DULLAHAN_VERSION_MINOR 9
+#define DULLAHAN_VERSION_POINT 1
 
 // The build version number as of v1.2 is now the date/time the build was made
 // It is only regenerated if the constructed version header (dullahan_version.h)

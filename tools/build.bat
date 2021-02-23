@@ -20,7 +20,7 @@
 @pushd .
 
 @rem The CMake generator string to use
-@set VS_CMD=Visual Studio 12 2013
+@set VS_CMD=Visual Studio 15 2017
 
 @rem Rudimentary test to see if we are in the Dullahan root directory where
 @rem we demand that this script is started from.

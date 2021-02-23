@@ -43,9 +43,6 @@ class dullahan_render_handler :
         void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                      const RectList& dirtyRects,
                      const void* buffer, int width, int height) override;
-        void OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor,
-                            CursorType type,
-                            const CefCursorInfo& custom_cursor_info) override;
         void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) override;
         void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) override;
         bool GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info) override;

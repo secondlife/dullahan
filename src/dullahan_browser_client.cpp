@@ -194,6 +194,18 @@ bool dullahan_browser_client::OnTooltip(CefRefPtr<CefBrowser> browser,
     return false;
 }
 
+// CefDisplayhandler overrides
+bool dullahan_browser_client::OnCursorChange(CefRefPtr<CefBrowser> browser,
+        CefCursorHandle cursor, cef_cursor_type_t type,
+        const CefCursorInfo& custom_cursor_info)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    mParent->getCallbackManager()->onCursorChanged((dullahan::ECursorType)type);
+
+    return false;
+}
+
 // CefLoadHandler override
 void dullahan_browser_client::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
         bool isLoading, bool canGoBack, bool canGoForward)

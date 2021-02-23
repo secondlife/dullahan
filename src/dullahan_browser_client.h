@@ -88,6 +88,9 @@ class dullahan_browser_client :
                            const CefString& title) override;
         bool OnTooltip(CefRefPtr<CefBrowser> browser,
                        CefString& text) override;
+        bool OnCursorChange(CefRefPtr<CefBrowser> browser,
+                            CefCursorHandle cursor, cef_cursor_type_t type,
+                            const CefCursorInfo& custom_cursor_info) override;
 
         // CefLoadHandler overrides
         CefRefPtr<CefLoadHandler> GetLoadHandler() override
