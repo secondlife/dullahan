@@ -121,6 +121,7 @@ void app::init_dullahan()
     mDullahan->setCustomSchemes(custom_schemes);
 
     dullahan::dullahan_settings settings;
+	settings.host_process_path = "";  // implies host process is next to executable
     settings.accept_language_list = "en-US";
     settings.background_color = 0xff666666;
     settings.cache_enabled = true;

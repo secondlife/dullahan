@@ -160,26 +160,41 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
 
     CefSettings settings;
 
-    // point to host application
+    // point to host application helper
 #ifdef WIN32
     // Note: as of CEF 83, it appears that on Windows builds, the path to the host
     // helper application must be an absolute path vs the existing, relative path.
-    char exe_path[MAX_PATH];
-    GetModuleFileName(NULL, exe_path, MAX_PATH);
-    std::string cur_exe_path = std::string(exe_path);
-    const size_t last_slash_idx = cur_exe_path.find_last_of("\\/");
-    if (last_slash_idx == std::string::npos)
+    // If the user has not specified a path to the helper explicitly, then we can,
+    // as a first pass, assume it's located next to the executable (it often is)
+    // and for use cases where it is located elsewhere, the consumer can specify
+    // the absolute path directly.
+    std::string host_process_path = user_settings.host_process_path;
+    if (host_process_path.empty())
     {
-        return false;
+        // path is not specified so assume it's adjacent to the executable
+        char exe_path[MAX_PATH];
+        GetModuleFileName(NULL, exe_path, MAX_PATH);
+        std::string cur_exe_path = std::string(exe_path);
+        const size_t last_slash_idx = cur_exe_path.find_last_of("\\/");
+        if (last_slash_idx == std::string::npos)
+        {
+            return false;
+        }
+        host_process_path = cur_exe_path.erase(last_slash_idx + 1);
     }
-    std::string cur_path = cur_exe_path.erase(last_slash_idx + 1);
-    std::string host_path = cur_path + "dullahan_host.exe";
-    CefString(&settings.browser_subprocess_path) = host_path;
+
+    // finally, tell CEF where to find the host process helper
+    CefString(&settings.browser_subprocess_path) = host_process_path + "\\" + user_settings.host_process_filename;
+
+    std::string s = host_process_path + "\\" + user_settings.host_process_filename;
+    DLNOUT(s)
+
 #elif __APPLE__
     NSString* appBundlePath = [[NSBundle mainBundle] bundlePath];
     CefString(&settings.browser_subprocess_path) =
         [[NSString stringWithFormat:
           @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
+
 #endif
 #ifdef __linux__
     CefString(&settings.browser_subprocess_path) = getExeCwd() + "/dullahan_host";

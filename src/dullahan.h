@@ -137,9 +137,15 @@ class dullahan
             unsigned int initial_width = 512;
             unsigned int initial_height = 512;
 
+            // host process name (for Windows - read only for API consumers)
+            const std::string host_process_filename = "dullahan_host.exe";
+
+            // host process path (Not required for macOS)
+            std::string host_process_path = std::string();
+
             // substring inserted into existing user agent string
             // leave it blank by default otherwise "Chrome xx.x" part is removed
-            std::string user_agent_substring = "";
+            std::string user_agent_substring = std::string();
 
             // default frame rate
             int frame_rate = 60;
@@ -164,23 +170,23 @@ class dullahan
             bool webgl_enabled = true;                  // webgl
 
             // explicitly set the path to the locales folder since defaults no longer work on some systems
-            std::string locales_dir_path = "";
+            std::string locales_dir_path = std::string();
 
             // The root directory that all cache_path and context_cache_path values
             // must have in common.
             // If this value is empty and cache_path is non-empty then this value
             // will default to the cache_path value.
-            std::string root_cache_path = "";
+            std::string root_cache_path = std::string();
 
             // path to browser cache - cookies (if enabled) are also stored here as of Chrome 75
             // This will be used for global context
-            std::string cache_path = "";
+            std::string cache_path = std::string();
 
             // As of version 75 cef doesn't allow storing cookies separately from cache, but context
             // requests with individual cache path can be used to separate cookies.
             // Context's cache always should be a child to root cache path, simultaneous contexts with
             // same path do not share sessions.
-            std::string context_cache_path = "";
+            std::string context_cache_path = std::string();
 
             // list of language locale codes used to configure the Accept-Language HTTP header value
             // and change the default language of the browser
