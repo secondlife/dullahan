@@ -186,9 +186,6 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     // finally, tell CEF where to find the host process helper
     CefString(&settings.browser_subprocess_path) = host_process_path + "\\" + user_settings.host_process_filename;
 
-    std::string s = host_process_path + "\\" + user_settings.host_process_filename;
-    DLNOUT(s)
-
 #elif __APPLE__
     NSString* appBundlePath = [[NSBundle mainBundle] bundlePath];
     CefString(&settings.browser_subprocess_path) =
