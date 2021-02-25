@@ -38,6 +38,7 @@
 #include "dullahan.h"
 #include "dullahan_debug.h"
 
+class dullahan_audio_handler;
 class dullahan_browser_client;
 class dullahan_render_handler;
 class dullahan_callback_manager;
@@ -145,6 +146,7 @@ class dullahan_impl :
     private:
         bool initCEF(dullahan::dullahan_settings& user_settings);
 
+        CefRefPtr<dullahan_audio_handler> mAudioHandler;
         CefRefPtr<dullahan_browser_client> mBrowserClient;
         CefRefPtr<dullahan_render_handler> mRenderHandler;
         CefRefPtr<CefRequestContext> mRequestContext;
@@ -157,7 +159,6 @@ class dullahan_impl :
         bool mSystemFlashEnabled;
         bool mMediaStreamEnabled;
         bool mBeginFrameScheduling;
-        bool mForceWaveAudio;
         bool mDisableGPU;
         bool mDisableWebSecurity;
         bool mDisableNetworkService;

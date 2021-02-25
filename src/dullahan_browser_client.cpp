@@ -27,6 +27,7 @@
 #include "cef_browser.h"
 #include "wrapper/cef_helpers.h"
 
+#include "dullahan_audio_handler.h"
 #include "dullahan_render_handler.h"
 #include "dullahan_browser_client.h"
 #include "dullahan_callback_manager.h"
@@ -34,8 +35,10 @@
 #include "dullahan_impl.h"
 
 dullahan_browser_client::dullahan_browser_client(dullahan_impl* parent,
+        dullahan_audio_handler* audio_handler,
         dullahan_render_handler* render_handler) :
     mParent(parent),
+    mAudioHandler(audio_handler),
     mRenderHandler(render_handler)
 {
     DLNOUT("dullahan_browser_client::dullahan_browser_client - parent ptr = " << parent);
@@ -43,7 +46,14 @@ dullahan_browser_client::dullahan_browser_client(dullahan_impl* parent,
 
 dullahan_browser_client::~dullahan_browser_client()
 {
+    mAudioHandler = nullptr;
     mRenderHandler = nullptr;
+}
+
+// CefAudioHandler override
+CefRefPtr<CefAudioHandler> dullahan_browser_client::GetAudioHandler()
+{
+    return mAudioHandler;
 }
 
 // CefClient override
@@ -93,6 +103,10 @@ bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
 void dullahan_browser_client::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {
     CEF_REQUIRE_UI_THREAD();
+
+    // mute default output since we are capturing raw audio stream
+    // using CefAudioHandler() and playing it back ourselves
+    browser.get()->GetHost().get()->SetAudioMuted(false);
 
     mBrowserList.push_back(browser);
 }

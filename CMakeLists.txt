@@ -195,6 +195,8 @@ add_library(
     STATIC
     src/dullahan.cpp
     src/dullahan.h
+    src/dullahan_audio_handler.cpp
+    src/dullahan_audio_handler.h
     src/dullahan_browser_client.cpp
     src/dullahan_browser_client.h
     src/dullahan_callback_manager.cpp

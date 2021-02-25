@@ -88,6 +88,18 @@ class dullahan_callback_manager
         void setOnJSDialogCallback(std::function<bool(const std::string origin_url, const std::string message_text, const std::string default_prompt_text)> callback);
         bool onJSDialogCallback(const std::string origin_url, const std::string message_text, const std::string default_prompt_text);
 
+        void setOnAudioStreamStartedCallback(std::function<void(int channels, int sample_rate, int frames_per_buffer)> callback);
+        void onAudioStreamStarted(int channels, int sample_rate, int frames_per_buffer);
+
+        void setOnAudioStreamPacketCallback(std::function<void(const float** data, int frames, long long pts)> callback);
+        void onAudioStreamPacket(const float** data, int frames, long long pts);
+
+        void setOnAudioStreamStoppedCallback(std::function<void()> callback);
+        void onAudioStreamStopped();
+
+        void setOnAudioStreamErrorCallback(std::function<void(const std::string error)> callback);
+        void onAudioStreamError(const std::string error);
+
     private:
         std::function<void(const std::string)> mOnAddressChangeCallbackFunc;
         std::function<void(const std::string, const std::string, int)> mOnConsoleMessageCallbackFunc;
@@ -107,6 +119,10 @@ class dullahan_callback_manager
         std::function<void(int percent, bool complete)> mOnFileDownloadProgressCallbackFunc;
         std::function<const std::vector<std::string>(dullahan::EFileDialogType, const std::string, const std::string, const std::string, bool&)> mOnFileDialogCallbackFunc;
         std::function<bool(const std::string, const std::string, const std::string)> mOnJSDialogCallbackFunc;
+        std::function<void(int channels, int sample_rate, int frames_per_buffer)> mOnAudioStreamStartedCallback;
+        std::function<void(const float** data, int frames, long long pts)> mOnAudioStreamPacketCallback;
+        std::function<void()> mOnAudioStreamStoppedCallback;
+        std::function<void(const std::string error)> mOnAudioStreamErrorCallback;
 };
 
 #endif //_DULLAHAN_CALLBACK_MANAGER

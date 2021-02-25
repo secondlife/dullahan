@@ -123,6 +123,7 @@ void app::init_dullahan()
     dullahan::dullahan_settings settings;
 	settings.host_process_path = "";  // implies host process is next to executable
     settings.accept_language_list = "en-US";
+	settings.autoplay_without_gesture = true;
     settings.background_color = 0xff666666;
     settings.cache_enabled = true;
     settings.locales_dir_path = "";
@@ -135,7 +136,6 @@ void app::init_dullahan()
     settings.flash_enabled = false;
     settings.flip_mouse_y = false;
     settings.flip_pixels_y = false;
-    settings.force_wave_audio = true;
     settings.frame_rate = 60;
     settings.initial_height = mTextureWidth;
     settings.initial_width = mTextureHeight;
@@ -439,11 +439,6 @@ void app::setPageZoom(float val)
 // Volume is 0.0 to 1.0
 void app::setPageVolume(float volume)
 {
-    DWORD left_channel = (DWORD)(volume * 65535.0f);
-    DWORD right_channel = (DWORD)(volume * 65535.0f);
-    DWORD hw_volume = left_channel << 16 | right_channel;
-
-    ::waveOutSetVolume(nullptr, hw_volume);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -512,8 +507,6 @@ void app::onConsoleMessage(const std::string message, const std::string source, 
 //
 void app::onCursorChanged(dullahan::ECursorType type)
 {
-    std::cout << "onCursorChanged: " << type << std::endl;
-
     if (type == dullahan::CT_POINTER)
     {
         SetCursor(LoadCursor(nullptr, IDC_ARROW));
@@ -1178,7 +1171,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if (__argc == 2)
     {
         std::string argv1 = std::string(__argv[1]);
-        std::string opt("--homepage");
+        std::string opt("--homepage");  // --homepage=url
         if (argv1.find(opt) != std::string::npos)
         {
             std::string url = argv1.substr(opt.length() + 1, argv1.length() - opt.length() - 1);

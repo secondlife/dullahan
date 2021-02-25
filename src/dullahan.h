@@ -161,7 +161,6 @@ class dullahan
             bool use_mock_keychain = false;             // like adding --use-mock-keychain to Chrome command line
             bool autoplay_without_gesture = false;      // like adding --autoplay-policy=???? to Chrome command line
             bool flash_enabled = true;                  // system flash plugin
-            bool force_wave_audio = false;              // forces Windows WaveOut/In audio
             bool image_shrink_standalone_to_fit = true; // scale standalone images larger than browser size to fit
             bool java_enabled = false;                  // java
             bool javascript_enabled = true;             // javascript

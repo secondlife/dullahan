@@ -229,7 +229,6 @@ int main(int argc, char* argv[])
     settings.flash_enabled = false;
     settings.flip_mouse_y = false;
     settings.flip_pixels_y = false;
-    settings.force_wave_audio = true;
     settings.frame_rate = 60;
     settings.initial_height = gTextureWidth;
     settings.initial_width = gTextureHeight;

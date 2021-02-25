@@ -32,6 +32,7 @@
 #include "cef_client.h"
 
 class dullahan_impl;
+class dullahan_audio_handler;
 class dullahan_renderer_handler;
 
 class dullahan_browser_client :
@@ -46,8 +47,12 @@ class dullahan_browser_client :
 {
     public:
         dullahan_browser_client(dullahan_impl* parent,
+                                dullahan_audio_handler* audio_handler,
                                 dullahan_render_handler* render_handler);
         ~dullahan_browser_client();
+
+        // CefClient override
+        CefRefPtr<CefAudioHandler> GetAudioHandler() override;
 
         // CefClient override
         CefRefPtr<CefRenderHandler> GetRenderHandler() override;
@@ -161,6 +166,7 @@ class dullahan_browser_client :
 
     private:
         dullahan_impl* mParent;
+        CefRefPtr<CefAudioHandler> mAudioHandler;
         CefRefPtr<CefRenderHandler> mRenderHandler;
         typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
         BrowserList mBrowserList;

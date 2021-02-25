@@ -30,6 +30,7 @@
 
 
 #include "dullahan_impl.h"
+#include "dullahan_audio_handler.h"
 #include "dullahan_render_handler.h"
 #include "dullahan_browser_client.h"
 #include "dullahan_callback_manager.h"
@@ -64,7 +65,6 @@ dullahan_impl::dullahan_impl() :
     mSystemFlashEnabled(false),
     mMediaStreamEnabled(false),
     mBeginFrameScheduling(false),
-    mForceWaveAudio(false),
     mDisableGPU(true),
     mDisableWebSecurity(false),
     mDisableNetworkService(false),
@@ -107,9 +107,6 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         {
             command_line->AppendSwitch("enable-begin-frame-scheduling");
         }
-
-        // <ND> n.b. be careful enabling this. At least on Linux it will break sites like twitch.tv mixer.com, dlive.com.
-        // Probably this also makes only sense for Win32?
 
         if (mDisableGPU == true)
         {
@@ -278,11 +275,6 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     // this flag needed for some video cards to force onPaints to work - off by default
     mBeginFrameScheduling = user_settings.begin_frame_scheduling;
 
-#ifdef WIN32
-    // this flag forces Windows WaveOut/In audio API even if Core Audio is supported
-    mForceWaveAudio = user_settings.force_wave_audio;
-#endif
-
     // this flag if set, adds command line options to disable the GPU and GPU compositing.
     // Appears to be needed to make sites like Google Maps work now. The GPU compositing
     // needs to be off to allow videos to play back without stutter. For the moment, it is
@@ -353,8 +345,9 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     browser_settings.file_access_from_file_urls = user_settings.file_access_from_file_urls ? STATE_ENABLED : STATE_DISABLED;
     browser_settings.image_shrink_standalone_to_fit = user_settings.image_shrink_standalone_to_fit ? STATE_ENABLED : STATE_DISABLED;
 
+    mAudioHandler = new dullahan_audio_handler(this);
     mRenderHandler = new dullahan_render_handler(this);
-    mBrowserClient = new dullahan_browser_client(this, mRenderHandler);
+    mBrowserClient = new dullahan_browser_client(this, mAudioHandler, mRenderHandler);
 
     CefString url = std::string();
     CefRefPtr<CefDictionaryValue> extra_info = nullptr;
@@ -420,6 +413,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 void dullahan_impl::shutdown()
 {
     mBrowser = nullptr;
+    mAudioHandler = nullptr;
     mRenderHandler = nullptr;
     mBrowserClient = nullptr;
     mRequestContext = nullptr;
