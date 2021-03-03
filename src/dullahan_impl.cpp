@@ -70,6 +70,7 @@ dullahan_impl::dullahan_impl() :
     mDisableNetworkService(false),
     mUseMockKeyChain(false),
     mAutoPlayWithoutGesture(false),
+    mFakeUIForMediaStream(false),
     mFlipPixelsY(false),
     mFlipMouseY(false),
     mRequestContext(0),
@@ -135,6 +136,11 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         if (mAutoPlayWithoutGesture)
         {
             command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
+        }
+
+        if (mFakeUIForMediaStream)
+        {
+            command_line->AppendSwitch("use-fake-ui-for-media-stream");
         }
 
         platformAddCommandLines(command_line);
@@ -309,6 +315,12 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     // this flag, if set, allows video/audio to autoplay if the URL parameters are configured
     // correctly to do so. (by default as of Chrome 70, audio/video does not autoplay)
     mAutoPlayWithoutGesture = user_settings.autoplay_without_gesture;
+
+    // this flag, if set allows you to bypass UI like "This page wants to use
+    // your microphone" and accept the request. Obviously, use with caution -
+    // eventually, this will be implemented as a callback so the consumer can
+    // provide their own ("Allow, "Disallow") UI.
+    mFakeUIForMediaStream = user_settings.fake_ui_for_media_stream;
 
     // if true, this setting inverts the pixels in Y direction - useful if your texture
     // coords are upside down compared to default for Dullahan

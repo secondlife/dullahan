@@ -163,6 +163,7 @@ class dullahan_impl :
         bool mDisableNetworkService;
         bool mUseMockKeyChain;
         bool mAutoPlayWithoutGesture;
+        bool mFakeUIForMediaStream;
         bool mFlipPixelsY;
         bool mFlipMouseY;
         double mRequestedPageZoom;

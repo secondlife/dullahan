@@ -121,7 +121,7 @@ void app::init_dullahan()
     mDullahan->setCustomSchemes(custom_schemes);
 
     dullahan::dullahan_settings settings;
-	settings.host_process_path = "";  // implies host process is next to executable
+    settings.host_process_path = "";  // implies host process is next to executable
     settings.accept_language_list = "en-US";
     settings.background_color = 0xff666666;
     settings.cache_enabled = true;
@@ -147,6 +147,7 @@ void app::init_dullahan()
     settings.webgl_enabled = true;
     settings.log_file = "webcube_cef_log.txt";
     settings.log_verbose = true;
+    settings.fake_ui_for_media_stream = true;
 
     bool result = mDullahan->init(settings);
     if (result)
