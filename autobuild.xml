@@ -44,9 +44,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>ca3bd4f35e2ca5eb8062e7ddd4e8fc06</string>
+              <string>2ddeb253f88504d853ca5fbe8a45da19</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/60316/566616/cef_bin-81.3.10_gb223419_chromium-81.0.4044.138-windows-542664.tar.bz2</string>
+              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/77748/736626/cef_bin-89.0.5_gc1f90d8_chromium-89.0.4389.40-windows-556458.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
@@ -56,16 +56,16 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>15ea369c824a1289ad1d9285e16817e2</string>
+              <string>0c1960c52c1c47bc3591c4e63b0909d7</string>
               <key>url</key>
-              <string>https://ll-build-secondlife-development.s3.amazonaws.com/ct2/10184/43904/cef_bin-88.2.8_ge484012_chromium-88.0.4324.150-windows64-509865.tar.bz2</string>
+              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/77707/736361/cef_bin-89.0.5_gc1f90d8_chromium-89.0.4389.40-windows64-556458.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
         <key>version</key>
-        <string>88.2.8_ge484012_chromium-88.0.4324.150</string>
+        <string>89.0.5_gc1f90d8_chromium-89.0.4389.40</string>
       </map>
     </map>
     <key>package_description</key>
