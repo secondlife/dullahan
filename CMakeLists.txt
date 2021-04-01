@@ -95,22 +95,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         PATHS ${CEF_RELEASE_DLL_LIB_DIR}
     )
 
-    find_library(
-        CEF_FRAMEWORK_DEBUG
-        NAMES "Chromium Embedded Framework"
-        PATHS ${CEF_DEBUG_BIN_DIR}
-    )
 
-    find_library(
-        CEF_FRAMEWORK_RELEASE
-        NAMES "Chromium Embedded Framework"
-        PATHS ${CEF_RELEASE_BIN_DIR}
-    )
-
-    set(CEF_FRAMEWORK
-        debug ${CEF_FRAMEWORK_DEBUG}
-        optimized ${CEF_FRAMEWORK_RELEASE}
-    )
+    set(CEF_FRAMEWORK "'${CEF_RELEASE_BIN_DIR}/Chromium Embedded Framework.framework'")
 
     find_library(OPENGL_FRAMEWORK OpenGL)
     find_library(COCOA_FRAMEWORK Cocoa)
@@ -118,8 +104,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # Check that we were able to find our build components
     check_exists(CEF_DLL_LIBRARY_DEBUG)
     check_exists(CEF_DLL_LIBRARY_RELEASE)
-    check_exists(CEF_FRAMEWORK_DEBUG)
-    check_exists(CEF_FRAMEWORK_RELEASE)
     check_exists(CEF_FRAMEWORK)
     check_exists(OPENGL_FRAMEWORK)
     check_exists(COCOA_FRAMEWORK)
@@ -305,7 +289,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_link_libraries(
         DullahanHelper
         ${CEF_DLL_LIBRARY}
-        ${CEF_FRAMEWORK}
+        "-F ${CEF_FRAMEWORK}"
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_link_libraries(
@@ -556,7 +540,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         osxgl
         dullahan
         ${CEF_DLL_LIBRARY}
-        ${CEF_FRAMEWORK}
+        "-F ${CEF_FRAMEWORK}"
         ${OPENGL_FRAMEWORK}
         ${COCOA_FRAMEWORK}
     )
