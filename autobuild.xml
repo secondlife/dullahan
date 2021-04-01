@@ -20,9 +20,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>5848b70f8960e1b7f5594cc01aede8cc</string>
+              <string>3d1eed71bfe268fff6360f8d636dbcd2</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/60315/567240/cef_bin-81.3.10_gb223419_chromium-81.0.4044.138-darwin64-542664.tar.bz2</string>
+              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/79385/751802/cef_bin-89.0.12_g2b76680_chromium-89.0.4389.90-darwin64-557697.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
@@ -65,7 +65,7 @@
           </map>
         </map>
         <key>version</key>
-        <string>89.0.5_gc1f90d8_chromium-89.0.4389.40</string>
+        <string>89.0.12_g2b76680_chromium-89.0.4389.90</string>
       </map>
     </map>
     <key>package_description</key>
