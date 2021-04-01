@@ -3,3 +3,4 @@ build
 build64
 stage
 *.tar.bz2
+.DS_Store
