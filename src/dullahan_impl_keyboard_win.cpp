@@ -31,20 +31,46 @@ bool isKeyDown(int vkey)
     return (GetKeyState(vkey) & 0x8000) != 0;
 }
 
-int GetCefKeyboardModifiers(WPARAM wparam, LPARAM lparam)
+int GetCefKeyboardModifiers(uint32_t msg, WPARAM wparam, LPARAM lparam)
 {
     int modifiers = 0;
-    if (isKeyDown(VK_SHIFT))
+    // In Windows AltGr and Alt+Ctrl are equivalent (AltGr key specifically is RAlt + LCtrl).
+    // AltGr can be used with Shift modifier to result in different character.
+    // Viewer won't get WM_CHAR event from TranslateMessage with Alt+Ctrl pressed unless it
+    // is AltGr, so in case of WM_CHAR+Ctrl+Alt mark as EVENTFLAG_ALTGR_DOWN or drop all modifers.
+    bool alt_gr_mode = (msg == WM_CHAR) && isKeyDown(VK_CONTROL) && isKeyDown(VK_MENU);
+    if (!alt_gr_mode)
     {
-        modifiers |= EVENTFLAG_SHIFT_DOWN;
-    }
-    if (isKeyDown(VK_CONTROL))
-    {
-        modifiers |= EVENTFLAG_CONTROL_DOWN;
-    }
-    if (isKeyDown(VK_MENU))
-    {
-        modifiers |= EVENTFLAG_ALT_DOWN;
+        if (isKeyDown(VK_LSHIFT))
+        {
+            modifiers |= EVENTFLAG_SHIFT_DOWN;
+            modifiers |= EVENTFLAG_IS_LEFT;
+        }
+        if (isKeyDown(VK_RSHIFT))
+        {
+            modifiers |= EVENTFLAG_SHIFT_DOWN;
+            modifiers |= EVENTFLAG_IS_RIGHT;
+        }
+        if (isKeyDown(VK_LCONTROL))
+        {
+            modifiers |= EVENTFLAG_CONTROL_DOWN;
+            modifiers |= EVENTFLAG_IS_LEFT;
+        }
+        if (isKeyDown(VK_RCONTROL))
+        {
+            modifiers |= EVENTFLAG_CONTROL_DOWN;
+            modifiers |= EVENTFLAG_IS_RIGHT;
+        }
+        if (isKeyDown(VK_LMENU))
+        {
+            modifiers |= EVENTFLAG_ALT_DOWN;
+            modifiers |= EVENTFLAG_IS_LEFT;
+        }
+        if (isKeyDown(VK_RMENU))
+        {
+            modifiers |= EVENTFLAG_ALT_DOWN;
+            modifiers |= EVENTFLAG_IS_RIGHT;
+        }
     }
 
     // Low bit set from GetKeyState indicates "toggled".
@@ -100,34 +126,10 @@ int GetCefKeyboardModifiers(WPARAM wparam, LPARAM lparam)
             modifiers |= EVENTFLAG_IS_KEY_PAD;
             break;
         case VK_SHIFT:
-            if (isKeyDown(VK_LSHIFT))
-            {
-                modifiers |= EVENTFLAG_IS_LEFT;
-            }
-            else if (isKeyDown(VK_RSHIFT))
-            {
-                modifiers |= EVENTFLAG_IS_RIGHT;
-            }
             break;
         case VK_CONTROL:
-            if (isKeyDown(VK_LCONTROL))
-            {
-                modifiers |= EVENTFLAG_IS_LEFT;
-            }
-            else if (isKeyDown(VK_RCONTROL))
-            {
-                modifiers |= EVENTFLAG_IS_RIGHT;
-            }
             break;
         case VK_MENU:
-            if (isKeyDown(VK_LMENU))
-            {
-                modifiers |= EVENTFLAG_IS_LEFT;
-            }
-            else if (isKeyDown(VK_RMENU))
-            {
-                modifiers |= EVENTFLAG_IS_RIGHT;
-            }
             break;
         case VK_LWIN:
             modifiers |= EVENTFLAG_IS_LEFT;
@@ -162,7 +164,7 @@ void dullahan_impl::nativeKeyboardEventWin(uint32_t msg, uint32_t wparam, uint64
             event.type = KEYEVENT_CHAR;
         }
 
-        event.modifiers = GetCefKeyboardModifiers((WPARAM)wparam, (LPARAM)lparam);
+        event.modifiers = GetCefKeyboardModifiers(msg, (WPARAM)wparam, (LPARAM)lparam);
 
         mBrowser->GetHost()->SendKeyEvent(event);
     }
