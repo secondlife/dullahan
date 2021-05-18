@@ -159,6 +159,10 @@ class dullahan_browser_client :
                         CefRefPtr<CefJSDialogCallback> callback,
                         bool& suppress_message) override;
 
+        bool OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser,
+                                  const CefString& message_text,
+                                  bool is_reload,
+                                  CefRefPtr<CefJSDialogCallback> callback) override;
     private:
         dullahan_impl* mParent;
         CefRefPtr<CefRenderHandler> mRenderHandler;

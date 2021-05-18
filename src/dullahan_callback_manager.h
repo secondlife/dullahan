@@ -88,6 +88,9 @@ class dullahan_callback_manager
         void setOnJSDialogCallback(std::function<bool(const std::string origin_url, const std::string message_text, const std::string default_prompt_text)> callback);
         bool onJSDialogCallback(const std::string origin_url, const std::string message_text, const std::string default_prompt_text);
 
+        void setOnJSBeforeUnloadCallback(std::function<bool()> callback);
+        bool onJSBeforeUnloadCallback();
+
     private:
         std::function<void(const std::string)> mOnAddressChangeCallbackFunc;
         std::function<void(const std::string, const std::string, int)> mOnConsoleMessageCallbackFunc;
@@ -107,6 +110,7 @@ class dullahan_callback_manager
         std::function<void(int percent, bool complete)> mOnFileDownloadProgressCallbackFunc;
         std::function<const std::vector<std::string>(dullahan::EFileDialogType, const std::string, const std::string, const std::string, bool&)> mOnFileDialogCallbackFunc;
         std::function<bool(const std::string, const std::string, const std::string)> mOnJSDialogCallbackFunc;
+        std::function<bool()> mOnJSBeforeUnloadCallbackFunc;
 };
 
 #endif //_DULLAHAN_CALLBACK_MANAGER

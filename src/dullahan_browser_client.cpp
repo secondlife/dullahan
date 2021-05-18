@@ -450,3 +450,21 @@ bool dullahan_browser_client::OnJSDialog(CefRefPtr<CefBrowser> browser,
 
     return false;
 }
+
+bool dullahan_browser_client::OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser,
+        const CefString& message_text,
+        bool is_reload,
+        CefRefPtr<CefJSDialogCallback> callback)
+{
+    bool suppress_dialog = mParent->getCallbackManager()->onJSBeforeUnloadCallback();
+
+    if (suppress_dialog)
+    {
+        const CefString user_input("");
+        callback->Continue(true, user_input);
+
+        return true;
+    }
+
+    return false;
+}

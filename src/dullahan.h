@@ -388,6 +388,9 @@ class dullahan
                                    const std::string message_text,
                                    const std::string default_prompt_text)> callback);
 
+        // JS before unload callback (alert)
+        void setOnJSBeforeUnloadCallback(std::function<bool()> callback);
+
     private:
         std::unique_ptr <dullahan_impl> mImpl;
 };

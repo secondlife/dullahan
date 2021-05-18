@@ -275,3 +275,20 @@ bool dullahan_callback_manager::onJSDialogCallback(const std::string origin_url,
     return false;
 }
 
+void dullahan_callback_manager::setOnJSBeforeUnloadCallback(
+    std::function<bool()> callback)
+{
+    mOnJSBeforeUnloadCallbackFunc = callback;
+}
+
+bool dullahan_callback_manager::onJSBeforeUnloadCallback()
+{
+    if (mOnJSBeforeUnloadCallbackFunc)
+    {
+        return mOnJSBeforeUnloadCallbackFunc();
+    }
+
+    // default to cancel request if no callback set up
+    return false;
+}
+
