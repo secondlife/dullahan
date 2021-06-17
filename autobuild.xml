@@ -20,9 +20,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>45da9453a241087cdb198f2b857e05f1</string>
+              <string>ef4c69f44501d0f2b3134e387e6425db</string>
               <key>url</key>
-              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/79700/753486/cef_bin-89.0.17_ge7bbb1d_chromium-89.0.4389.114-darwin64-557882.tar.bz2</string>
+              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/83281/779081/cef_bin-91.1.12_gcf0c26a_chromium-91.0.4472.101-darwin64-560652.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
@@ -44,9 +44,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>a3f3351b2014fdafd869a2af60d9fead</string>
+              <string>465917a542ca8b7c11fbe4db65b53fd0</string>
               <key>url</key>
-              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/79668/753438/cef_bin-89.0.17_ge7bbb1d_chromium-89.0.4389.114-windows-557882.tar.bz2</string>
+              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/83282/779070/cef_bin-91.1.19_ga92e5d5_chromium-91.0.4472.101-windows-560652.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
@@ -56,16 +56,16 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>504b7bcff91b90030159a32fa8009734</string>
+              <string>7be7846aa5c3004d1e4e81091beb3186</string>
               <key>url</key>
-              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/79669/753444/cef_bin-89.0.17_ge7bbb1d_chromium-89.0.4389.114-windows64-557882.tar.bz2</string>
+              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/83283/779069/cef_bin-91.1.19_ga92e5d5_chromium-91.0.4472.101-windows64-560652.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
         <key>version</key>
-        <string>89.0.17_ge7bbb1d_chromium-89.0.4389.114</string>
+        <string>91.1.19_ga92e5d5_chromium-91.0.4472.101</string>
       </map>
     </map>
     <key>package_description</key>

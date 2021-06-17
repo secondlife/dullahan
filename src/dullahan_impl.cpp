@@ -249,22 +249,24 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
         CefString(&settings.cache_path) = user_settings.cache_path;
     }
 
+    // as of CEF 90, the new way to disable cookies
+    if (user_settings.cookies_enabled == false)
+    {
+        CefString(&settings.cookieable_schemes_list) = "";
+        settings.cookieable_schemes_exclude_defaults = true;
+    }
+
     // insert a new string into user agent
     if (user_settings.user_agent_substring.length())
     {
         std::string user_agent(user_settings.user_agent_substring);
-        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.product_version);
+        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.user_agent_product);
     }
     else
     {
         std::string user_agent = makeCompatibleUserAgentString("");
-        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.product_version);
+        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.user_agent_product);
     }
-
-    // commenting out but leaving this here for future reference - shows how you can explicitly set
-    // whole of user agent string versus adding to what is there already
-    //std::string user_agent_direct("user agent string");
-    //cef_string_utf8_to_utf16(user_agent_direct.c_str(), user_agent_direct.size(), &settings.user_agent);
 
     // list of language locale codes used to configure the Accept-Language HTTP header value
     if (user_settings.accept_language_list.length())
@@ -397,15 +399,6 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
         // set up how we handle cookies and persistance for global context
         // (we probably shouldn't do this globally and use some context instead)
         manager = CefCookieManager::GetGlobalManager(nullptr);
-    }
-
-    if (manager && user_settings.cookies_enabled == false)
-    {
-        // this appears to be the way to fully disable cookies - empty list of schemes to accept and no defaults
-        const std::vector<CefString> empty_list;
-        const bool include_defaults = false;
-        CefRefPtr<CefCompletionCallback> callback = nullptr;
-        manager->SetSupportedSchemes(empty_list, include_defaults, callback);
     }
 
     // off with it's head

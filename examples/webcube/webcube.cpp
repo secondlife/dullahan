@@ -80,7 +80,7 @@ app::app()
 //
 const std::string app::get_title()
 {
-    return "Web Cube - a Dullahan example";
+    return "Web Cube; a Dullahan example";
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -114,8 +114,8 @@ void app::init_dullahan()
     mDullahan->setOnRequestExitCallback(std::bind(&app::onRequestExitCallback, this));
     mDullahan->setOnStatusMessageCallback(std::bind(&app::onStatusMessage, this, std::placeholders::_1));
     mDullahan->setOnTitleChangeCallback(std::bind(&app::onTitleChange, this, std::placeholders::_1));
-	mDullahan->setOnJSDialogCallback(std::bind(&app::onJSDialogCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-	mDullahan->setOnJSBeforeUnloadCallback(std::bind(&app::onJSBeforeUnloadCallback, this));
+    mDullahan->setOnJSDialogCallback(std::bind(&app::onJSDialogCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    mDullahan->setOnJSBeforeUnloadCallback(std::bind(&app::onJSBeforeUnloadCallback, this));
     mDullahan->setOnTooltipCallback(std::bind(&app::onTooltip, this, std::placeholders::_1));
 
     std::vector<std::string> custom_schemes(1, "secondlife");
@@ -776,10 +776,10 @@ bool app::onJSDialogCallback(const std::string origin_url, const std::string mes
 //
 bool app::onJSBeforeUnloadCallback()
 {
-	std::cout << "JavaScript alert before page unloaded triggered:" << std::endl;
+    std::cout << "JavaScript alert before page unloaded triggered:" << std::endl;
 
-	// cancel the dialog automatically
-	return true;
+    // cancel the dialog automatically
+    return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
