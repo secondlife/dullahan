@@ -15,6 +15,18 @@
         <string>cef-bin</string>
         <key>platforms</key>
         <map>
+          <key>darwin64</key>
+          <map>
+            <key>archive</key>
+            <map>
+              <key>hash</key>
+              <string>857f5531a30f1f956bcbea637e665c1f</string>
+              <key>url</key>
+              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/83391/779820/cef_bin-91.1.21_g9dd45fe_chromium-91.0.4472.114-darwin64-560735.tar.bz2</string>
+            </map>
+            <key>name</key>
+            <string>darwin64</string>
+          </map>
           <key>linux64</key>
           <map>
             <key>archive</key>
@@ -27,26 +39,14 @@
             <key>name</key>
             <string>darwin64</string>
           </map>
-          <key>darwin64</key>
-          <map>
-            <key>archive</key>
-            <map>
-              <key>hash</key>
-              <string>5848b70f8960e1b7f5594cc01aede8cc</string>
-              <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/60315/567240/cef_bin-81.3.10_gb223419_chromium-81.0.4044.138-darwin64-542664.tar.bz2</string>
-            </map>
-            <key>name</key>
-            <string>darwin64</string>
-          </map>
           <key>windows</key>
           <map>
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>ca3bd4f35e2ca5eb8062e7ddd4e8fc06</string>
+              <string>3164a2ebaadc473ddac3cedf39a7c0f3</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/60316/566616/cef_bin-81.3.10_gb223419_chromium-81.0.4044.138-windows-542664.tar.bz2</string>
+              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/83393/779738/cef_bin-91.1.21_g9dd45fe_chromium-91.0.4472.114-windows-560735.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
@@ -56,16 +56,16 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>bbadb8dce79fa7a850251ba2d26a3b26</string>
+              <string>5ab7616c3b013b0bf771146f740092fb</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/60314/566606/cef_bin-81.3.10_gb223419_chromium-81.0.4044.138-windows64-542664.tar.bz2</string>
+              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/83392/779744/cef_bin-91.1.21_g9dd45fe_chromium-91.0.4472.114-windows64-560735.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
         <key>version</key>
-        <string>81.3.10_gb223419_chromium-81.0.4044.138</string>
+        <string>91.1.21_g9dd45fe_chromium-91.0.4472.114</string>
       </map>
     </map>
     <key>package_description</key>
@@ -138,30 +138,6 @@
           <key>name</key>
           <string>darwin</string>
         </map>
-        <key>windows</key>
-        <map>
-          <key>configurations</key>
-          <map>
-            <key>Release</key>
-            <map>
-              <key>build</key>
-              <map>
-              </map>
-              <key>default</key>
-              <boolean>true</boolean>
-              <key>name</key>
-              <string>Release</string>
-            </map>
-          </map>
-          <key>manifest</key>
-          <array>
-            <string>lib/release/*</string>
-            <string>bin/release/*</string>
-            <string>resources/*</string>
-          </array>
-          <key>name</key>
-          <string>windows</string>
-        </map>
         <key>linux64</key>
         <map>
           <key>configurations</key>
@@ -185,6 +161,30 @@
           </array>
           <key>name</key>
           <string>linux</string>
+        </map>
+        <key>windows</key>
+        <map>
+          <key>configurations</key>
+          <map>
+            <key>Release</key>
+            <map>
+              <key>build</key>
+              <map>
+              </map>
+              <key>default</key>
+              <boolean>true</boolean>
+              <key>name</key>
+              <string>Release</string>
+            </map>
+          </map>
+          <key>manifest</key>
+          <array>
+            <string>lib/release/*</string>
+            <string>bin/release/*</string>
+            <string>resources/*</string>
+          </array>
+          <key>name</key>
+          <string>windows</string>
         </map>
       </map>
       <key>source_directory</key>

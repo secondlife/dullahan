@@ -20,7 +20,7 @@
 @pushd .
 
 @rem The CMake generator string to use
-@set VS_CMD=Visual Studio 12 2013
+@set VS_CMD=Visual Studio 15 2017
 
 @rem Rudimentary test to see if we are in the Dullahan root directory where
 @rem we demand that this script is started from.
@@ -119,7 +119,7 @@
 @rem we don't often need the Debug build, the Dullahan CMakeLists.txt file refers
 @rem to it and will fail without it so we must build
 @cd %CEF_BUILD_DIR%
-@cmake -G %CMAKE_CMD% .. -DCEF_RUNTIME_LIBRARY_FLAG=/MD
+@cmake -G %CMAKE_CMD% .. -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off
 @if errorlevel 1 goto End
 @cd libcef_dll_wrapper
 @msbuild libcef_dll_wrapper.vcxproj /property:Configuration="Debug" %PLATFORM_CMD%

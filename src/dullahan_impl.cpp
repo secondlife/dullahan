@@ -70,6 +70,7 @@ dullahan_impl::dullahan_impl() :
     mDisableNetworkService(false),
     mUseMockKeyChain(false),
     mAutoPlayWithoutGesture(false),
+    mFakeUIForMediaStream(false),
     mFlipPixelsY(false),
     mFlipMouseY(false),
     mRequestContext(0),
@@ -137,7 +138,12 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
             command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
         }
 
-		platformAddCommandLines( command_line );		
+        if (mFakeUIForMediaStream)
+        {
+            command_line->AppendSwitch("use-fake-ui-for-media-stream");
+        }
+
+        platformAddCommandLines(command_line);
     }
 }
 
@@ -160,14 +166,38 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
 
     CefSettings settings;
 
-    // point to host application
+    // point to host application helper
 #ifdef WIN32
-    CefString(&settings.browser_subprocess_path) = "dullahan_host.exe";
+    // Note: as of CEF 83, it appears that on Windows builds, the path to the host
+    // helper application must be an absolute path vs the existing, relative path.
+    // If the user has not specified a path to the helper explicitly, then we can,
+    // as a first pass, assume it's located next to the executable (it often is)
+    // and for use cases where it is located elsewhere, the consumer can specify
+    // the absolute path directly.
+    std::string host_process_path = user_settings.host_process_path;
+    if (host_process_path.empty())
+    {
+        // path is not specified so assume it's adjacent to the executable
+        char exe_path[MAX_PATH];
+        GetModuleFileName(NULL, exe_path, MAX_PATH);
+        std::string cur_exe_path = std::string(exe_path);
+        const size_t last_slash_idx = cur_exe_path.find_last_of("\\/");
+        if (last_slash_idx == std::string::npos)
+        {
+            return false;
+        }
+        host_process_path = cur_exe_path.erase(last_slash_idx + 1);
+    }
+
+    // finally, tell CEF where to find the host process helper
+    CefString(&settings.browser_subprocess_path) = host_process_path + "\\" + user_settings.host_process_filename;
+
 #elif __APPLE__
     NSString* appBundlePath = [[NSBundle mainBundle] bundlePath];
     CefString(&settings.browser_subprocess_path) =
         [[NSString stringWithFormat:
           @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
+
 #endif
 #ifdef __linux__
     CefString(&settings.browser_subprocess_path) = getExeCwd() + "/dullahan_host";
@@ -219,22 +249,24 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
         CefString(&settings.cache_path) = user_settings.cache_path;
     }
 
+    // as of CEF 90, the new way to disable cookies
+    if (user_settings.cookies_enabled == false)
+    {
+        CefString(&settings.cookieable_schemes_list) = "";
+        settings.cookieable_schemes_exclude_defaults = true;
+    }
+
     // insert a new string into user agent
     if (user_settings.user_agent_substring.length())
     {
         std::string user_agent(user_settings.user_agent_substring);
-        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.product_version);
+        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.user_agent_product);
     }
     else
     {
         std::string user_agent = makeCompatibleUserAgentString("");
-        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.product_version);
+        cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.user_agent_product);
     }
-
-    // commenting out but leaving this here for future reference - shows how you can explicitly set
-    // whole of user agent string versus adding to what is there already
-    //std::string user_agent_direct("user agent string");
-    //cef_string_utf8_to_utf16(user_agent_direct.c_str(), user_agent_direct.size(), &settings.user_agent);
 
     // list of language locale codes used to configure the Accept-Language HTTP header value
     if (user_settings.accept_language_list.length())
@@ -286,6 +318,12 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     // correctly to do so. (by default as of Chrome 70, audio/video does not autoplay)
     mAutoPlayWithoutGesture = user_settings.autoplay_without_gesture;
 
+    // this flag, if set allows you to bypass UI like "This page wants to use
+    // your microphone" and accept the request. Obviously, use with caution -
+    // eventually, this will be implemented as a callback so the consumer can
+    // provide their own ("Allow, "Disallow") UI.
+    mFakeUIForMediaStream = user_settings.fake_ui_for_media_stream;
+
     // if true, this setting inverts the pixels in Y direction - useful if your texture
     // coords are upside down compared to default for Dullahan
     mFlipPixelsY = user_settings.flip_pixels_y;
@@ -312,7 +350,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 {
     DLNOUT("dullahan_impl::init()");
 
-	platormInitWidevine(user_settings.cache_path);
+    platormInitWidevine(user_settings.cache_path);
 
     if (!initCEF(user_settings))
     {
@@ -361,15 +399,6 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
         // set up how we handle cookies and persistance for global context
         // (we probably shouldn't do this globally and use some context instead)
         manager = CefCookieManager::GetGlobalManager(nullptr);
-    }
-
-    if (manager && user_settings.cookies_enabled == false)
-    {
-        // this appears to be the way to fully disable cookies - empty list of schemes to accept and no defaults
-        const std::vector<CefString> empty_list;
-        const bool include_defaults = false;
-        CefRefPtr<CefCompletionCallback> callback = nullptr;
-        manager->SetSupportedSchemes(empty_list, include_defaults, callback);
     }
 
     // off with it's head

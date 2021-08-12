@@ -47,8 +47,8 @@ class dullahan_impl :
     public CefApp,
     public CefPdfPrintCallback
 {
-	void platormInitWidevine(std::string cachePath);
-	void platformAddCommandLines( CefRefPtr<CefCommandLine> command_line);
+        void platormInitWidevine(std::string cachePath);
+        void platformAddCommandLines(CefRefPtr<CefCommandLine> command_line);
     public:
         dullahan_impl();
         ~dullahan_impl();
@@ -163,6 +163,7 @@ class dullahan_impl :
         bool mDisableNetworkService;
         bool mUseMockKeyChain;
         bool mAutoPlayWithoutGesture;
+        bool mFakeUIForMediaStream;
         bool mFlipPixelsY;
         bool mFlipMouseY;
         double mRequestedPageZoom;

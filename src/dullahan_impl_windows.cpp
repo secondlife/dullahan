@@ -14,13 +14,17 @@ void dullahan_impl::platformAddCommandLines(CefRefPtr<CefCommandLine> command_li
         command_line->AppendSwitch("force-wave-audio");
 
         // <ND> This breaks twitch and friends. Allow to not add this via env override (for debugging)
-        char const *pEnv { getenv( "nd_AudioServiceOutOfProcess" ) };
+        char const* pEnv { getenv("nd_AudioServiceOutOfProcess") };
         bool bDisableAudioServiceOutOfProcess { true };
-        if( pEnv && pEnv[0] == '1' )
+        if (pEnv && pEnv[0] == '1')
+        {
             bDisableAudioServiceOutOfProcess = false;
+        }
 
-        if( bDisableAudioServiceOutOfProcess )
+        if (bDisableAudioServiceOutOfProcess)
+        {
             command_line->AppendSwitchWithValue("disable-features", "AudioServiceOutOfProcess");
+        }
     }
 
 }

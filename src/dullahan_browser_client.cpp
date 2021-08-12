@@ -194,6 +194,18 @@ bool dullahan_browser_client::OnTooltip(CefRefPtr<CefBrowser> browser,
     return false;
 }
 
+// CefDisplayhandler overrides
+bool dullahan_browser_client::OnCursorChange(CefRefPtr<CefBrowser> browser,
+        CefCursorHandle cursor, cef_cursor_type_t type,
+        const CefCursorInfo& custom_cursor_info)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    mParent->getCallbackManager()->onCursorChanged((dullahan::ECursorType)type);
+
+    return false;
+}
+
 // CefLoadHandler override
 void dullahan_browser_client::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
         bool isLoading, bool canGoBack, bool canGoForward)
@@ -435,6 +447,24 @@ bool dullahan_browser_client::OnJSDialog(CefRefPtr<CefBrowser> browser,
     suppress_message = mParent->getCallbackManager()->onJSDialogCallback(std::string(origin_url),
                        std::string(message_text),
                        std::string(default_prompt_text));
+
+    return false;
+}
+
+bool dullahan_browser_client::OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser,
+        const CefString& message_text,
+        bool is_reload,
+        CefRefPtr<CefJSDialogCallback> callback)
+{
+    bool suppress_dialog = mParent->getCallbackManager()->onJSBeforeUnloadCallback();
+
+    if (suppress_dialog)
+    {
+        const CefString user_input("");
+        callback->Continue(true, user_input);
+
+        return true;
+    }
 
     return false;
 }

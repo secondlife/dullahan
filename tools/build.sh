@@ -31,7 +31,7 @@ elif [ "$1" == "F" ]; then
     cef_bundle_dir_darwin64=$2
     
     # confirm the source CEF folder exists
-    if [ [ ! -d "$top_build_dir" ] ]; then
+    if [ ! -d "$cef_bundle_dir_darwin64" ]; then
         echo "Selected CEF source directory does not exist"
         exit 1
     fi

@@ -80,7 +80,7 @@ app::app()
 //
 const std::string app::get_title()
 {
-    return "Web Cube - a Dullahan example";
+    return "Web Cube; a Dullahan example";
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -115,12 +115,14 @@ void app::init_dullahan()
     mDullahan->setOnStatusMessageCallback(std::bind(&app::onStatusMessage, this, std::placeholders::_1));
     mDullahan->setOnTitleChangeCallback(std::bind(&app::onTitleChange, this, std::placeholders::_1));
     mDullahan->setOnJSDialogCallback(std::bind(&app::onJSDialogCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    mDullahan->setOnJSBeforeUnloadCallback(std::bind(&app::onJSBeforeUnloadCallback, this));
     mDullahan->setOnTooltipCallback(std::bind(&app::onTooltip, this, std::placeholders::_1));
 
     std::vector<std::string> custom_schemes(1, "secondlife");
     mDullahan->setCustomSchemes(custom_schemes);
 
     dullahan::dullahan_settings settings;
+    settings.host_process_path = "";  // implies host process is next to executable
     settings.accept_language_list = "en-US";
     settings.background_color = 0xff666666;
     settings.cache_enabled = true;
@@ -146,6 +148,7 @@ void app::init_dullahan()
     settings.webgl_enabled = true;
     settings.log_file = "webcube_cef_log.txt";
     settings.log_verbose = true;
+    settings.fake_ui_for_media_stream = true;
 
     bool result = mDullahan->init(settings);
     if (result)
@@ -764,6 +767,16 @@ bool app::onJSDialogCallback(const std::string origin_url, const std::string mes
     std::cout << "    URL: " << origin_url << std::endl;
     std::cout << "    message: " << message_text << std::endl;
     std::cout << "    prompt: " << default_prompt_text << std::endl;
+
+    // cancel the dialog automatically
+    return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+bool app::onJSBeforeUnloadCallback()
+{
+    std::cout << "JavaScript alert before page unloaded triggered:" << std::endl;
 
     // cancel the dialog automatically
     return true;
