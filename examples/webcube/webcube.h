@@ -59,8 +59,9 @@ class app
         void setPageVolume(float volume);
         void resizeBrowser(int width, int height);
         void setACookie();
-        void listAllCookies();
-        void deleteAllCookies();
+        void listCookies();
+        void deleteCookies();
+        void flushCookies();
         void initConsole();
         void closeConsole();
         void request_exit();

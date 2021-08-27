@@ -41,6 +41,9 @@
 class dullahan_browser_client;
 class dullahan_render_handler;
 class dullahan_callback_manager;
+class dullahan_cookie_manager;
+
+// TODO remove?
 class CefRequestContext;
 
 class dullahan_impl :
@@ -110,10 +113,12 @@ class dullahan_impl :
 
         bool setCookie(const std::string url, const std::string name,
                        const std::string value,
-                       const std::string domain, const std::string path, bool httponly, bool secure);
-        const std::vector<std::string> getAllCookies();
-        void deleteAllCookies();
-        void flushAllCookies();
+                       const std::string domain, const std::string path,
+                       bool httponly, bool secure);
+        const dullahan::dullahan_cookie_list_t getCookies();
+        bool deleteCookies();
+        bool flushCookies();
+
         void postData(const std::string url, const std::string data,
                       const std::string headers);
         bool executeJavaScript(const std::string cmd);
@@ -147,9 +152,9 @@ class dullahan_impl :
 
         CefRefPtr<dullahan_browser_client> mBrowserClient;
         CefRefPtr<dullahan_render_handler> mRenderHandler;
-        CefRefPtr<CefRequestContext> mRequestContext;
         CefRefPtr<CefBrowser> mBrowser;
         dullahan_callback_manager* mCallbackManager;
+        dullahan_cookie_manager* mCookieManager;
 
         bool mInitialized;
         int mViewWidth;

@@ -129,6 +129,9 @@ class dullahan
             FD_SAVE_FILE,
         } EFileDialogType;
 
+        typedef std::vector<std::pair<std::string, std::string >>
+                dullahan_cookie_list_t;
+
     public:
         //////////// initialization settings ////////////
         struct dullahan_settings
@@ -308,8 +311,9 @@ class dullahan
                        const std::string name, const std::string value,
                        const std::string domain, const std::string path,
                        bool httponly, bool secure);
-        const std::vector<std::string> getCookies();
-        void deleteAllCookies();
+        const dullahan_cookie_list_t getCookies();
+        void deleteCookies();
+        void flushCookies();
 
         // POST data to a URL
         void postData(const std::string url,

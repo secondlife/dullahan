@@ -33,6 +33,7 @@
 #include <functional>
 #include <string>
 #include <ctime>
+#include <direct.h>
 
 #include <windows.h>
 #include <commctrl.h>
@@ -121,13 +122,16 @@ void app::init_dullahan()
     std::vector<std::string> custom_schemes(1, "secondlife");
     mDullahan->setCustomSchemes(custom_schemes);
 
+    char dir[MAX_PATH];
+    std::string cwd = getcwd(dir, sizeof(dir));
+
     dullahan::dullahan_settings settings;
     settings.host_process_path = "";  // implies host process is next to executable
     settings.accept_language_list = "en-US";
     settings.background_color = 0xff666666;
     settings.cache_enabled = true;
     settings.locales_dir_path = "";
-    settings.cache_path = ".\\webcube_cache";
+    settings.cache_path = cwd + "/" + "webcube_cache";
     settings.cookies_enabled = true;
     settings.disable_gpu = false;
     settings.disable_network_service = false;
@@ -463,36 +467,57 @@ void app::resizeBrowser(int width, int height)
 void app::setACookie()
 {
     const std::string url("https://id.callum.com");
-    const std::string name("best_cookies");
-    const std::string value("hobnobs");
+    std::string name("best_cookies");
+    std::string value("hobnobs");
     const std::string domain("id.callum.com");
     const std::string path("/");
     const bool httponly = false;
     const bool secure = false;
 
-    std::cout << "Setting cookie called " << name << " to value " << value << std::endl;
+    std::cout << "1- Setting cookie called " << name << " to value " << value << std::endl;
+    mDullahan->setCookie(url, name, value, domain, path, httponly, secure);
 
+    name = "worst_cookies";
+    value = "rich_tea";
+    std::cout << "2- Setting cookie called " << name << " to value " << value << std::endl;
     mDullahan->setCookie(url, name, value, domain, path, httponly, secure);
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-void app::listAllCookies()
+void app::listCookies()
 {
-    std::cout << "Listing all cookies" << std::endl;
+    std::cout << "Listing cookies" << std::endl;
 
-    std::vector<std::string> cookies = mDullahan->getCookies();
+    dullahan::dullahan_cookie_list_t cookies = mDullahan->getCookies();
 
-    std::cout << "Number of cookies is " << cookies.size() << std::endl;
+    std::cout << "--- Begin list of cookies ---" << std::endl;
+    dullahan::dullahan_cookie_list_t::iterator iter = cookies.begin();
+    while (iter != cookies.end())
+    {
+        std::cout << "    "<< (iter - cookies.begin() + 1) << "  " << (*iter).first << " => " << (*iter).second << std::endl;
+
+        ++iter;
+    }
+    std::cout << "---- End list of cookies ----" << std::endl;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-void app::deleteAllCookies()
+void app::deleteCookies()
 {
-    std::cout << "Deleting all cookies" << std::endl;
+    std::cout << "Deleting cookies" << std::endl;
 
-    mDullahan->deleteAllCookies();
+    mDullahan->deleteCookies();
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+void app::flushCookies()
+{
+    std::cout << "Flushing cookies" << std::endl;
+
+    mDullahan->flushCookies();
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -992,12 +1017,16 @@ LRESULT CALLBACK window_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     gApp->setACookie();
                     break;
 
-                case ID_FEATURES_COOKIES_LIST_ALL_COOKIES:
-                    gApp->listAllCookies();
+                case ID_FEATURES_COOKIES_LIST_COOKIES:
+                    gApp->listCookies();
                     break;
 
-                case ID_FEATURES_COOKIES_DELETE_ALL_COOKIES:
-                    gApp->deleteAllCookies();
+                case ID_FEATURES_COOKIES_DELETE_COOKIES:
+                    gApp->deleteCookies();
+                    break;
+
+                case ID_FEATURES_COOKIES_FLUSH_COOKIES:
+                    gApp->flushCookies();
                     break;
 
                 default:

@@ -33,6 +33,7 @@
 #include "dullahan_render_handler.h"
 #include "dullahan_browser_client.h"
 #include "dullahan_callback_manager.h"
+#include "dullahan_cookie_manager.h"
 
 #include "include/cef_request_context.h"
 #include "include/cef_request_context_handler.h"
@@ -59,6 +60,7 @@ dullahan_impl::dullahan_impl() :
     mInitialized(false),
     mBrowser(0),
     mCallbackManager(new dullahan_callback_manager),
+    mCookieManager(new dullahan_cookie_manager),
     mViewWidth(0),
     mViewHeight(0),
     mSystemFlashEnabled(false),
@@ -73,7 +75,6 @@ dullahan_impl::dullahan_impl() :
     mFakeUIForMediaStream(false),
     mFlipPixelsY(false),
     mFlipMouseY(false),
-    mRequestContext(0),
     mRequestedPageZoom(1.0)
 {
     DLNOUT("dullahan_impl::dullahan_impl()");
@@ -357,6 +358,11 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
         return false;
     }
 
+    if (!mCookieManager->init())
+    {
+        return false;
+    }
+
     CefBrowserSettings browser_settings;
     browser_settings.windowless_frame_rate = user_settings.frame_rate;
     browser_settings.webgl = user_settings.webgl_enabled ? STATE_ENABLED : STATE_DISABLED;
@@ -373,34 +379,6 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     CefString url = std::string();
     CefRefPtr<CefDictionaryValue> extra_info = nullptr;
 
-    if (user_settings.cache_enabled && user_settings.context_cache_path.length())
-    {
-        // Creating multiple contexts in same folder simultaneously will not share sessions!
-        CefRequestContextSettings contextSettings;
-        CefString(&contextSettings.cache_path) = user_settings.context_cache_path;
-        contextSettings.persist_session_cookies = user_settings.cookies_enabled;
-
-        mRequestContext = CefRequestContext::CreateContext(contextSettings, nullptr);
-    }
-    else
-    {
-        // Default context
-        // Since this reuses existing context when possible, all instances of browser will share cookies and sessions.
-        mRequestContext = nullptr;
-    }
-
-    CefRefPtr<CefCookieManager> manager;
-    if (mRequestContext)
-    {
-        manager = mRequestContext->GetCookieManager(nullptr);
-    }
-    else
-    {
-        // set up how we handle cookies and persistance for global context
-        // (we probably shouldn't do this globally and use some context instead)
-        manager = CefCookieManager::GetGlobalManager(nullptr);
-    }
-
     // off with it's head
     CefWindowInfo window_info;
     window_info.SetAsWindowless(0);
@@ -410,7 +388,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     window_info.width = user_settings.initial_width;
     window_info.height = user_settings.initial_height;
 
-    mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), url, browser_settings, extra_info, mRequestContext.get());
+    mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), url, browser_settings, extra_info, nullptr);
 
     // important: set the size *after* we create a browser
     setSize(user_settings.initial_width, user_settings.initial_height);
@@ -427,7 +405,6 @@ void dullahan_impl::shutdown()
     mBrowser = nullptr;
     mRenderHandler = nullptr;
     mBrowserClient = nullptr;
-    mRequestContext = nullptr;
 
     CefShutdown();
 }
@@ -436,10 +413,7 @@ void dullahan_impl::requestExit()
 {
     if (mBrowser.get() && mBrowser->GetHost())
     {
-        flushAllCookies();
-
         bool force_close = false;
-
         mBrowser->GetHost()->CloseBrowser(force_close);
     }
 }
@@ -743,184 +717,23 @@ bool dullahan_impl::setCookie(const std::string url, const std::string name,
                               const std::string value, const std::string domain,
                               const std::string path, bool httponly, bool secure)
 {
-    CefRefPtr<CefCookieManager> manager;
-
-    if (mRequestContext)
-    {
-        manager = mRequestContext->GetCookieManager(nullptr);
-    }
-    else
-    {
-        manager = CefCookieManager::GetGlobalManager(nullptr);
-    }
-
-    if (manager)
-    {
-        CefCookie cookie;
-        CefString(&cookie.name) = name;
-        CefString(&cookie.value) = value;
-        CefString(&cookie.domain) = domain;
-        CefString(&cookie.path) = path;
-
-        cookie.httponly = httponly;
-        cookie.secure = secure;
-
-        cookie.has_expires = true;
-        cookie.expires.year = 2064;
-        cookie.expires.month = 4;
-        cookie.expires.day_of_week = 5;
-        cookie.expires.day_of_month = 10;
-
-        // wait for cookie to be set in setCookie callback
-        class setCookieCallback :
-            public CefSetCookieCallback
-        {
-            public:
-                explicit setCookieCallback(CefRefPtr<CefWaitableEvent> event)
-                    : mEvent(event)
-                {
-                }
-
-                void OnComplete(bool success) override
-                {
-                    mEvent->Signal();
-                }
-
-            private:
-                CefRefPtr<CefWaitableEvent> mEvent;
-
-                IMPLEMENT_REFCOUNTING(setCookieCallback);
-        };
-
-        bool automatically_reset = true;
-        bool initially_signaled = false;
-        CefRefPtr<CefWaitableEvent> event = CefWaitableEvent::CreateWaitableEvent(automatically_reset, initially_signaled);
-
-        bool result = manager->SetCookie(url, cookie, new setCookieCallback(event));
-
-        event->Wait();
-
-        flushAllCookies();
-
-        return result;
-    }
-
-    return false;
+    return mCookieManager->setCookie(url, name, value, domain, path, httponly, secure);
 }
 
-// TODO: This does not pass back the vector of strings correctly.
-//       Plus we should consider adding a cookie class and use that to represent a cookie vs. just name as a string
-const std::vector<std::string> dullahan_impl::getAllCookies()
+const dullahan::dullahan_cookie_list_t dullahan_impl::getCookies()
 {
-    class CookieVisitor : public CefCookieVisitor
-    {
-        public:
-            CookieVisitor(std::vector<std::string> cookies) :
-                mCookies(cookies)
-            {
-            }
-
-            bool Visit(const CefCookie& cookie, int count, int total, bool& deleteCookie) override
-            {
-                const std::string name = std::string(CefString(&cookie.name));
-                const std::string value = std::string(CefString(&cookie.value));
-
-                mCookies.push_back(name);
-                deleteCookie = false;
-                return true;
-            }
-
-        private:
-            std::vector<std::string> mCookies;
-
-            IMPLEMENT_REFCOUNTING(CookieVisitor);
-    };
-
-    std::vector<std::string> cookies;
-    CefRefPtr<CefCookieManager> manager;
-    if (mRequestContext)
-    {
-        manager = mRequestContext->GetCookieManager(nullptr);
-    }
-    else
-    {
-        manager = CefCookieManager::GetGlobalManager(nullptr);
-    }
-    if (manager)
-    {
-        manager->VisitAllCookies(new CookieVisitor(cookies));
-        manager->FlushStore(nullptr);
-
-        return cookies;
-    }
-
-    return std::vector<std::string>();
+    return mCookieManager->getCookies();
 }
 
-void dullahan_impl::deleteAllCookies()
+bool dullahan_impl::flushCookies()
 {
-    CefRefPtr<CefCookieManager> manager;
-    if (mRequestContext)
-    {
-        manager = mRequestContext->GetCookieManager(nullptr);
-    }
-    else
-    {
-        manager = CefCookieManager::GetGlobalManager(nullptr);
-    }
-    if (manager)
-    {
-        // empty URL deletes all cookies for all domains
-        const CefString url("");
-        const CefString name("");
-        const CefRefPtr<CefDeleteCookiesCallback> callback = nullptr;
-        manager->DeleteCookies(url, name, callback);
-    }
+    bool wait_for_complete = true;
+    return mCookieManager->flushCookies(wait_for_complete);
 }
 
-void dullahan_impl::flushAllCookies()
+bool dullahan_impl::deleteCookies()
 {
-    CefRefPtr<CefCookieManager> manager;
-    if (mRequestContext)
-    {
-        manager = mRequestContext->GetCookieManager(nullptr);
-    }
-    else
-    {
-        manager = CefCookieManager::GetGlobalManager(nullptr);
-    }
-
-    if (manager)
-    {
-        class flushStoreCallback :
-            public CefCompletionCallback
-        {
-            public:
-                explicit flushStoreCallback(CefRefPtr<CefWaitableEvent> event)
-                    : mEvent(event)
-                {
-                }
-
-                void OnComplete() override
-                {
-                    mEvent->Signal();
-                }
-
-            private:
-                CefRefPtr<CefWaitableEvent> mEvent;
-
-                IMPLEMENT_REFCOUNTING(flushStoreCallback);
-        };
-
-        bool automatically_reset = true;
-        bool initially_signaled = false;
-        CefRefPtr<CefWaitableEvent> event = CefWaitableEvent::CreateWaitableEvent(automatically_reset, initially_signaled);
-
-        const CefRefPtr<CefCompletionCallback> flush_store_callback = new flushStoreCallback(event);
-        manager->FlushStore(flush_store_callback);
-
-        event->Wait();
-    }
+    return mCookieManager->deleteCookies();
 }
 
 void dullahan_impl::postData(const std::string url, const std::string data,
