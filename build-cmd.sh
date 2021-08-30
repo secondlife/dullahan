@@ -154,6 +154,7 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
             -DCMAKE_C_FLAGS:STRING="$LL_BUILD_RELEASE" \
             -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE" \
             ..
+
         xcodebuild -project dullahan.xcodeproj -target dullahan -configuration Release
         xcodebuild -project dullahan.xcodeproj -target DullahanHelper -configuration Release
 
@@ -175,6 +176,34 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         cp -R "$cef_no_wrapper_dir/Release/Chromium Embedded Framework.framework" "$stage/lib/release"
         cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"
         cp "$top/LICENSE.txt" "$stage/LICENSES"
+
+        # sign the binaries (both CEF and DullahanHelper)
+        CONFIG_FILE="$build_secrets_checkout/code-signing-osx/config.sh"
+        if [ -f "$CONFIG_FILE" ]; then
+            source $CONFIG_FILE
+
+            pushd "$stage/lib/release/Chromium Embedded Framework.framework/Libraries"
+            for dylib in lib*.dylib;
+            do
+                if [ -f "$dylib" ]; then
+                    codesign --force --timestamp --options runtime --sign "$APPLE_SIGNATURE" "$dylib"
+                fi
+            done
+            codesign --force --timestamp --options runtime --sign "$APPLE_SIGNATURE" "../Chromium Embedded Framework"
+            popd
+
+            pushd "$stage/lib/release/"
+            for app in DullahanHelper*.app;
+            do
+                if [ -d "$app" ]; then
+                    sed -i "" "s/DullahanHelper/${app%.*}/" "$app/Contents/Info.plist"
+                    codesign --force --timestamp --options runtime --sign "$APPLE_SIGNATURE" "$app"
+                fi
+            done
+            popd
+        else
+            echo "No config file found; skipping codesign."
+        fi
 
         # populate version_file (after CMake runs)
         g++ \
