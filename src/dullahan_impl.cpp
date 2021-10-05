@@ -143,6 +143,11 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
             command_line->AppendSwitch("use-fake-ui-for-media-stream");
         }
 
+        if (mProxyHostPort.length())
+        {
+            command_line->AppendSwitchWithValue("--proxy-server", mProxyHostPort);
+        }
+
         platformAddCommandLines(command_line);
     }
 }
@@ -267,6 +272,9 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
         std::string user_agent = makeCompatibleUserAgentString("");
         cef_string_utf8_to_utf16(user_agent.c_str(), user_agent.size(), &settings.user_agent_product);
     }
+
+    // the proxy host:port to use
+    mProxyHostPort = user_settings.proxy_host_port;
 
     // list of language locale codes used to configure the Accept-Language HTTP header value
     if (user_settings.accept_language_list.length())

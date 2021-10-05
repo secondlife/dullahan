@@ -124,6 +124,7 @@ void app::init_dullahan()
     dullahan::dullahan_settings settings;
     settings.host_process_path = "";  // implies host process is next to executable
     settings.accept_language_list = "en-US";
+    settings.proxy_host_port = std::string();
     settings.background_color = 0xff666666;
     settings.cache_enabled = true;
     settings.locales_dir_path = "";

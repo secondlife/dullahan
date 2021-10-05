@@ -193,6 +193,9 @@ class dullahan
             // and change the default language of the browser
             std::string accept_language_list = "en-us";
 
+            // host name:port to use as a web proxy
+            std::string proxy_host_port = std::string();
+
             // background color displayed before first page loaded (RRGGBB)
             unsigned int background_color = 0xffffff;
 
