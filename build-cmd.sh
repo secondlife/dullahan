@@ -186,10 +186,10 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
             for dylib in lib*.dylib;
             do
                 if [ -f "$dylib" ]; then
-                    codesign --force --timestamp --options runtime --sign "$APPLE_SIGNATURE" "$dylib"
+                    codesign --force --timestamp --options runtime --entitlements "$dullahan_source_dir/dullahan.entitlements" --sign "$APPLE_SIGNATURE" "$dylib"
                 fi
             done
-            codesign --force --timestamp --options runtime --sign "$APPLE_SIGNATURE" "../Chromium Embedded Framework"
+            codesign --force --timestamp --options runtime --entitlements "$dullahan_source_dir/dullahan.entitlements" --sign "$APPLE_SIGNATURE" "../Chromium Embedded Framework"
             popd
 
             pushd "$stage/lib/release/"
@@ -197,7 +197,7 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
             do
                 if [ -d "$app" ]; then
                     sed -i "" "s/DullahanHelper/${app%.*}/" "$app/Contents/Info.plist"
-                    codesign --force --timestamp --options runtime --sign "$APPLE_SIGNATURE" "$app"
+                    codesign --force --timestamp --options runtime --entitlements "$dullahan_source_dir/dullahan.entitlements" --sign "$APPLE_SIGNATURE" "$app"
                 fi
             done
             popd
