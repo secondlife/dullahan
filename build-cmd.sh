@@ -178,7 +178,8 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         cp "$top/LICENSE.txt" "$stage/LICENSES"
 
         # sign the binaries (both CEF and DullahanHelper)
-        CONFIG_FILE="$build_secrets_checkout/code-signing-osx/config.sh"
+        BUILD_SECRETS_DIR=${build_secrets_checkout:-}
+        CONFIG_FILE="$BUILD_SECRETS_DIR/code-signing-osx/config.sh"
         if [ -f "$CONFIG_FILE" ]; then
             source $CONFIG_FILE
 
