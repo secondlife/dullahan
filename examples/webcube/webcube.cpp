@@ -133,7 +133,6 @@ void app::init_dullahan()
     settings.disable_gpu = false;
     settings.disable_network_service = false;
     settings.disable_web_security = false;
-    settings.file_access_from_file_urls = false;
     settings.flash_enabled = false;
     settings.flip_mouse_y = false;
     settings.flip_pixels_y = false;
@@ -144,12 +143,13 @@ void app::init_dullahan()
     settings.java_enabled = false;
     settings.javascript_enabled = true;
     settings.media_stream_enabled = true;
-    settings.plugins_enabled = true;
     settings.user_agent_substring = mDullahan->makeCompatibleUserAgentString(get_title());
     settings.webgl_enabled = true;
     settings.log_file = "webcube_cef_log.txt";
     settings.log_verbose = true;
     settings.fake_ui_for_media_stream = true;
+    settings.databases_enabled = true;
+    settings.local_storage_enabled = true;
 
     bool result = mDullahan->init(settings);
     if (result)

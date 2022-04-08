@@ -46,7 +46,7 @@ class dullahan_browser_client :
 {
     public:
         dullahan_browser_client(dullahan_impl* parent,
-                                dullahan_render_handler* render_handler);
+                                CefRefPtr<dullahan_render_handler> render_handler);
         ~dullahan_browser_client();
 
         // CefClient override
@@ -122,7 +122,7 @@ class dullahan_browser_client :
         bool OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                             const CefString& origin_url,
                             int64 new_size,
-                            CefRefPtr<CefRequestCallback> callback) override;
+                            CefRefPtr<CefCallback> callback) override;
 
         // CefDownloadHandler overrides
         CefRefPtr<CefDownloadHandler> GetDownloadHandler() override

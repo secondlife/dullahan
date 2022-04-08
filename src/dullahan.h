@@ -154,8 +154,8 @@ class dullahan
             bool begin_frame_scheduling = false;        // fixes issue when onPaint not called
             bool cache_enabled = true;                  // local cache
             bool cookies_enabled = true;                // cookies
+            bool databases_enabled = true;              // enable or disable JavaScript databases
             bool disable_gpu = true;                    // disable GPU and GPU compositing
-            bool file_access_from_file_urls = false;    // allow access files from local file system
             bool disable_web_security = false;          // like adding --disable-web-security to Chrome command line
             bool disable_network_service = false;       // like adding --disable-features=NetworkService to Chrome command line
             bool use_mock_keychain = false;             // like adding --use-mock-keychain to Chrome command line
@@ -166,8 +166,8 @@ class dullahan
             bool image_shrink_standalone_to_fit = true; // scale standalone images larger than browser size to fit
             bool java_enabled = false;                  // java
             bool javascript_enabled = true;             // javascript
+            bool local_storage_enabled = true;          // enable or disable JavaScript local storage access
             bool media_stream_enabled = false;          // web cams etc. (caution)
-            bool plugins_enabled = true;                // all plugins
             bool webgl_enabled = true;                  // webgl
 
             // explicitly set the path to the locales folder since defaults no longer work on some systems

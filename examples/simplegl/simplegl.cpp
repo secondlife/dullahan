@@ -225,7 +225,6 @@ int main(int argc, char* argv[])
     settings.cookies_enabled = true;
     settings.disable_gpu = false;
     settings.disable_web_security = false;
-    settings.file_access_from_file_urls = false;
     settings.flash_enabled = false;
     settings.flip_mouse_y = false;
     settings.flip_pixels_y = false;
@@ -236,7 +235,6 @@ int main(int argc, char* argv[])
     settings.java_enabled = false;
     settings.javascript_enabled = true;
     settings.media_stream_enabled = true;
-    settings.plugins_enabled = true;
     settings.user_agent_substring = gDullahan->makeCompatibleUserAgentString("SimpleGL");
     settings.webgl_enabled = true;
 

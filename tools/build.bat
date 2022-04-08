@@ -20,7 +20,7 @@
 @pushd .
 
 @rem The CMake generator string to use
-@set VS_CMD=Visual Studio 15 2017
+@set VS_CMD=Visual Studio 16 2019
 
 @rem Rudimentary test to see if we are in the Dullahan root directory where
 @rem we demand that this script is started from.
@@ -87,7 +87,7 @@
 
 @rem Set up build parameters for 64 bit builds
 @if "%BIT_WIDTH%"=="64" (
-    @set CMAKE_CMD="%VS_CMD% Win64"
+    @set CMAKE_CMD="%VS_CMD%"
     @set PLATFORM_CMD="/property:PlatformTarget=x64"
 )
 

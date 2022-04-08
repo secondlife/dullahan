@@ -37,7 +37,6 @@
 #include "include/cef_request_context.h"
 #include "include/cef_request_context_handler.h"
 #include "include/cef_waitable_event.h"
-#include "include/cef_web_plugin.h"
 #include "include/base/cef_logging.h"
 
 #include "dullahan_version.h"
@@ -57,7 +56,7 @@
 
 dullahan_impl::dullahan_impl() :
     mInitialized(false),
-    mBrowser(0),
+    mBrowser(nullptr),
     mCallbackManager(new dullahan_callback_manager),
     mViewWidth(0),
     mViewHeight(0),
@@ -73,7 +72,7 @@ dullahan_impl::dullahan_impl() :
     mFakeUIForMediaStream(false),
     mFlipPixelsY(false),
     mFlipMouseY(false),
-    mRequestContext(0),
+    mRequestContext(nullptr),
     mRequestedPageZoom(1.0)
 {
     DLNOUT("dullahan_impl::dullahan_impl()");
@@ -285,7 +284,7 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     }
 
     // enable/disable use of system Flash
-    mSystemFlashEnabled = user_settings.plugins_enabled & user_settings.flash_enabled;
+    mSystemFlashEnabled = user_settings.flash_enabled;
 
     // enable/disable media stream (web cams etc.)
     // IMPORTANT: there is no "Use Your WebCam OK?" dialog so enable this at your peril
@@ -369,11 +368,10 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     browser_settings.windowless_frame_rate = user_settings.frame_rate;
     browser_settings.webgl = user_settings.webgl_enabled ? STATE_ENABLED : STATE_DISABLED;
     browser_settings.javascript = user_settings.javascript_enabled ? STATE_ENABLED : STATE_DISABLED;
-    browser_settings.plugins = user_settings.plugins_enabled ? STATE_ENABLED : STATE_DISABLED;
-    browser_settings.application_cache = user_settings.cache_enabled ? STATE_ENABLED : STATE_DISABLED;
     browser_settings.background_color = user_settings.background_color;
-    browser_settings.file_access_from_file_urls = user_settings.file_access_from_file_urls ? STATE_ENABLED : STATE_DISABLED;
     browser_settings.image_shrink_standalone_to_fit = user_settings.image_shrink_standalone_to_fit ? STATE_ENABLED : STATE_DISABLED;
+    browser_settings.databases = user_settings.databases_enabled ? STATE_ENABLED : STATE_DISABLED;
+    browser_settings.local_storage = user_settings.local_storage_enabled ? STATE_ENABLED : STATE_DISABLED;
 
     mRenderHandler = new dullahan_render_handler(this);
     mBrowserClient = new dullahan_browser_client(this, mRenderHandler);
@@ -413,10 +411,10 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     CefWindowInfo window_info;
     window_info.SetAsWindowless(0);
     window_info.windowless_rendering_enabled = true;
-    window_info.x = 0;
-    window_info.y = 0;
-    window_info.width = user_settings.initial_width;
-    window_info.height = user_settings.initial_height;
+    window_info.bounds.x = 0;
+    window_info.bounds.y = 0;
+    window_info.bounds.width = user_settings.initial_width;
+    window_info.bounds.height = user_settings.initial_height;
 
     mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), url, browser_settings, extra_info, mRequestContext.get());
 
@@ -604,7 +602,7 @@ void dullahan_impl::setFocus()
 {
     if (mBrowser.get() && mBrowser->GetHost())
     {
-        mBrowser->GetHost()->SendFocusEvent(true);
+        mBrowser->GetHost()->SetFocus(true);
     }
 }
 
@@ -704,10 +702,10 @@ void dullahan_impl::showDevTools()
     if (mBrowser.get() && mBrowser->GetHost())
     {
         CefWindowInfo window_info;
-        window_info.x = 0;
-        window_info.y = 0;
-        window_info.width = 400;
-        window_info.height = 400;
+        window_info.bounds.x = 0;
+        window_info.bounds.y = 0;
+        window_info.bounds.width = 400;
+        window_info.bounds.height = 400;
 #ifdef WIN32
         window_info.SetAsPopup(nullptr, "Dullahan Dev Tools");
 #elif __APPLE__
