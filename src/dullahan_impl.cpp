@@ -50,6 +50,7 @@
 #include "dullahan_impl_linux.cpp"
 #elif WIN32
 #include "dullahan_impl_windows.cpp"
+#include <winnls.h> // for WideCharToMultiByte
 #else
 #include "dullahan_impl_mac.cpp"
 #endif
@@ -152,6 +153,46 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
     }
 }
 
+#ifdef WIN32
+// copied from viewer's llstring.h
+std::string convert_wide_to_string(const wchar_t* in, unsigned int code_page)
+{
+    std::string out;
+    if (in)
+    {
+        int len_in = wcslen(in);
+        int len_out = WideCharToMultiByte(
+            code_page,
+            0,
+            in,
+            len_in,
+            NULL,
+            0,
+            0,
+            0);
+        // We will need two more bytes for the double NULL ending
+        // created in WideCharToMultiByte().
+        char* pout = new char[len_out + 2];
+        memset(pout, 0, len_out + 2);
+        if (pout)
+        {
+            WideCharToMultiByte(
+                code_page,
+                0,
+                in,
+                len_in,
+                pout,
+                len_out,
+                0,
+                0);
+            out.assign(pout);
+            delete[] pout;
+        }
+    }
+    return out;
+}
+#endif
+
 bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
 {
 #ifdef WIN32
@@ -183,9 +224,9 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     if (host_process_path.empty())
     {
         // path is not specified so assume it's adjacent to the executable
-        char exe_path[MAX_PATH];
-        GetModuleFileName(NULL, exe_path, MAX_PATH);
-        std::string cur_exe_path = std::string(exe_path);
+        std::vector<wchar_t> exe_path(MAX_PATH + 1);
+        GetModuleFileNameW(NULL, &exe_path[0], MAX_PATH);
+        std::string cur_exe_path = convert_wide_to_string(&exe_path[0], CP_UTF8);
         const size_t last_slash_idx = cur_exe_path.find_last_of("\\/");
         if (last_slash_idx == std::string::npos)
         {
