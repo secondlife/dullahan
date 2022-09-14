@@ -315,7 +315,9 @@ void dullahan::setOnCursorChangedCallback(std::function<void(const ECursorType t
     mImpl->getCallbackManager()->setOnCursorChangedCallback(callback);
 }
 
-void dullahan::setOnCustomSchemeURLCallback(std::function<void(const std::string url)> callback)
+void dullahan::setOnCustomSchemeURLCallback(std::function<void(const std::string url, 
+                                            bool user_gesture, 
+                                            bool is_redirect)> callback)
 {
     mImpl->getCallbackManager()->setOnCustomSchemeURLCallback(callback);
 }

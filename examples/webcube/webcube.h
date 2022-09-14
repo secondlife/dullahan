@@ -130,7 +130,7 @@ class app
         void onAddressChange(const std::string url);
         void onConsoleMessage(const std::string message, const std::string source, int line);
         void onCursorChanged(dullahan::ECursorType type);
-        void onCustomSchemeURL(const std::string url);
+        void onCustomSchemeURL(const std::string url, bool user_gesture, bool is_redirect);
         const std::vector<std::string> onFileDialog(dullahan::EFileDialogType dialog_type, const std::string dialog_title, const std::string default_file, const std::string dialog_accept_filter, bool& use_default);
         void onFileDownloadProgress(int percent, bool complete);
         bool onHTTPAuth(const std::string host, const std::string realm, std::string& username, std::string& password);

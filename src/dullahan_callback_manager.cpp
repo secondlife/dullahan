@@ -68,16 +68,16 @@ void dullahan_callback_manager::onCursorChanged(const dullahan::ECursorType type
     }
 }
 
-void dullahan_callback_manager::setOnCustomSchemeURLCallback(std::function<void(const std::string url)> callback)
+void dullahan_callback_manager::setOnCustomSchemeURLCallback(std::function<void(const std::string url, bool user_gesture, bool is_redirec)> callback)
 {
     mOnCustomSchemeURLCallbackFunc = callback;
 }
 
-void dullahan_callback_manager::onCustomSchemeURL(const std::string url)
+void dullahan_callback_manager::onCustomSchemeURL(const std::string url, bool user_gesture, bool is_redirect)
 {
     if (mOnCustomSchemeURLCallbackFunc)
     {
-        mOnCustomSchemeURLCallbackFunc(url);
+        mOnCustomSchemeURLCallbackFunc(url, user_gesture, is_redirect);
     }
 }
 

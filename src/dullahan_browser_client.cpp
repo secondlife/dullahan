@@ -273,7 +273,7 @@ bool dullahan_browser_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
 
     std::string url = request->GetURL();
 
-    // for conmparison
+    // for comparison, use lowercase
     std::transform(url.begin(), url.end(), url.begin(), [](char c)
     {
         return static_cast<char>(tolower(c));
@@ -286,7 +286,11 @@ bool dullahan_browser_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
         {
             // get URL again since we lower cased it for comparison
             url = request->GetURL();
-            mParent->getCallbackManager()->onCustomSchemeURL(url);
+
+            // also pass over the user_gesture and isRedirect flags - see the CefRequestHandler 
+            // header file for details - the user_gesture tells us if a link was clicked
+            // or navigated to - something we care about deeply for the custom scheme support
+            mParent->getCallbackManager()->onCustomSchemeURL(url, user_gesture, isRedirect);
 
             // don't continue with navigation
             return true;

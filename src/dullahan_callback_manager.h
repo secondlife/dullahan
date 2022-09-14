@@ -43,8 +43,8 @@ class dullahan_callback_manager
         void setOnCursorChangedCallback(std::function<void(const dullahan::ECursorType type)> callback);
         void onCursorChanged(const dullahan::ECursorType type);
 
-        void setOnCustomSchemeURLCallback(std::function<void(const std::string url)> callback);
-        void onCustomSchemeURL(const std::string url);
+        void setOnCustomSchemeURLCallback(std::function<void(const std::string url, bool gesture, bool in_redirect)> callback);
+        void onCustomSchemeURL(const std::string url, bool gesture, bool in_redirect);
 
         void setOnHTTPAuthCallback(std::function<bool(const std::string host, const std::string realm, std::string& username, std::string& password)> callback);
         bool onHTTPAuth(const std::string host, const std::string realm, std::string& username, std::string& password);
@@ -95,7 +95,7 @@ class dullahan_callback_manager
         std::function<void(const std::string)> mOnAddressChangeCallbackFunc;
         std::function<void(const std::string, const std::string, int)> mOnConsoleMessageCallbackFunc;
         std::function<void(const dullahan::ECursorType)> mOnCursorChangedCallbackFunc;
-        std::function<void(const std::string)> mOnCustomSchemeURLCallbackFunc;
+        std::function<void(const std::string, bool, bool)> mOnCustomSchemeURLCallbackFunc;
         std::function<bool(const std::string, const std::string, std::string&, std::string&)> mOnHTTPAuthCallbackFunc;
         std::function<void(int, const std::string)> mOnLoadEndCallbackFunc;
         std::function<void(int, const std::string)> mOnLoadErrorCallbackFunc;

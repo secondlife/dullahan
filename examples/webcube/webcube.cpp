@@ -101,7 +101,7 @@ void app::init_dullahan()
     mDullahan->setOnAddressChangeCallback(std::bind(&app::onAddressChange, this, std::placeholders::_1));
     mDullahan->setOnConsoleMessageCallback(std::bind(&app::onConsoleMessage, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     mDullahan->setOnCursorChangedCallback(std::bind(&app::onCursorChanged, this, std::placeholders::_1));
-    mDullahan->setOnCustomSchemeURLCallback(std::bind(&app::onCustomSchemeURL, this, std::placeholders::_1));
+    mDullahan->setOnCustomSchemeURLCallback(std::bind(&app::onCustomSchemeURL, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     mDullahan->setOnFileDialogCallback(std::bind(&app::onFileDialog, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
     mDullahan->setOnFileDownloadProgressCallback(std::bind(&app::onFileDownloadProgress, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnHTTPAuthCallback(std::bind(&app::onHTTPAuth, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
@@ -537,9 +537,13 @@ void app::onCursorChanged(dullahan::ECursorType type)
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-void app::onCustomSchemeURL(const std::string url)
+void app::onCustomSchemeURL(const std::string url, bool user_gesture, bool is_redirect)
 {
-    std::cout << "onCustomSchemeURL triggered in app: " << url << std::endl;
+    std::cout << "onCustomSchemeURL triggered in app:";
+    std::cout << "    URL: " << url << std::endl;;
+    std::cout << "    user_gesture: " << user_gesture << std::endl;;
+    std::cout << "    is_redirect: " << is_redirect << std::endl;;
+    std::cout << std::endl;
 }
 
 /////////////////////////////////////////////////////////////////////////////////

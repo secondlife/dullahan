@@ -341,7 +341,9 @@ class dullahan
         void setOnCursorChangedCallback(std::function<void(const ECursorType type)> callback);
 
         // custom URL scheme link is clicked (see setCustomSchemes(..))
-        void setOnCustomSchemeURLCallback(std::function<void(const std::string url)> callback);
+        void setOnCustomSchemeURLCallback(std::function<void(const std::string url,
+                                          bool user_gesture, 
+                                          bool is_redirect)> callback);
 
         // HTTP auth request triggered
         void setOnHTTPAuthCallback(std::function<bool(const std::string host,
