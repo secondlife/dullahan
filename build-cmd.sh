@@ -91,14 +91,15 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         rm -rf "$cef_no_wrapper_build_dir"
         mkdir -p "$cef_no_wrapper_build_dir"
         cd "$cef_no_wrapper_build_dir"
-        cmake -G "$AUTOBUILD_WIN_CMAKE_GEN" -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off ..
+        cmake -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
+              -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off ..
         build_sln cef.sln "Release|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
         build_sln cef.sln "Debug|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
 
         # generate the project files for Dullahan
         cd "$stage"
         cmake .. \
-            -G "$AUTOBUILD_WIN_CMAKE_GEN" \
+            -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
             -DCEF_WRAPPER_DIR="$(cygpath -w "$cef_no_wrapper_dir")" \
             -DCEF_WRAPPER_BUILD_DIR="$(cygpath -w "$cef_no_wrapper_build_dir")" \
             -DCMAKE_C_FLAGS="$LL_BUILD_RELEASE"
