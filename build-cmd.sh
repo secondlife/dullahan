@@ -41,6 +41,25 @@ source_environment_tempfile="$stage/source_environment.sh"
 "$autobuild" source_environment > "$source_environment_tempfile"
 . "$source_environment_tempfile"
 
+# Use msbuild.exe instead of devenv.com
+build_sln() {
+    local solution=$1
+    local config=$2
+    local proj="${3:-}"
+    local toolset="${AUTOBUILD_WIN_VSTOOLSET:-v143}"
+
+    # e.g. config = "Release|$AUTOBUILD_WIN_VSPLATFORM" per devenv.com convention
+    local -a confparts
+    IFS="|" read -ra confparts <<< "$config"
+
+    msbuild.exe \
+        "$(cygpath -w "$solution")" \
+        ${proj:+-t:"$proj"} \
+        -p:Configuration="${confparts[0]}" \
+        -p:Platform="${confparts[1]}" \
+        -p:PlatformToolset=$toolset
+}
+
 build=${AUTOBUILD_BUILD_ID:=0}
 
 case "$AUTOBUILD_PLATFORM" in
