@@ -9,9 +9,10 @@ jobs:
         include:
           - os: windows-2022
             addrsize: "32"
+    continue-on-error: true
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: secondlife/action-autobuild@release/v3
+      - uses: secondlife/action-autobuild@v3
         with:
           addrsize: ${{ matrix.addrsize }}
   release:
@@ -19,6 +20,6 @@ jobs:
     runs-on: [ubuntu-latest]
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: secondlife/action-autobuild-release@v1
+      - uses: secondlife/action-autobuild-release@v2
         with:
           public: true
