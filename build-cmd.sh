@@ -178,8 +178,8 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         cp "$top/LICENSE.txt" "$stage/LICENSES"
 
         # sign the binaries (both CEF and DullahanHelper)
-        CONFIG_FILE="$build_secrets_checkout/code-signing-osx/config.sh"
-        if [ -f "$CONFIG_FILE" ]; then
+        CONFIG_FILE="${build_secrets_checkout:-<no build_secrets_checkout>}/code-signing-osx/config.sh"
+        if [[ -n "${build_secrets_checkout:-}" && -f "$CONFIG_FILE" ]]; then
             source $CONFIG_FILE
 
             pushd "$stage/lib/release/Chromium Embedded Framework.framework/Libraries"
@@ -202,7 +202,7 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
             done
             popd
         else
-            echo "No config file found; skipping codesign."
+            echo "No config file $CONFIG_FILE found; skipping codesign."
         fi
 
         # populate version_file (after CMake runs)
@@ -215,52 +215,52 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         rm "$stage/version"
     ;;
     linux64)
-		#Force version regeneration.
-		rm -f src/dullahan_version.h
+        #Force version regeneration.
+        rm -f src/dullahan_version.h
 
         # build the CEF c->C++ wrapper "libcef_dll_wrapper"
-		cd "${cef_no_wrapper_dir}"
+        cd "${cef_no_wrapper_dir}"
         rm -rf "${cef_no_wrapper_build_dir}"
         mkdir -p "${cef_no_wrapper_build_dir}"
         cd "${cef_no_wrapper_build_dir}"
         cmake -G  Ninja ..
-		ninja libcef_dll_wrapper
-		
+        ninja libcef_dll_wrapper
+        
         cd "$stage"
         cmake .. -G  Ninja -DCEF_WRAPPER_DIR="${cef_no_wrapper_dir}" \
             -DCEF_WRAPPER_BUILD_DIR="${cef_no_wrapper_build_dir}" \
-			  -DCMAKE_C_FLAGS:STRING="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}" \
-			  -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}"
+              -DCMAKE_C_FLAGS:STRING="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}" \
+              -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}"
 
-		ninja
+        ninja
 
-		g++ -std=c++11 	-I "${cef_no_wrapper_dir}/include" 	-I "${dullahan_source_dir}" -o "$stage/version"  "$top/tools/autobuild_version.cpp"
+        g++ -std=c++11  -I "${cef_no_wrapper_dir}/include"  -I "${dullahan_source_dir}" -o "$stage/version"  "$top/tools/autobuild_version.cpp"
 
-		"$stage/version" > "$stage/VERSION.txt"
-		rm "$stage/version"
-		
-		mkdir -p "$stage/LICENSES"
-		mkdir -p "$stage/bin/release/"
-		mkdir -p "$stage/include"
-		mkdir -p "$stage/include/cef"
-		mkdir -p "$stage/lib/release/swiftshader"
-		mkdir -p "$stage/resources"
-		 
-		cp libdullahan.a ${stage}/lib/release/
-		cp ${cef_no_wrapper_build_dir}/libcef_dll_wrapper/libcef_dll_wrapper.a $stage/lib/release
+        "$stage/version" > "$stage/VERSION.txt"
+        rm "$stage/version"
+        
+        mkdir -p "$stage/LICENSES"
+        mkdir -p "$stage/bin/release/"
+        mkdir -p "$stage/include"
+        mkdir -p "$stage/include/cef"
+        mkdir -p "$stage/lib/release/swiftshader"
+        mkdir -p "$stage/resources"
+         
+        cp libdullahan.a ${stage}/lib/release/
+        cp ${cef_no_wrapper_build_dir}/libcef_dll_wrapper/libcef_dll_wrapper.a $stage/lib/release
 
-		cp -a ${cef_no_wrapper_dir}/Release/*.so ${stage}/lib/release/
-		cp -a ${cef_no_wrapper_dir}/Release/swiftshader/* ${stage}/lib/release/swiftshader/
+        cp -a ${cef_no_wrapper_dir}/Release/*.so ${stage}/lib/release/
+        cp -a ${cef_no_wrapper_dir}/Release/swiftshader/* ${stage}/lib/release/swiftshader/
 
-		cp dullahan_host ${stage}/bin/release/
+        cp dullahan_host ${stage}/bin/release/
 
-		cp -a ${cef_no_wrapper_dir}/Release/*.bin ${stage}/bin/release/
-		cp -a ${cef_no_wrapper_dir}/Release/chrome-sandbox ${stage}/bin/release/
+        cp -a ${cef_no_wrapper_dir}/Release/*.bin ${stage}/bin/release/
+        cp -a ${cef_no_wrapper_dir}/Release/chrome-sandbox ${stage}/bin/release/
 
-		cp -R ${cef_no_wrapper_dir}/Resources/* ${stage}/resources/
-		cp ${dullahan_source_dir}/dullahan.h ${stage}/include/cef/
-		cp ${dullahan_source_dir}/dullahan_version.h ${stage}/include/cef/
+        cp -R ${cef_no_wrapper_dir}/Resources/* ${stage}/resources/
+        cp ${dullahan_source_dir}/dullahan.h ${stage}/include/cef/
+        cp ${dullahan_source_dir}/dullahan_version.h ${stage}/include/cef/
         cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"
         cp "$top/LICENSE.txt" "$stage/LICENSES"
-		;;
+        ;;
 esac
