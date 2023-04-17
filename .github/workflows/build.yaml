@@ -10,11 +10,12 @@ jobs:
         include:
           - os: windows-2022
             addrsize: "32"
-    continue-on-error: true
+    continue-on-error: false
     runs-on: ${{ matrix.os }}
     steps:
       - uses: secondlife/action-autobuild@v3
         with:
+          build-variables-ref: viewer-c++17
           addrsize: ${{ matrix.addrsize }}
   release:
     needs: build
