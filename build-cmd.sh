@@ -66,32 +66,13 @@ case "$AUTOBUILD_PLATFORM" in
     windows*)
         load_vsvars
 
-        # We've observed some weird failures in which the PATH is too big to be
-        # passed to a child process! When that gets munged, we start seeing errors
-        # like failing to find the 'mt.exe' command. Thing is, by this point
-        # in the script we've acquired a shocking number of duplicate entries.
-        # Dedup the PATH using Python's OrderedDict, which preserves the order in
-        # which you insert keys.
-        # We find that some of the Visual Studio PATH entries appear both with and
-        # without a trailing slash, which is pointless. Strip those off and dedup
-        # what's left.
-        # Pass the existing PATH as an explicit argument rather than reading it
-        # from the environment to bypass the fact that cygwin implicitly converts
-        # PATH to Windows form when running a native executable. Since we're
-        # setting bash's PATH, leave everything in cygwin form. That means
-        # splitting and rejoining on ':' rather than on os.pathsep, which on
-        # Windows is ';'.
-        # Use python -u, else the resulting PATH will end with a spurious '\r'.
-        export PATH="$(python -u -c "import sys
-from collections import OrderedDict
-print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'))))" "$PATH")"
-
         # build the CEF c->C++ wrapper "libcef_dll_wrapper"
         cd "$cef_no_wrapper_dir"
         rm -rf "$cef_no_wrapper_build_dir"
         mkdir -p "$cef_no_wrapper_build_dir"
         cd "$cef_no_wrapper_build_dir"
         cmake -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
+              -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
               -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off ..
         build_sln cef.sln "Release|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
         build_sln cef.sln "Debug|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
@@ -102,7 +83,7 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
             -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
             -DCEF_WRAPPER_DIR="$(cygpath -w "$cef_no_wrapper_dir")" \
             -DCEF_WRAPPER_BUILD_DIR="$(cygpath -w "$cef_no_wrapper_build_dir")" \
-            -DCMAKE_C_FLAGS="$LL_BUILD_RELEASE"
+            -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE"
 
         # build individual dullahan libraries but not examples
         build_sln "dullahan.sln" "Release|$AUTOBUILD_WIN_VSPLATFORM" dullahan
@@ -161,7 +142,10 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         rm -rf "$cef_no_wrapper_build_dir"
         mkdir -p "$cef_no_wrapper_build_dir"
         cd "$cef_no_wrapper_build_dir"
-        cmake -G Xcode -DPROJECT_ARCH="x86_64" ..
+        cmake -G Xcode \
+              -DPROJECT_ARCH="x86_64" \
+              -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
+              ..
         xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration Debug
         xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration Release
 
@@ -171,7 +155,6 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
             -DCMAKE_OSX_ARCHITECTURES="$AUTOBUILD_CONFIGURE_ARCH" \
             -DCEF_WRAPPER_DIR="$cef_no_wrapper_dir" \
             -DCEF_WRAPPER_BUILD_DIR="$cef_no_wrapper_build_dir" \
-            -DCMAKE_C_FLAGS:STRING="$LL_BUILD_RELEASE" \
             -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE" \
             ..
 
@@ -243,13 +226,15 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         rm -rf "${cef_no_wrapper_build_dir}"
         mkdir -p "${cef_no_wrapper_build_dir}"
         cd "${cef_no_wrapper_build_dir}"
-        cmake -G  Ninja ..
+        cmake -G  Ninja \
+              -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
+              ..
         ninja libcef_dll_wrapper
         
         cd "$stage"
-        cmake .. -G  Ninja -DCEF_WRAPPER_DIR="${cef_no_wrapper_dir}" \
-            -DCEF_WRAPPER_BUILD_DIR="${cef_no_wrapper_build_dir}" \
-              -DCMAKE_C_FLAGS:STRING="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}" \
+        cmake .. -G  Ninja \
+              -DCEF_WRAPPER_DIR="${cef_no_wrapper_dir}" \
+              -DCEF_WRAPPER_BUILD_DIR="${cef_no_wrapper_build_dir}" \
               -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}"
 
         ninja
