@@ -41,6 +41,9 @@ source_environment_tempfile="$stage/source_environment.sh"
 "$autobuild" source_environment > "$source_environment_tempfile"
 . "$source_environment_tempfile"
 
+# remove_cxxstd
+source "$(dirname "$AUTOBUILD_VARIABLES_FILE")/functions"
+
 # Use msbuild.exe instead of devenv.com
 build_sln() {
     local solution=$1
@@ -142,9 +145,12 @@ case "$AUTOBUILD_PLATFORM" in
         rm -rf "$cef_no_wrapper_build_dir"
         mkdir -p "$cef_no_wrapper_build_dir"
         cd "$cef_no_wrapper_build_dir"
+        opts="$LL_BUILD_RELEASE"
+        plainopts="$(remove_cxxstd $opts)"
         cmake -G Xcode \
               -DPROJECT_ARCH="x86_64" \
-              -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
+              -DCMAKE_C_FLAGS="$plainopts" \
+              -DCMAKE_CXX_FLAGS="$opts" \
               ..
         xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration Debug
         xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration Release
@@ -155,7 +161,8 @@ case "$AUTOBUILD_PLATFORM" in
             -DCMAKE_OSX_ARCHITECTURES="$AUTOBUILD_CONFIGURE_ARCH" \
             -DCEF_WRAPPER_DIR="$cef_no_wrapper_dir" \
             -DCEF_WRAPPER_BUILD_DIR="$cef_no_wrapper_build_dir" \
-            -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE" \
+            -DCMAKE_C_FLAGS:STRING="$plainopts" \
+            -DCMAKE_CXX_FLAGS:STRING="$opts" \
             ..
 
         xcodebuild -project dullahan.xcodeproj -target dullahan -configuration Release
@@ -226,8 +233,11 @@ case "$AUTOBUILD_PLATFORM" in
         rm -rf "${cef_no_wrapper_build_dir}"
         mkdir -p "${cef_no_wrapper_build_dir}"
         cd "${cef_no_wrapper_build_dir}"
+        opts="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}"
+        plainopts="$(remove_cxxstd $opts)"
         cmake -G  Ninja \
-              -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
+              -DCMAKE_C_FLAGS="$plainopts" \
+              -DCMAKE_CXX_FLAGS="$opts" \
               ..
         ninja libcef_dll_wrapper
         
@@ -235,7 +245,7 @@ case "$AUTOBUILD_PLATFORM" in
         cmake .. -G  Ninja \
               -DCEF_WRAPPER_DIR="${cef_no_wrapper_dir}" \
               -DCEF_WRAPPER_BUILD_DIR="${cef_no_wrapper_build_dir}" \
-              -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}"
+              -DCMAKE_CXX_FLAGS:STRING="$opts"
 
         ninja
 
