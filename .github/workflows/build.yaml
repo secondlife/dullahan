@@ -25,3 +25,4 @@ jobs:
       - uses: secondlife/action-autobuild-release@v2
         with:
           public: true
+
