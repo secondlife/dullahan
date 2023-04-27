@@ -5,11 +5,13 @@ jobs:
     strategy:
       matrix:
         ## linux64 cef-bin URL has a 192.168.mmm.nnn host
-        os: [windows-2022, macos-11] ##, ubuntu-22.04]
+          os: [windows-2022]
         addrsize: ["64"]
         include:
           - os: windows-2022
             addrsize: "32"
+          - os: macos
+            tag: self-hosted
     continue-on-error: true
     runs-on: ${{ matrix.os }}
     steps:
