@@ -4,8 +4,7 @@ jobs:
   build:
     strategy:
       matrix:
-        ## linux64 cef-bin URL has a 192.168.mmm.nnn host
-          os: [windows-2022]
+        os: [windows-2022]
         addrsize: ["64"]
         include:
           - os: windows-2022
