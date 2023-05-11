@@ -46,7 +46,7 @@ class dullahan_browser_client :
 {
     public:
         dullahan_browser_client(dullahan_impl* parent,
-                                dullahan_render_handler* render_handler);
+            scoped_refptr<dullahan_render_handler> render_handler);
         ~dullahan_browser_client();
 
         // CefClient override
@@ -119,11 +119,6 @@ class dullahan_browser_client :
                                 const CefString& host, int port, const CefString& realm,
                                 const CefString& scheme, CefRefPtr<CefAuthCallback> callback) override;
 
-        bool OnQuotaRequest(CefRefPtr<CefBrowser> browser,
-                            const CefString& origin_url,
-                            int64 new_size,
-                            CefRefPtr<CefRequestCallback> callback) override;
-
         // CefDownloadHandler overrides
         CefRefPtr<CefDownloadHandler> GetDownloadHandler() override
         {
@@ -143,7 +138,7 @@ class dullahan_browser_client :
             return this;
         }
         bool OnFileDialog(CefRefPtr<CefBrowser> browser, FileDialogMode mode, const CefString& title,
-                          const CefString& default_file_path, const std::vector<CefString>& accept_filters, int selected_accept_filter,
+                          const CefString& default_file_path, const std::vector<CefString>& accept_filters,
                           CefRefPtr<CefFileDialogCallback> callback) override;
 
         // CefJSDialogHandler overrides

@@ -20,9 +20,11 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>857f5531a30f1f956bcbea637e665c1f</string>
+              <string>81e6c73dd0bc700194754fd86b163702765870f6</string>
+              <key>hash_algorithm</key>
+              <string>sha1</string>
               <key>url</key>
-              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/83391/779820/cef_bin-91.1.21_g9dd45fe_chromium-91.0.4472.114-darwin64-560735.tar.bz2</string>
+              <string>https://github.com/secondlife/cef/releases/download/v112.3.0-a27689a/cef_bin-112.3.0_gb09c4ca_chromium-112.0.5615.165-darwin64-a27689a.tar.zst</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
@@ -44,9 +46,11 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>3164a2ebaadc473ddac3cedf39a7c0f3</string>
+              <string>23ce6b7bd82a1a605d2e4e823559564ca1aa0ac5</string>
+              <key>hash_algorithm</key>
+              <string>sha1</string>
               <key>url</key>
-              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/83393/779738/cef_bin-91.1.21_g9dd45fe_chromium-91.0.4472.114-windows-560735.tar.bz2</string>
+              <string>https://github.com/secondlife/cef/releases/download/v112.3.0-a27689a/cef_bin-112.3.0_gb09c4ca_chromium-112.0.5615.165-windows-a27689a.tar.zst</string>
             </map>
             <key>name</key>
             <string>windows</string>
@@ -56,16 +60,18 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>5ab7616c3b013b0bf771146f740092fb</string>
+              <string>de8b1185e0f1b102d788537abcb3bce72bd0e538</string>
+              <key>hash_algorithm</key>
+              <string>sha1</string>
               <key>url</key>
-              <string>https://automated-builds-secondlife-com.s3.amazonaws.com/ct2/83392/779744/cef_bin-91.1.21_g9dd45fe_chromium-91.0.4472.114-windows64-560735.tar.bz2</string>
+              <string>https://github.com/secondlife/cef/releases/download/v112.3.0-a27689a/cef_bin-112.3.0_gb09c4ca_chromium-112.0.5615.165-windows64-a27689a.tar.zst</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
         <key>version</key>
-        <string>91.1.21_g9dd45fe_chromium-91.0.4472.114</string>
+        <string>112.3.0_gb09c4ca_chromium-112.0.5615.165</string>
       </map>
     </map>
     <key>package_description</key>

@@ -20,7 +20,7 @@
 @pushd .
 
 @rem The CMake generator string to use
-@set VS_CMD=Visual Studio 15 2017
+@set VS_CMD=Visual Studio 17 2022
 
 @rem Rudimentary test to see if we are in the Dullahan root directory where
 @rem we demand that this script is started from.
@@ -81,13 +81,15 @@
 
 @rem Set up build parameters for 32 bit builds
 @if "%BIT_WIDTH%"=="32" (
-    @set CMAKE_CMD="%VS_CMD%"
+    @set CMAKE_GENERATOR="%VS_CMD%"
+    @set CMAKE_ARCH=-A Win32
     @set PLATFORM_CMD="/property:PlatformTarget=x86"
 )
 
 @rem Set up build parameters for 64 bit builds
 @if "%BIT_WIDTH%"=="64" (
-    @set CMAKE_CMD="%VS_CMD% Win64"
+    @set CMAKE_GENERATOR="%VS_CMD%"
+    @set CMAKE_ARCH=-A x64
     @set PLATFORM_CMD="/property:PlatformTarget=x64"
 )
 
@@ -119,7 +121,7 @@
 @rem we don't often need the Debug build, the Dullahan CMakeLists.txt file refers
 @rem to it and will fail without it so we must build
 @cd %CEF_BUILD_DIR%
-@cmake -G %CMAKE_CMD% .. -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off
+@cmake -G %CMAKE_GENERATOR% %CMAKE_ARCH% .. -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off
 @if errorlevel 1 goto End
 @cd libcef_dll_wrapper
 @msbuild libcef_dll_wrapper.vcxproj /property:Configuration="Debug" %PLATFORM_CMD%
@@ -137,7 +139,7 @@ if exist ..\src\dullahan_version.h del ..\src\dullahan_version.h
 @rem Build the Dullahan solution which includes the SDK as well as the examples 
 @rem Note: we remove the Dullahan version header file since it is created each
 @rem time to include the latest information by the CMake script 
-@cmake -G %CMAKE_CMD% ^
+@cmake -G %CMAKE_GENERATOR% %CMAKE_ARCH% ^
        -DCEF_WRAPPER_DIR=%DST_CEF_DIR% ^
        -DCEF_WRAPPER_BUILD_DIR=%CEF_BUILD_DIR% ^
        ..

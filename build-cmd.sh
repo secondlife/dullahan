@@ -94,7 +94,6 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         cmake -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
               -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off ..
         build_sln cef.sln "Release|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
-        build_sln cef.sln "Debug|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
 
         # generate the project files for Dullahan
         cd "$stage"
@@ -129,7 +128,6 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
 
         # CEF run time binaries (copy individually except SwiftShader so it's
         # obvious when a file is removed and this part of the script fails)
-        cp -R "$cef_no_wrapper_dir/Release/swiftshader/"* "$stage/bin/release/swiftshader/"
         cp "$cef_no_wrapper_dir/Release/chrome_elf.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/d3dcompiler_47.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/libcef.dll" "$stage/bin/release/"
@@ -137,6 +135,9 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         cp "$cef_no_wrapper_dir/Release/libGLESv2.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/snapshot_blob.bin" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/v8_context_snapshot.bin" "$stage/bin/release/"
+        cp "$cef_no_wrapper_dir/Release/vk_swiftshader.dll" "$stage/bin/release/"
+        cp "$cef_no_wrapper_dir/Release/vk_swiftshader_icd.json" "$stage/bin/release/"
+        cp "$cef_no_wrapper_dir/Release/vulkan-1.dll" "$stage/bin/release/"
 
         # CEF resources
         cp -R "$cef_no_wrapper_dir/Resources/"* "$stage/resources/"
@@ -162,7 +163,6 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         mkdir -p "$cef_no_wrapper_build_dir"
         cd "$cef_no_wrapper_build_dir"
         cmake -G Xcode -DPROJECT_ARCH="x86_64" ..
-        xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration Debug
         xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration Release
 
         # build Dullahan

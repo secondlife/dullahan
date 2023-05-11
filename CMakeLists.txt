@@ -22,11 +22,8 @@ endfunction()
 # The user must pass in CEF_WRAPPER_DIR and CEF_WRAPPER_BUILD_DIR then we
 # derrive all the other ones we need based on those
 set(CEF_INCLUDE_DIR ${CEF_WRAPPER_DIR}/include)
-set(CEF_DEBUG_LIB_DIR ${CEF_WRAPPER_DIR}/Debug)
-set(CEF_DEBUG_DLL_LIB_DIR ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/Debug)
 set(CEF_RELEASE_LIB_DIR ${CEF_WRAPPER_DIR}/Release)
 set(CEF_RELEASE_DLL_LIB_DIR ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/Release)
-set(CEF_DEBUG_BIN_DIR ${CEF_WRAPPER_DIR}/Debug)
 set(CEF_RELEASE_BIN_DIR ${CEF_WRAPPER_DIR}/Release)
 set(CEF_RESOURCES_DIR ${CEF_WRAPPER_DIR}/Resources)
 
@@ -35,33 +32,14 @@ set(CEF_RESOURCES_DIR ${CEF_WRAPPER_DIR}/Resources)
 check_exists(CEF_WRAPPER_DIR)
 check_exists(CEF_WRAPPER_BUILD_DIR)
 check_exists(CEF_INCLUDE_DIR)
-check_exists(CEF_DEBUG_LIB_DIR)
-check_exists(CEF_DEBUG_DLL_LIB_DIR)
 check_exists(CEF_RELEASE_LIB_DIR)
 check_exists(CEF_RELEASE_DLL_LIB_DIR)
-check_exists(CEF_DEBUG_BIN_DIR)
 check_exists(CEF_RELEASE_BIN_DIR)
 check_exists(CEF_RESOURCES_DIR)
 
 ###############################################################################
 # location of CEF libraries we link against
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-
-    # Find both link libraries we need for Debug/Release
-    find_library(
-        CEF_LIBRARY_DEBUG
-        NAMES libcef.lib
-        PATHS ${CEF_DEBUG_LIB_DIR}
-        NO_DEFAULT_PATH
-    )
-
-    find_library(
-        CEF_DLL_LIBRARY_DEBUG
-        NAMES libcef_dll_wrapper.lib
-        PATHS ${CEF_DEBUG_DLL_LIB_DIR}
-        NO_DEFAULT_PATH
-    )
-
     find_library(
         CEF_LIBRARY_RELEASE
         NAMES libcef.lib
@@ -77,24 +55,15 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     )
 
     # Confirm that we were able to find our link libs
-    check_exists(CEF_LIBRARY_DEBUG)
-    check_exists(CEF_DLL_LIBRARY_DEBUG)
     check_exists(CEF_LIBRARY_RELEASE)
     check_exists(CEF_DLL_LIBRARY_RELEASE)
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     find_library(
-        CEF_DLL_LIBRARY_DEBUG
-        NAMES libcef_dll_wrapper.a
-        PATHS ${CEF_DEBUG_DLL_LIB_DIR}
-    )
-
-    find_library(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.a
         PATHS ${CEF_RELEASE_DLL_LIB_DIR}
     )
-
 
     set(CEF_FRAMEWORK "'${CEF_RELEASE_BIN_DIR}/Chromium Embedded Framework.framework'")
 
@@ -102,7 +71,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     find_library(COCOA_FRAMEWORK Cocoa)
 
     # Check that we were able to find our build components
-    check_exists(CEF_DLL_LIBRARY_DEBUG)
     check_exists(CEF_DLL_LIBRARY_RELEASE)
     check_exists(CEF_FRAMEWORK)
     check_exists(OPENGL_FRAMEWORK)
@@ -131,11 +99,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(CEF_DLL_LIBRARY ${CEF_DLL_LIBRARY_RELEASE} )
 else()
   set(CEF_LIBRARY
-      debug ${CEF_LIBRARY_DEBUG}
       optimized ${CEF_LIBRARY_RELEASE}
   )
   set(CEF_DLL_LIBRARY
-      debug ${CEF_DLL_LIBRARY_DEBUG}
       optimized ${CEF_DLL_LIBRARY_RELEASE}
   )
 endif()
@@ -150,10 +116,8 @@ check_exists(CEF_DLL_LIBRARY)
 #    4127 "conditional is constant" - I use an explicity var to turn code on and off which triggers this
 #    4505 "unreferenced local function has been removed" - supress meaningless freeglut warning
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -W4 -wd4100 -wd4127 -wd4505")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -W4 -wd4100 -wd4127 -wd4505")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11 -xobjective-c++")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11 -xobjective-c++")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
@@ -301,7 +265,6 @@ endif()
 
 # we are building Windows executable, not a console app (default) and turn off spurious linker warnings
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS "/ignore:4099")
 
@@ -318,7 +281,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 add_custom_command(
     TARGET dullahan_host POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_directory
-            "$<$<CONFIG:debug>:${CEF_DEBUG_BIN_DIR}>$<$<CONFIG:release>:${CEF_RELEASE_BIN_DIR}>"
+            "$<$<CONFIG:release>:${CEF_RELEASE_BIN_DIR}>"
             "$<TARGET_FILE_DIR:dullahan_host>"
     COMMENT "Copying runtime files to executable directory")
 
@@ -367,7 +330,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     # we are building Windows executable, not a console app (default) and turn off spurious linker warnings
     if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        set_target_properties(webcube PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
         set_target_properties(webcube PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
         set_target_properties(webcube PROPERTIES LINK_FLAGS "/ignore:4099")
     endif()
@@ -560,5 +522,5 @@ endif()
 # generic commands that have to go after everything else
 
 if(CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
+    set(CMAKE_CONFIGURATION_TYPES "Release")
 endif()
