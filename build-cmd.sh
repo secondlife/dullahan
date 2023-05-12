@@ -76,6 +76,7 @@ case "$AUTOBUILD_PLATFORM" in
         cd "$cef_no_wrapper_build_dir"
         cmake -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
               -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
+              $(cmake_cxx_standard $LL_BUILD_RELEASE) \
               -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off ..
         build_sln cef.sln "Release|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
 
@@ -85,7 +86,8 @@ case "$AUTOBUILD_PLATFORM" in
             -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
             -DCEF_WRAPPER_DIR="$(cygpath -w "$cef_no_wrapper_dir")" \
             -DCEF_WRAPPER_BUILD_DIR="$(cygpath -w "$cef_no_wrapper_build_dir")" \
-            -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE"
+            -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
+            $(cmake_cxx_standard $LL_BUILD_RELEASE) \
 
         # build individual dullahan libraries but not examples
         build_sln "dullahan.sln" "Release|$AUTOBUILD_WIN_VSPLATFORM" dullahan
@@ -152,6 +154,7 @@ case "$AUTOBUILD_PLATFORM" in
               -DPROJECT_ARCH="x86_64" \
               -DCMAKE_C_FLAGS="$plainopts" \
               -DCMAKE_CXX_FLAGS="$opts" \
+              $(cmake_cxx_standard $opts) \
               ..
         xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration Release
 
@@ -163,6 +166,7 @@ case "$AUTOBUILD_PLATFORM" in
             -DCEF_WRAPPER_BUILD_DIR="$cef_no_wrapper_build_dir" \
             -DCMAKE_C_FLAGS:STRING="$plainopts" \
             -DCMAKE_CXX_FLAGS:STRING="$opts" \
+            $(cmake_cxx_standard $opts) \
             ..
 
         xcodebuild -project dullahan.xcodeproj -target dullahan -configuration Release
@@ -238,6 +242,7 @@ case "$AUTOBUILD_PLATFORM" in
         cmake -G  Ninja \
               -DCMAKE_C_FLAGS="$plainopts" \
               -DCMAKE_CXX_FLAGS="$opts" \
+              $(cmake_cxx_standard $LL_BUILD_RELEASE) \
               ..
         ninja libcef_dll_wrapper
         
@@ -245,7 +250,8 @@ case "$AUTOBUILD_PLATFORM" in
         cmake .. -G  Ninja \
               -DCEF_WRAPPER_DIR="${cef_no_wrapper_dir}" \
               -DCEF_WRAPPER_BUILD_DIR="${cef_no_wrapper_build_dir}" \
-              -DCMAKE_CXX_FLAGS:STRING="$opts"
+              -DCMAKE_CXX_FLAGS:STRING="$opts" \
+              $(cmake_cxx_standard $LL_BUILD_RELEASE)
 
         ninja
 
