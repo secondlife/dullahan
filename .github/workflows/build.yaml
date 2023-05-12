@@ -19,7 +19,6 @@ jobs:
     steps:
       - uses: secondlife/action-autobuild@v3
         with:
-          build-variables-ref: viewer-c++17
           addrsize: ${{ matrix.addrsize }}
   release:
     needs: build
