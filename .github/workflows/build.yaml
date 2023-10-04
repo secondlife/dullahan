@@ -1,20 +1,11 @@
 name: Build
 on: [push]
-env:
-  ACTIONS_RUNNER_DEBUG: true
 jobs:
   build:
     strategy:
       matrix:
-        os: [windows-2022]
+        os: [windows-2022, macos-13]
         addrsize: ["64"]
-        include:
-          - os: windows-2022
-            addrsize: "32"
-          - os: macos
-            tag: self-hosted
-            addrsize: "64"
-    continue-on-error: false
     runs-on: ${{ matrix.os }}
     steps:
       - uses: secondlife/action-autobuild@v3
