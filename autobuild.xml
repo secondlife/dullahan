@@ -19,11 +19,11 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>b6efadfab1663a8d22b5efddb22cdacfabd54520</string>
+              <string>fe25699d025bac8925a80e43564608e15d6811c9</string>
               <key>hash_algorithm</key>
               <string>sha1</string>
               <key>url</key>
-              <string>https://github.com/secondlife/cef/releases/download/v117.2.2_ge80c977_chromium-117.0.5938.132-b5ecda7/cef_bin-117.2.2_ge80c977_chromium-117.0.5938.132-darwin64-b5ecda7.tar.zst</string>
+              <string>https://github.com/secondlife/cef/releases/download/v118.0.5993.54b/cef_bin-118.4.1_g3dd6078_chromium-118.0.5993.54-darwin64-9522e46.tar.zst</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
@@ -59,18 +59,18 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>7668f118d96f170ff2684ea24d44b4dfb9688a20</string>
+              <string>b0a3386821d9e15715733e64cd4b83beef67b311</string>
               <key>hash_algorithm</key>
               <string>sha1</string>
               <key>url</key>
-              <string>https://github.com/secondlife/cef/releases/download/v117.2.2_ge80c977_chromium-117.0.5938.132-b5ecda7/cef_bin-117.2.2_ge80c977_chromium-117.0.5938.132-windows64-b5ecda7.tar.zst</string>
+              <string>https://github.com/secondlife/cef/releases/download/v118.0.5993.54b/cef_bin-118.4.1_g3dd6078_chromium-118.0.5993.54-windows64-9522e46.tar.zst</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
         <key>version</key>
-        <string>117.2.2_ge80c977_chromium-117.0.5938.132</string>
+        <string>118.4.1_g3dd6078_chromium-118.0.5993.54</string>
       </map>
     </map>
     <key>package_description</key>
