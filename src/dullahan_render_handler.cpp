@@ -172,7 +172,7 @@ void dullahan_render_handler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool sh
         delete[] mPopupBuffer;
         mPopupBuffer = nullptr;
 
-        mPopupBufferRect.Reset();
+        mPopupBufferRect.Set(0,0, 0,0);
     }
 }
 

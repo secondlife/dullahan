@@ -1,0 +1,21 @@
+name: Build
+on: [push]
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-2022, macos-13]
+        addrsize: ["64"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: secondlife/action-autobuild@v3
+        with:
+          addrsize: ${{ matrix.addrsize }}
+  release:
+    needs: build
+    runs-on: [ubuntu-latest]
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: secondlife/action-autobuild-release@v2
+        with:
+          public: true

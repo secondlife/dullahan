@@ -41,48 +41,53 @@ source_environment_tempfile="$stage/source_environment.sh"
 "$autobuild" source_environment > "$source_environment_tempfile"
 . "$source_environment_tempfile"
 
+# remove_cxxstd
+source "$(dirname "$AUTOBUILD_VARIABLES_FILE")/functions"
+
+# Use msbuild.exe instead of devenv.com
+build_sln() {
+    local solution=$1
+    local config=$2
+    local proj="${3:-}"
+    local toolset="${AUTOBUILD_WIN_VSTOOLSET:-v143}"
+
+    # e.g. config = "Release|$AUTOBUILD_WIN_VSPLATFORM" per devenv.com convention
+    local -a confparts
+    IFS="|" read -ra confparts <<< "$config"
+
+    msbuild.exe \
+        "$(cygpath -w "$solution")" \
+        ${proj:+-t:"$proj"} \
+        -p:Configuration="${confparts[0]}" \
+        -p:Platform="${confparts[1]}" \
+        -p:PlatformToolset=$toolset
+}
+
 build=${AUTOBUILD_BUILD_ID:=0}
 
 case "$AUTOBUILD_PLATFORM" in
     windows*)
         load_vsvars
 
-        # We've observed some weird failures in which the PATH is too big to be
-        # passed to a child process! When that gets munged, we start seeing errors
-        # like failing to find the 'mt.exe' command. Thing is, by this point
-        # in the script we've acquired a shocking number of duplicate entries.
-        # Dedup the PATH using Python's OrderedDict, which preserves the order in
-        # which you insert keys.
-        # We find that some of the Visual Studio PATH entries appear both with and
-        # without a trailing slash, which is pointless. Strip those off and dedup
-        # what's left.
-        # Pass the existing PATH as an explicit argument rather than reading it
-        # from the environment to bypass the fact that cygwin implicitly converts
-        # PATH to Windows form when running a native executable. Since we're
-        # setting bash's PATH, leave everything in cygwin form. That means
-        # splitting and rejoining on ':' rather than on os.pathsep, which on
-        # Windows is ';'.
-        # Use python -u, else the resulting PATH will end with a spurious '\r'.
-        export PATH="$(python -u -c "import sys
-from collections import OrderedDict
-print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'))))" "$PATH")"
-
         # build the CEF c->C++ wrapper "libcef_dll_wrapper"
         cd "$cef_no_wrapper_dir"
         rm -rf "$cef_no_wrapper_build_dir"
         mkdir -p "$cef_no_wrapper_build_dir"
         cd "$cef_no_wrapper_build_dir"
-        cmake -G "$AUTOBUILD_WIN_CMAKE_GEN" -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off ..
+        cmake -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
+              -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
+              $(cmake_cxx_standard $LL_BUILD_RELEASE) \
+              -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off ..
         build_sln cef.sln "Release|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
-        build_sln cef.sln "Debug|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
 
         # generate the project files for Dullahan
         cd "$stage"
         cmake .. \
-            -G "$AUTOBUILD_WIN_CMAKE_GEN" \
+            -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
             -DCEF_WRAPPER_DIR="$(cygpath -w "$cef_no_wrapper_dir")" \
             -DCEF_WRAPPER_BUILD_DIR="$(cygpath -w "$cef_no_wrapper_build_dir")" \
-            -DCMAKE_C_FLAGS="$LL_BUILD_RELEASE"
+            -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
+            $(cmake_cxx_standard $LL_BUILD_RELEASE) \
 
         # build individual dullahan libraries but not examples
         build_sln "dullahan.sln" "Release|$AUTOBUILD_WIN_VSPLATFORM" dullahan
@@ -109,7 +114,6 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
 
         # CEF run time binaries (copy individually except SwiftShader so it's
         # obvious when a file is removed and this part of the script fails)
-        cp -R "$cef_no_wrapper_dir/Release/swiftshader/"* "$stage/bin/release/swiftshader/"
         cp "$cef_no_wrapper_dir/Release/chrome_elf.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/d3dcompiler_47.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/libcef.dll" "$stage/bin/release/"
@@ -117,6 +121,9 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         cp "$cef_no_wrapper_dir/Release/libGLESv2.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/snapshot_blob.bin" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/v8_context_snapshot.bin" "$stage/bin/release/"
+        cp "$cef_no_wrapper_dir/Release/vk_swiftshader.dll" "$stage/bin/release/"
+        cp "$cef_no_wrapper_dir/Release/vk_swiftshader_icd.json" "$stage/bin/release/"
+        cp "$cef_no_wrapper_dir/Release/vulkan-1.dll" "$stage/bin/release/"
 
         # CEF resources
         cp -R "$cef_no_wrapper_dir/Resources/"* "$stage/resources/"
@@ -141,8 +148,14 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         rm -rf "$cef_no_wrapper_build_dir"
         mkdir -p "$cef_no_wrapper_build_dir"
         cd "$cef_no_wrapper_build_dir"
-        cmake -G Xcode -DPROJECT_ARCH="x86_64" ..
-        xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration Debug
+        opts="$LL_BUILD_RELEASE"
+        plainopts="$(remove_cxxstd $opts)"
+        cmake -G Xcode \
+              -DPROJECT_ARCH="x86_64" \
+              -DCMAKE_C_FLAGS="$plainopts" \
+              -DCMAKE_CXX_FLAGS="$opts" \
+              $(cmake_cxx_standard $opts) \
+              ..
         xcodebuild -project cef.xcodeproj -target libcef_dll_wrapper -configuration Release
 
         # build Dullahan
@@ -151,8 +164,9 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
             -DCMAKE_OSX_ARCHITECTURES="$AUTOBUILD_CONFIGURE_ARCH" \
             -DCEF_WRAPPER_DIR="$cef_no_wrapper_dir" \
             -DCEF_WRAPPER_BUILD_DIR="$cef_no_wrapper_build_dir" \
-            -DCMAKE_C_FLAGS:STRING="$LL_BUILD_RELEASE" \
-            -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE" \
+            -DCMAKE_C_FLAGS:STRING="$plainopts" \
+            -DCMAKE_CXX_FLAGS:STRING="$opts" \
+            $(cmake_cxx_standard $opts) \
             ..
 
         xcodebuild -project dullahan.xcodeproj -target dullahan -configuration Release
@@ -178,8 +192,8 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         cp "$top/LICENSE.txt" "$stage/LICENSES"
 
         # sign the binaries (both CEF and DullahanHelper)
-        CONFIG_FILE="$build_secrets_checkout/code-signing-osx/config.sh"
-        if [ -f "$CONFIG_FILE" ]; then
+        CONFIG_FILE="${build_secrets_checkout:-<no build_secrets_checkout>}/code-signing-osx/config.sh"
+        if [[ -n "${build_secrets_checkout:-}" && -f "$CONFIG_FILE" ]]; then
             source $CONFIG_FILE
 
             pushd "$stage/lib/release/Chromium Embedded Framework.framework/Libraries"
@@ -202,7 +216,7 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
             done
             popd
         else
-            echo "No config file found; skipping codesign."
+            echo "No config file $CONFIG_FILE found; skipping codesign."
         fi
 
         # populate version_file (after CMake runs)
@@ -215,52 +229,59 @@ print(':'.join(OrderedDict((dir.rstrip('/'), 1) for dir in sys.argv[1].split(':'
         rm "$stage/version"
     ;;
     linux64)
-		#Force version regeneration.
-		rm -f src/dullahan_version.h
+        #Force version regeneration.
+        rm -f src/dullahan_version.h
 
         # build the CEF c->C++ wrapper "libcef_dll_wrapper"
-		cd "${cef_no_wrapper_dir}"
+        cd "${cef_no_wrapper_dir}"
         rm -rf "${cef_no_wrapper_build_dir}"
         mkdir -p "${cef_no_wrapper_build_dir}"
         cd "${cef_no_wrapper_build_dir}"
-        cmake -G  Ninja ..
-		ninja libcef_dll_wrapper
-		
+        opts="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}"
+        plainopts="$(remove_cxxstd $opts)"
+        cmake -G  Ninja \
+              -DCMAKE_C_FLAGS="$plainopts" \
+              -DCMAKE_CXX_FLAGS="$opts" \
+              $(cmake_cxx_standard $LL_BUILD_RELEASE) \
+              ..
+        ninja libcef_dll_wrapper
+        
         cd "$stage"
-        cmake .. -G  Ninja -DCEF_WRAPPER_DIR="${cef_no_wrapper_dir}" \
-            -DCEF_WRAPPER_BUILD_DIR="${cef_no_wrapper_build_dir}" \
-			  -DCMAKE_C_FLAGS:STRING="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}" \
-			  -DCMAKE_CXX_FLAGS:STRING="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}"
+        cmake .. -G  Ninja \
+              -DCEF_WRAPPER_DIR="${cef_no_wrapper_dir}" \
+              -DCEF_WRAPPER_BUILD_DIR="${cef_no_wrapper_build_dir}" \
+              -DCMAKE_CXX_FLAGS:STRING="$opts" \
+              $(cmake_cxx_standard $LL_BUILD_RELEASE)
 
-		ninja
+        ninja
 
-		g++ -std=c++11 	-I "${cef_no_wrapper_dir}/include" 	-I "${dullahan_source_dir}" -o "$stage/version"  "$top/tools/autobuild_version.cpp"
+        g++ -std=c++11  -I "${cef_no_wrapper_dir}/include"  -I "${dullahan_source_dir}" -o "$stage/version"  "$top/tools/autobuild_version.cpp"
 
-		"$stage/version" > "$stage/VERSION.txt"
-		rm "$stage/version"
-		
-		mkdir -p "$stage/LICENSES"
-		mkdir -p "$stage/bin/release/"
-		mkdir -p "$stage/include"
-		mkdir -p "$stage/include/cef"
-		mkdir -p "$stage/lib/release/swiftshader"
-		mkdir -p "$stage/resources"
-		 
-		cp libdullahan.a ${stage}/lib/release/
-		cp ${cef_no_wrapper_build_dir}/libcef_dll_wrapper/libcef_dll_wrapper.a $stage/lib/release
+        "$stage/version" > "$stage/VERSION.txt"
+        rm "$stage/version"
+        
+        mkdir -p "$stage/LICENSES"
+        mkdir -p "$stage/bin/release/"
+        mkdir -p "$stage/include"
+        mkdir -p "$stage/include/cef"
+        mkdir -p "$stage/lib/release/swiftshader"
+        mkdir -p "$stage/resources"
+         
+        cp libdullahan.a ${stage}/lib/release/
+        cp ${cef_no_wrapper_build_dir}/libcef_dll_wrapper/libcef_dll_wrapper.a $stage/lib/release
 
-		cp -a ${cef_no_wrapper_dir}/Release/*.so ${stage}/lib/release/
-		cp -a ${cef_no_wrapper_dir}/Release/swiftshader/* ${stage}/lib/release/swiftshader/
+        cp -a ${cef_no_wrapper_dir}/Release/*.so ${stage}/lib/release/
+        cp -a ${cef_no_wrapper_dir}/Release/swiftshader/* ${stage}/lib/release/swiftshader/
 
-		cp dullahan_host ${stage}/bin/release/
+        cp dullahan_host ${stage}/bin/release/
 
-		cp -a ${cef_no_wrapper_dir}/Release/*.bin ${stage}/bin/release/
-		cp -a ${cef_no_wrapper_dir}/Release/chrome-sandbox ${stage}/bin/release/
+        cp -a ${cef_no_wrapper_dir}/Release/*.bin ${stage}/bin/release/
+        cp -a ${cef_no_wrapper_dir}/Release/chrome-sandbox ${stage}/bin/release/
 
-		cp -R ${cef_no_wrapper_dir}/Resources/* ${stage}/resources/
-		cp ${dullahan_source_dir}/dullahan.h ${stage}/include/cef/
-		cp ${dullahan_source_dir}/dullahan_version.h ${stage}/include/cef/
+        cp -R ${cef_no_wrapper_dir}/Resources/* ${stage}/resources/
+        cp ${dullahan_source_dir}/dullahan.h ${stage}/include/cef/
+        cp ${dullahan_source_dir}/dullahan_version.h ${stage}/include/cef/
         cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"
         cp "$top/LICENSE.txt" "$stage/LICENSES"
-		;;
+        ;;
 esac

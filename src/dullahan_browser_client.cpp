@@ -33,8 +33,10 @@
 
 #include "dullahan_impl.h"
 
+#include <algorithm>
+
 dullahan_browser_client::dullahan_browser_client(dullahan_impl* parent,
-        dullahan_render_handler* render_handler) :
+    scoped_refptr<dullahan_render_handler> render_handler) :
     mParent(parent),
     mRenderHandler(render_handler)
 {
@@ -329,21 +331,6 @@ bool dullahan_browser_client::GetAuthCredentials(CefRefPtr<CefBrowser> browser, 
     }
 }
 
-// CefRequestHandler override
-bool dullahan_browser_client::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
-        const CefString& origin_url,
-        int64 new_size,
-        CefRefPtr<CefRequestCallback> callback)
-{
-    CEF_REQUIRE_IO_THREAD();
-
-    // 10MB hard coded for now
-    static const int64 max_size = 1024 * 1024 * 10;
-
-    callback->Continue(new_size <= max_size);
-    return true;
-}
-
 // CefDownloadHandler overrides
 void dullahan_browser_client::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
         CefRefPtr<CefDownloadItem> download_item,
@@ -380,7 +367,6 @@ bool dullahan_browser_client::OnFileDialog(CefRefPtr<CefBrowser> browser,
         const CefString& title,
         const CefString& default_file_path,
         const std::vector<CefString>& accept_filters,
-        int selected_accept_filter,
         CefRefPtr<CefFileDialogCallback> callback)
 {
     CEF_REQUIRE_UI_THREAD();
@@ -428,8 +414,7 @@ bool dullahan_browser_client::OnFileDialog(CefRefPtr<CefBrowser> browser,
             cef_file_paths.push_back(*iter);
         }
 
-        const int file_path_index = 0;
-        callback->Continue(file_path_index, cef_file_paths);
+        callback->Continue(cef_file_paths);
     }
     else
     {
