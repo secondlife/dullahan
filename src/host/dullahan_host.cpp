@@ -30,7 +30,7 @@
 int main(int argc, char* argv[])
 {
     CefMainArgs main_args(argc, argv);
-    return CefExecuteProcess(main_args, NULL, NULL);
+    return CefExecuteProcess(main_args, nullptr, nullptr);
 }
 #endif
 #ifdef WIN32
