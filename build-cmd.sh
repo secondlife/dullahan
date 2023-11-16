@@ -148,7 +148,7 @@ case "$AUTOBUILD_PLATFORM" in
         rm -rf "$cef_no_wrapper_build_dir"
         mkdir -p "$cef_no_wrapper_build_dir"
         cd "$cef_no_wrapper_build_dir"
-        opts="$LL_BUILD_RELEASE"
+        opts="$(set_target $LL_BUILD_RELEASE)"
         plainopts="$(remove_cxxstd $opts)"
         cmake -G Xcode \
               -DPROJECT_ARCH="x86_64" \
@@ -190,34 +190,6 @@ case "$AUTOBUILD_PLATFORM" in
         cp -R "$cef_no_wrapper_dir/Release/Chromium Embedded Framework.framework" "$stage/lib/release"
         cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"
         cp "$top/LICENSE.txt" "$stage/LICENSES"
-
-        # sign the binaries (both CEF and DullahanHelper)
-        CONFIG_FILE="${build_secrets_checkout:-<no build_secrets_checkout>}/code-signing-osx/config.sh"
-        if [[ -n "${build_secrets_checkout:-}" && -f "$CONFIG_FILE" ]]; then
-            source $CONFIG_FILE
-
-            pushd "$stage/lib/release/Chromium Embedded Framework.framework/Libraries"
-            for dylib in lib*.dylib;
-            do
-                if [ -f "$dylib" ]; then
-                    codesign --force --timestamp --options runtime --entitlements "$dullahan_source_dir/dullahan.entitlements" --sign "$APPLE_SIGNATURE" "$dylib"
-                fi
-            done
-            codesign --force --timestamp --options runtime --entitlements "$dullahan_source_dir/dullahan.entitlements" --sign "$APPLE_SIGNATURE" "../Chromium Embedded Framework"
-            popd
-
-            pushd "$stage/lib/release/"
-            for app in DullahanHelper*.app;
-            do
-                if [ -d "$app" ]; then
-                    sed -i "" "s/DullahanHelper/${app%.*}/" "$app/Contents/Info.plist"
-                    codesign --force --timestamp --options runtime --entitlements "$dullahan_source_dir/dullahan.entitlements" --sign "$APPLE_SIGNATURE" "$app"
-                fi
-            done
-            popd
-        else
-            echo "No config file $CONFIG_FILE found; skipping codesign."
-        fi
 
         # populate version_file (after CMake runs)
         g++ \
