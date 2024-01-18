@@ -16,6 +16,6 @@ jobs:
     runs-on: [ubuntu-latest]
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: secondlife/action-autobuild-release@v2
+      - uses: secondlife/action-autobuild-release@v3
         with:
           public: true
