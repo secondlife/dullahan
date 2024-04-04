@@ -4,6 +4,12 @@
 ###############################################################################
 cmake_minimum_required(VERSION 3.11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    add_compile_options("-Wno-array-bounds")
+endif()
 
 ###############################################################################
 # Dullahan main project/solution
@@ -19,24 +25,50 @@ function(check_exists variable)
     endif()
 endfunction()
 
-###############################################################################
-# The user must pass in CEF_WRAPPER_DIR and CEF_WRAPPER_BUILD_DIR then we
-# derrive all the other ones we need based on those
-set(CEF_INCLUDE_DIR ${CEF_WRAPPER_DIR}/include)
-set(CEF_RELEASE_LIB_DIR ${CEF_WRAPPER_DIR}/Release)
-set(CEF_RELEASE_DLL_LIB_DIR ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/Release)
-set(CEF_RELEASE_BIN_DIR ${CEF_WRAPPER_DIR}/Release)
-set(CEF_RESOURCES_DIR ${CEF_WRAPPER_DIR}/Resources)
+option( USE_SPOTIFY_CEF "Use a prebuild CEF from spotify" Off )
+option( SPOTIFY_CEF_URL "URL to the prebuild CEF from spotify" "" )
 
-# Check if all our variables exist and bail with
-# a fatal error if any of them are missing
-check_exists(CEF_WRAPPER_DIR)
-check_exists(CEF_WRAPPER_BUILD_DIR)
-check_exists(CEF_INCLUDE_DIR)
-check_exists(CEF_RELEASE_LIB_DIR)
-check_exists(CEF_RELEASE_DLL_LIB_DIR)
-check_exists(CEF_RELEASE_BIN_DIR)
-check_exists(CEF_RESOURCES_DIR)
+if( USE_SPOTIFY_CEF )
+    include(FetchContent)
+
+    FetchContent_Declare( cef_prebuild URL  ${SPOTIFY_CEF_URL} )
+    FetchContent_MakeAvailable(cef_prebuild)
+
+    set(CEF_ROOT "${cef_prebuild_SOURCE_DIR}")
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${cef_prebuild_SOURCE_DIR}/cmake")
+    find_package(CEF REQUIRED)
+endif()
+
+
+if( NOT USE_SPOTIFY_CEF )
+    ###############################################################################
+    # The user must pass in CEF_WRAPPER_DIR and CEF_WRAPPER_BUILD_DIR then we
+    # derrive all the other ones we need based on those
+    set(CEF_INCLUDE_DIR ${CEF_WRAPPER_DIR}/include)
+    set(CEF_RELEASE_LIB_DIR ${CEF_WRAPPER_DIR}/Release)
+    set(CEF_RELEASE_DLL_LIB_DIR ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/Release)
+    set(CEF_RELEASE_BIN_DIR ${CEF_WRAPPER_DIR}/Release)
+    set(CEF_RESOURCES_DIR ${CEF_WRAPPER_DIR}/Resources)
+
+    # Check if all our variables exist and bail with
+    # a fatal error if any of them are missing
+    check_exists(CEF_WRAPPER_DIR)
+    check_exists(CEF_WRAPPER_BUILD_DIR)
+    check_exists(CEF_INCLUDE_DIR)
+    check_exists(CEF_RELEASE_LIB_DIR)
+    check_exists(CEF_RELEASE_DLL_LIB_DIR)
+    check_exists(CEF_RELEASE_BIN_DIR)
+    check_exists(CEF_RESOURCES_DIR)
+else()
+    set(CEF_INCLUDE_DIR ${cef_prebuild_SOURCE_DIR}/include)
+    set(CEF_RELEASE_LIB_DIR ${cef_prebuild_SOURCE_DIR}/Release)
+    set(CEF_RELEASE_DLL_LIB_DIR ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/Release)
+    set(CEF_RELEASE_BIN_DIR ${cef_prebuild_SOURCE_DIR}/Release)
+    set(CEF_RESOURCES_DIR ${cef_prebuild_SOURCE_DIR}/Resources)
+
+    set( CEF_DLL_LIBRARY libcef_dll_wrapper )
+    set( CEF_LIBRARY ${CEF_LIB_RELEASE} )
+endif()
 
 ###############################################################################
 # location of CEF libraries we link against
@@ -78,27 +110,32 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     check_exists(COCOA_FRAMEWORK)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CMAKE_CXX_LINK_FLAGS "-Wl,--no-keep-memory -Wl,--build-id -Wl,-rpath,'$ORIGIN:$ORIGIN/../lib' -Wl,--exclude-libs,ALL")
-    find_library(
-        CEF_LIBRARY_RELEASE
-        NAMES libcef.so
-        PATHS ${CEF_RELEASE_LIB_DIR}
-        PATH_SUFFIXES release
-    )
-    find_library(
-        CEF_DLL_LIBRARY_RELEASE
-        NAMES libcef_dll_wrapper.a
-        PATHS ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/
-        PATH_SUFFIXES release
-    )
+
+    if( NOT USE_SPOTIFY_CEF )
+        find_library(
+            CEF_LIBRARY_RELEASE
+            NAMES libcef.so
+            PATHS ${CEF_RELEASE_LIB_DIR}
+            PATH_SUFFIXES release
+        )
+        find_library(
+            CEF_DLL_LIBRARY_RELEASE
+            NAMES libcef_dll_wrapper.a
+            PATHS ${CEF_WRAPPER_BUILD_DIR}/libcef_dll_wrapper/
+            PATH_SUFFIXES release
+        )
+        set(CEF_LIBRARY ${CEF_LIBRARY_RELEASE} )
+        set(CEF_DLL_LIBRARY ${CEF_DLL_LIBRARY_RELEASE} )
+    else()
+        set( CEF_DLL_LIBRARY libcef_dll_wrapper )
+        set( CEF_LIBRARY ${CEF_LIB_RELEASE} )
+    endif()
 endif()
 
 ###############################################################################
 # Final layer of finding the right libs for each combination
 # of name, platform, configuration, type etc.
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  set(CEF_LIBRARY ${CEF_LIBRARY_RELEASE} )
-  set(CEF_DLL_LIBRARY ${CEF_DLL_LIBRARY_RELEASE} )
-else()
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(CEF_LIBRARY
       optimized ${CEF_LIBRARY_RELEASE}
   )
@@ -524,4 +561,28 @@ endif()
 
 if(CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_CONFIGURATION_TYPES "Release")
+endif()
+
+# Install the Dullahan library and host executable
+
+if( USE_SPOTIFY_CEF )
+  install( TARGETS dullahan_host DESTINATION bin/release )
+  install( TARGETS dullahan ${CEF_DLL_LIBRARY} DESTINATION lib/release )
+
+  foreach(binFile IN LISTS CEF_BINARY_FILES)
+	if(IS_DIRECTORY ${CEF_BINARY_DIR_RELEASE}/${binFile} )
+	  install( DIRECTORY ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION lib/release )
+	  install( DIRECTORY ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION bin/release )
+	else()
+	  install( PROGRAMS ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION lib/release )
+	  install( PROGRAMS ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION bin/release )
+	endif()
+  endforeach()
+  foreach(resFile IN LISTS CEF_RESOURCE_FILES)
+	if(IS_DIRECTORY ${CEF_RESOURCE_DIR}/${resFile} )
+	  install( DIRECTORY  ${CEF_RESOURCE_DIR}/${resFile}  DESTINATION resources)
+	else()
+	  install( FILES ${CEF_RESOURCE_DIR}/${resFile}  DESTINATION resources)
+	endif()
+  endforeach()
 endif()

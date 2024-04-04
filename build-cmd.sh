@@ -232,53 +232,21 @@ case "$AUTOBUILD_PLATFORM" in
         #Force version regeneration.
         rm -f src/dullahan_version.h
 
-        # build the CEF c->C++ wrapper "libcef_dll_wrapper"
-        cd "${cef_no_wrapper_dir}"
-        rm -rf "${cef_no_wrapper_build_dir}"
-        mkdir -p "${cef_no_wrapper_build_dir}"
-        cd "${cef_no_wrapper_build_dir}"
-        opts="$LL_BUILD_RELEASE -m${AUTOBUILD_ADDRSIZE}"
-        plainopts="$(remove_cxxstd $opts)"
-        cmake -G  Ninja \
-              -DCMAKE_C_FLAGS="$plainopts" \
-              -DCMAKE_CXX_FLAGS="$opts" \
-              $(cmake_cxx_standard $LL_BUILD_RELEASE) \
-              ..
-        ninja libcef_dll_wrapper
-        
-        cd "$stage"
-        cmake .. -G  Ninja \
-              -DCEF_WRAPPER_DIR="${cef_no_wrapper_dir}" \
-              -DCEF_WRAPPER_BUILD_DIR="${cef_no_wrapper_build_dir}" \
-              -DCMAKE_CXX_FLAGS:STRING="$opts" \
-              $(cmake_cxx_standard $LL_BUILD_RELEASE)
+        cmake -S . -B stage/build  -DCMAKE_BUILD_TYPE=Release -G Ninja -DCMAKE_INSTALL_PREFIX=stage \
+        -DUSE_SPOTIFY_CEF=TRUE -DSPOTIFY_CEF_URL=https://cef-builds.spotifycdn.com/cef_binary_118.4.1%2Bg3dd6078%2Bchromium-118.0.5993.54_linux64_beta_minimal.tar.bz2
+		cmake --build stage/build
+		cmake --install stage/build
 
-        ninja
+        strip stage/lib/release/libcef.so
 
-        g++ -std=c++11  -I "${cef_no_wrapper_dir}/include"  -I "${dullahan_source_dir}" -o "$stage/version"  "$top/tools/autobuild_version.cpp"
+        g++ -std=c++17  -I "${cef_no_wrapper_dir}/include"  -I "${dullahan_source_dir}" -o "$stage/version"  "$top/tools/autobuild_version.cpp"
 
         "$stage/version" > "$stage/VERSION.txt"
         rm "$stage/version"
-        
+
         mkdir -p "$stage/LICENSES"
-        mkdir -p "$stage/bin/release/"
-        mkdir -p "$stage/include"
         mkdir -p "$stage/include/cef"
-        mkdir -p "$stage/lib/release/swiftshader"
-        mkdir -p "$stage/resources"
-         
-        cp libdullahan.a ${stage}/lib/release/
-        cp ${cef_no_wrapper_build_dir}/libcef_dll_wrapper/libcef_dll_wrapper.a $stage/lib/release
 
-        cp -a ${cef_no_wrapper_dir}/Release/*.so ${stage}/lib/release/
-        cp -a ${cef_no_wrapper_dir}/Release/swiftshader/* ${stage}/lib/release/swiftshader/
-
-        cp dullahan_host ${stage}/bin/release/
-
-        cp -a ${cef_no_wrapper_dir}/Release/*.bin ${stage}/bin/release/
-        cp -a ${cef_no_wrapper_dir}/Release/chrome-sandbox ${stage}/bin/release/
-
-        cp -R ${cef_no_wrapper_dir}/Resources/* ${stage}/resources/
         cp ${dullahan_source_dir}/dullahan.h ${stage}/include/cef/
         cp ${dullahan_source_dir}/dullahan_version.h ${stage}/include/cef/
         cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"
