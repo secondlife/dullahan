@@ -28,18 +28,6 @@
             <key>name</key>
             <string>darwin64</string>
           </map>
-          <key>linux64</key>
-          <map>
-            <key>archive</key>
-            <map>
-              <key>hash</key>
-              <string>fe4c980f5e42196e4ba554e2093dfb3a</string>
-              <key>url</key>
-              <string>http://192.168.1.115/dev/pkg/cef_bin-81.3.10_gb223419_chromium-81.0.4044.138.201451352-linux64-201451352.tar.bz2</string>
-            </map>
-            <key>name</key>
-            <string>darwin64</string>
-          </map>
           <key>windows</key>
           <map>
             <key>archive</key>
