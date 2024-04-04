@@ -238,6 +238,8 @@ case "$AUTOBUILD_PLATFORM" in
 		cmake --install stage/build
 
         strip stage/lib/release/libcef.so
+	rm stage/bin/release/*.so*
+	rm stage/bin/release/*.json
 
         g++ -std=c++17  -I "${cef_no_wrapper_dir}/include"  -I "${dullahan_source_dir}" -o "$stage/version"  "$top/tools/autobuild_version.cpp"
 
