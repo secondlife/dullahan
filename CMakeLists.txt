@@ -2,7 +2,7 @@
 # Dullahan CMake file - Callum Prentice - 2020-05-03
 
 ###############################################################################
-cmake_minimum_required(VERSION 3.4.3)
+cmake_minimum_required(VERSION 3.11)
 
 ###############################################################################
 # Dullahan main project/solution
@@ -121,7 +121,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11 -xobjective-c++")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-    if( NOT ENABLE_CXX11_ABI ) 
+    if( NOT ENABLE_CXX11_ABI )
       add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
     endif()
 endif()
@@ -274,7 +274,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMENT "Adding custom manifest...")
 endif()
 
-# Windows commands to copy CEF binaries and 'resources' folders to 
+# Windows commands to copy CEF binaries and 'resources' folders to
 # executable dir since they're needed at runtime
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
