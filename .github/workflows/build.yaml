@@ -8,10 +8,14 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-2022, macos-13]
+        os: [windows-2022, macos-13, ubuntu-22.04]
         addrsize: ["64"]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Install Linux dependencies
+        if: runner.os == 'linux'
+        run: sudo apt update && sudo apt install -y  ninja-build
+
       - uses: secondlife/action-autobuild@v3
         with:
           addrsize: ${{ matrix.addrsize }}
