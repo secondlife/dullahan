@@ -7,20 +7,20 @@
 #include <string>
 #include <fstream>
 #include <dirent.h>
+#include <iostream>
 
 namespace
 {
-std::string getExeCwd()
-{
-    char path[ 4096 ];
-    int len = readlink("/proc/self/exe", path, sizeof(path));
-    if (len != -1)
+    std::string getExeCwd()
     {
+        char path[ 4096 ];
+        int len = readlink("/proc/self/exe", path, sizeof(path));
+        if (len == -1)
+            return "";
+
         path[len] = 0;
         return dirname(path) ;
     }
-    return "";
-}
 }
 
 void dullahan_impl::platormInitWidevine(std::string cachePath)
@@ -29,20 +29,32 @@ void dullahan_impl::platormInitWidevine(std::string cachePath)
 
 void dullahan_impl::platformAddCommandLines(CefRefPtr<CefCommandLine> command_line)
 {
-    // <ND> For Linux autodetection does not work, we need to pass ppapi-flash-path/version.
-    // We're getting this via environment variables from either the parent process or the user
-    std::string strPlugin, strVersion;
+    auto *pDisplay = getenv("DISPLAY");
+    auto *pSessionType = getenv("XDG_SESSION_TYPE");
+    auto *pWaylandDisplay = getenv("WAYLAND_DISPAY");
+    auto *pSDLVideoDriver = getenv( "SDL_VIDEODRIVER" );
 
-    if (getenv("FS_FLASH_PLUGIN") && getenv("FS_FLASH_VERSION"))
-    {
-        strPlugin = getenv("FS_FLASH_PLUGIN");
-        strVersion = getenv("FS_FLASH_VERSION");
-    }
+    // XWayland disabled
+    // pDisplay == nullptr;
+    // pSessionType == "wayland"
+    // pWaylandDispay == "wayland-%d"
 
-    if (strPlugin.size() && strVersion.size() && mSystemFlashEnabled)
-    {
-        command_line->AppendSwitchWithValue("ppapi-flash-path", strPlugin);
-        command_line->AppendSwitchWithValue("ppapi-flash-version", strVersion);
-    }
+    // XWayland enabled
+    // pDisplay == ":%d"
+    // pSessionType == "wayland"
+    // pWaylandDispay == "wayland-%d"
+
+    bool use_wayland = false;
+
+    if( pDisplay == nullptr || strlen(pDisplay) == 0 )
+        use_wayland = true;
+
+    if( pSDLVideoDriver && strcmp( pSDLVideoDriver, "wayland" ) == 0 )
+        use_wayland = true;
+ 
+    std::cerr << "Using wayland: " << use_wayland << std::endl;
+
+    if( use_wayland )
+        command_line->AppendSwitchWithValue("ozone-platform", "wayland" );
 }
 
