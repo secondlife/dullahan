@@ -475,43 +475,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMAND "${CMAKE_MT}" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
         COMMENT "Adding custom manifest...")
 
-    ###############################################################################
-    # minimal CEF console example (doesn't use Dullahan)
-
-    # add source file to the application
-    add_executable(
-        cef_minimal
-        examples/cef_minimal/cef_minimal.cpp
-    )
-
-    # define which include directories to pull in
-    target_include_directories(
-        cef_minimal
-        PUBLIC
-        ${CEF_INCLUDE_DIR}
-        ${CEF_INCLUDE_DIR}/..
-    )
-
-    # define which libs to link against
-    target_link_libraries(
-        cef_minimal
-        ${CEF_LIBRARY}
-        ${CEF_DLL_LIBRARY}
-    )
-
-    # cef_minimal example dependes on host executable
-    add_dependencies(cef_minimal dullahan_host)
-
-    # turn off spurious linker warnings
-    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        set_target_properties(cef_minimal PROPERTIES LINK_FLAGS "/ignore:4099")
-    endif()
-
-    add_custom_command(
-        TARGET cef_minimal POST_BUILD
-        COMMAND "${CMAKE_MT}" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
-        COMMENT "Adding custom manifest...")
-
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 
     ###############################################################################

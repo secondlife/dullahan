@@ -110,7 +110,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
             command_line->AppendSwitch("enable-begin-frame-scheduling");
         }
 
-        // The ability to access local files used to be a member of CefBrowserSettings but 
+        // The ability to access local files used to be a member of CefBrowserSettings but
         // now is is configured globally via command line switch (https://github.com/cefsharp/CefSharp/issues/3668)
         if (mAllowFileAccessFromFiles == true)
         {
@@ -169,14 +169,14 @@ std::string convert_wide_to_string(const wchar_t* in, unsigned int code_page)
     {
         int len_in = wcslen(in);
         int len_out = WideCharToMultiByte(
-            code_page,
-            0,
-            in,
-            len_in,
-            NULL,
-            0,
-            0,
-            0);
+                          code_page,
+                          0,
+                          in,
+                          len_in,
+                          NULL,
+                          0,
+                          0,
+                          0);
         // We will need two more bytes for the double NULL ending
         // created in WideCharToMultiByte().
         char* pout = new char[len_out + 2];
@@ -749,7 +749,7 @@ void dullahan_impl::showDevTools()
     if (mBrowser.get() && mBrowser->GetHost())
     {
         CefWindowInfo window_info;
-        window_info.bounds = { 0,0, 600, 800 };
+        window_info.bounds = { 0, 0, 600, 800 };
 #ifdef WIN32
         window_info.SetAsPopup(nullptr, "Dullahan Dev Tools");
 #elif __APPLE__

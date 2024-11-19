@@ -1,17 +1,14 @@
 <?xml version="1.0" ?>
-<llsd><map>
+<llsd>
+<map>
+    <key>version</key>
+    <string>1.3</string>
+    <key>type</key>
+    <string>autobuild</string>
     <key>installables</key>
     <map>
       <key>cef-bin</key>
       <map>
-        <key>copyright</key>
-        <string>Copyright (c) 2008-2020 Marshall A. Greenblatt. Portions Copyright (c) 2006-2009 Google Inc. All rights reserved</string>
-        <key>license</key>
-        <string>bsd</string>
-        <key>license_file</key>
-        <string>LICENSES/cef.txt</string>
-        <key>name</key>
-        <string>cef-bin</string>
         <key>platforms</key>
         <map>
           <key>darwin64</key>
@@ -47,53 +44,47 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>b0a3386821d9e15715733e64cd4b83beef67b311</string>
+              <string>1182b66ecda1377e52e4e011631e6aad67246035</string>
               <key>hash_algorithm</key>
               <string>sha1</string>
               <key>url</key>
-              <string>https://github.com/secondlife/cef/releases/download/v118.0.5993.54b/cef_bin-118.4.1_g3dd6078_chromium-118.0.5993.54-windows64-9522e46.tar.zst</string>
+              <string>https://github.com/secondlife/cef/releases/download/v131.2.3/cef_bin-131.2.4_gb7543e4_chromium-131.0.6778.70-windows64-11905297398.tar.zst</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
+        <key>license</key>
+        <string>bsd</string>
+        <key>license_file</key>
+        <string>LICENSES/cef.txt</string>
+        <key>copyright</key>
+        <string>Copyright (c) 2008-2020 Marshall A. Greenblatt. Portions Copyright (c) 2006-2009 Google Inc. All rights reserved</string>
         <key>version</key>
-        <string>118.4.1_g3dd6078_chromium-118.0.5993.54</string>
+        <string>131.2.4_gb7543e4_chromium-131.0.6778.70</string>
+        <key>name</key>
+        <string>cef-bin</string>
       </map>
     </map>
     <key>package_description</key>
     <map>
-      <key>canonical_repo</key>
-      <string>https://github.com/secondlife/dullahan</string>
-      <key>copyright</key>
-      <string>Copyright (c) 2017, Linden Research, Inc.</string>
-      <key>description</key>
-      <string>A headless browser SDK that uses the Chromium Embedded Framework (CEF). It is designed to make it easier to write applications that render modern web content directly to a memory buffer, inject synthesized mouse and keyboard events as well as interact with web based features like JavaScript or cookies.</string>
-      <key>license</key>
-      <string>MPL</string>
-      <key>license_file</key>
-      <string>LICENSES/LICENSE.txt</string>
-      <key>name</key>
-      <string>dullahan</string>
       <key>platforms</key>
       <map>
         <key>common</key>
         <map>
-          <key>build_directory</key>
-          <string>stage</string>
           <key>configurations</key>
           <map>
             <key>Release</key>
             <map>
               <key>build</key>
               <map>
+                <key>command</key>
+                <string>bash</string>
                 <key>arguments</key>
                 <array>
                   <string>-c</string>
                   <string>../build-cmd.sh</string>
                 </array>
-                <key>command</key>
-                <string>bash</string>
               </map>
               <key>name</key>
               <string>Release</string>
@@ -106,6 +97,8 @@
             <string>include/cef/dullahan.h</string>
             <string>include/cef/dullahan_version.h</string>
           </array>
+          <key>build_directory</key>
+          <string>stage</string>
           <key>name</key>
           <string>common</string>
         </map>
@@ -180,13 +173,22 @@
           <string>windows</string>
         </map>
       </map>
-      <key>source_directory</key>
-      <string>src</string>
+      <key>license</key>
+      <string>MPL</string>
+      <key>license_file</key>
+      <string>LICENSES/LICENSE.txt</string>
+      <key>copyright</key>
+      <string>Copyright (c) 2017, Linden Research, Inc.</string>
       <key>version_file</key>
       <string>VERSION.txt</string>
+      <key>name</key>
+      <string>dullahan</string>
+      <key>canonical_repo</key>
+      <string>https://github.com/secondlife/dullahan</string>
+      <key>description</key>
+      <string>A headless browser SDK that uses the Chromium Embedded Framework (CEF). It is designed to make it easier to write applications that render modern web content directly to a memory buffer, inject synthesized mouse and keyboard events as well as interact with web based features like JavaScript or cookies.</string>
+      <key>source_directory</key>
+      <string>src</string>
     </map>
-    <key>type</key>
-    <string>autobuild</string>
-    <key>version</key>
-    <string>1.3</string>
-  </map></llsd>
+  </map>
+</llsd>

@@ -123,9 +123,8 @@
 @cd %CEF_BUILD_DIR%
 @cmake -G %CMAKE_GENERATOR% %CMAKE_ARCH% .. -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off
 @if errorlevel 1 goto End
+
 @cd libcef_dll_wrapper
-@msbuild libcef_dll_wrapper.vcxproj /property:Configuration="Debug" %PLATFORM_CMD%
-@if errorlevel 1 goto End
 @msbuild libcef_dll_wrapper.vcxproj /property:Configuration="Release" %PLATFORM_CMD%
 @if errorlevel 1 goto End
 
@@ -144,8 +143,7 @@ if exist ..\src\dullahan_version.h del ..\src\dullahan_version.h
        -DCEF_WRAPPER_BUILD_DIR=%CEF_BUILD_DIR% ^
        ..
 @if errorlevel 1 goto End
-@msbuild dullahan.sln /property:Configuration="Debug" %PLATFORM_CMD%
-@if errorlevel 1 goto End
+
 @msbuild dullahan.sln /property:Configuration="Release" %PLATFORM_CMD%
 @if errorlevel 1 goto End
 
