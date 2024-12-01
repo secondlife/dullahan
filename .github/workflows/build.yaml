@@ -16,7 +16,7 @@ jobs:
         if: runner.os == 'linux'
         run: sudo apt update && sudo apt install -y  ninja-build
 
-      - uses: secondlife/action-autobuild@v4
+      - uses: secondlife/action-autobuild@v5
         with:
           addrsize: ${{ matrix.addrsize }}
   release:
