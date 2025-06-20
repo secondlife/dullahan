@@ -75,6 +75,7 @@ dullahan_impl::dullahan_impl() :
     mUseMockKeyChain(false),
     mAutoPlayWithoutGesture(false),
     mFakeUIForMediaStream(false),
+    mDisableCookieDatabaseLocking(true),
     mFlipPixelsY(false),
     mFlipMouseY(false),
     mRequestContext(nullptr),
@@ -95,6 +96,8 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 {
     if (process_type.empty())
     {
+        std::vector<std::string> disable_features;
+
         // <ND> Enable HTMLImports to get youtube live chat to work
         command_line->AppendSwitchWithValue("enable-blink-features", "HTMLImports");
         if (mMediaStreamEnabled == true)
@@ -135,7 +138,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 
         if (mDisableNetworkService)
         {
-            command_line->AppendSwitchWithValue("disable-features", "NetworkService");
+            disable_features.push_back( "NetworkService" );
         }
 
         if (mUseMockKeyChain)
@@ -167,6 +170,19 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         // it using native Viewer UI as before.
         // Details captured in this GHI: https://github.com/secondlife/viewer-private/issues/489
         command_line->AppendSwitch("disable-chrome-login-prompt");
+
+#ifdef WIN32
+        if (mDisableCookieDatabaseLocking)
+        {
+            disable_features.push_back( "LockProfileCookieDatabase" );
+        }
+#endif
+
+        if (!disable_features.empty())
+        {
+            std::string disabled_features = CefString(CefJoinString(disable_features, ',', true);
+            command_line->AppendSwitchWithValue("disable-features", disabled_features);
+        }
 
         platformAddCommandLines(command_line);
     }
@@ -392,6 +408,12 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     // eventually, this will be implemented as a callback so the consumer can
     // provide their own ("Allow, "Disallow") UI.
     mFakeUIForMediaStream = user_settings.fake_ui_for_media_stream;
+
+    // this flag if set, disables a security measure introduced in Chrome 114 for W32 that
+    // prevents multiple processes from accessing the cookie database. It is recommended to
+    // enable this if the application spawns more than one Dullahan process, or when multiple
+    // simultaneous instances of the application needs to be supported.
+    mDisableCookieDatabaseLocking = user_settings.disable_cookie_database_locking;
 
     // if true, this setting inverts the pixels in Y direction - useful if your texture
     // coords are upside down compared to default for Dullahan
