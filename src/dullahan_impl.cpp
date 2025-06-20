@@ -136,7 +136,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 
         if (mDisableNetworkService)
         {
-            disable_features.push_back( "NetworkService" );
+            disable_features.push_back("NetworkService");
         }
 
         if (mUseMockKeyChain)
@@ -162,13 +162,13 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 #ifdef WIN32
         if (mDisableCookieDatabaseLocking)
         {
-            disable_features.push_back( "LockProfileCookieDatabase" );
+            disable_features.push_back("LockProfileCookieDatabase");
         }
 #endif
 
         if (!disable_features.empty())
         {
-            std::string disabled_features = CefString(CefJoinString(disable_features, ',', true);
+            std::string disabled_features = CefString(CefJoinString(disable_features, ',', true));
             command_line->AppendSwitchWithValue("disable-features", disabled_features);
         }
 
