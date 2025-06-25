@@ -168,8 +168,14 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
 
         if (!disable_features.empty())
         {
-            std::string disabled_features = CefString(CefJoinString(disable_features, ',', true));
-            command_line->AppendSwitchWithValue("disable-features", disabled_features);
+            std::ostringstream disabled_features;
+
+			for (size_t i = 0, n = disable_features.size(); i < n; ++i) {
+                if (i > 0) disabled_features << ',';
+                disabled_features << disable_features[i];
+            }
+            
+            command_line->AppendSwitchWithValue("disable-features", disabled_features.str());
         }
 
         platformAddCommandLines(command_line);
