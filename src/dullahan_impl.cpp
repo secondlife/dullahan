@@ -167,7 +167,7 @@ std::string convert_wide_to_string(const wchar_t* in, unsigned int code_page)
     std::string out;
     if (in)
     {
-        int len_in = wcslen(in);
+        int len_in = (int)wcslen(in);
         int len_out = WideCharToMultiByte(
             code_page,
             0,

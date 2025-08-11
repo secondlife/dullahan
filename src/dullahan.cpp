@@ -334,7 +334,7 @@ void dullahan::setOnLoadEndCallback(std::function<void(int status, const std::st
     mImpl->getCallbackManager()->setOnLoadEndCallback(callback);
 }
 
-void dullahan::setOnLoadErrorCallback(std::function<void(int status, const std::string error_text)> callback)
+void dullahan::setOnLoadErrorCallback(std::function<void(int status, const std::string error_text, const std::string error_url)> callback)
 {
     mImpl->getCallbackManager()->setOnLoadErrorCallback(callback);
 }

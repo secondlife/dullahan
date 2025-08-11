@@ -106,7 +106,7 @@ void app::init_dullahan()
     mDullahan->setOnFileDownloadProgressCallback(std::bind(&app::onFileDownloadProgress, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnHTTPAuthCallback(std::bind(&app::onHTTPAuth, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
     mDullahan->setOnLoadEndCallback(std::bind(&app::onLoadEnd, this, std::placeholders::_1, std::placeholders::_2));
-    mDullahan->setOnLoadErrorCallback(std::bind(&app::onLoadError, this, std::placeholders::_1, std::placeholders::_2));
+    mDullahan->setOnLoadErrorCallback(std::bind(&app::onLoadError, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     mDullahan->setOnLoadStartCallback(std::bind(&app::onLoadStart, this));
     mDullahan->setOnOpenPopupCallback(std::bind(&app::onOpenPopup, this, std::placeholders::_1, std::placeholders::_2));
     mDullahan->setOnPageChangedCallback(std::bind(&app::onPageChangedCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
@@ -718,13 +718,15 @@ void app::onLoadEnd(int status, const std::string url)
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-void app::onLoadError(int status, const std::string error_text)
+void app::onLoadError(int status, const std::string error_text, const std::string error_url)
 {
     std::stringstream msg;
 
     msg << "<b>Loading error!</b>";
     msg << "<p>";
     msg << "Message: " << error_text;
+    msg << "<br>";
+    msg << "URL: " << error_url;
     msg << "<br>";
     msg << "Code: " << status;
 

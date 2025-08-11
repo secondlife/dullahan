@@ -111,16 +111,16 @@ void dullahan_callback_manager::onLoadEnd(int status, const std::string url)
     }
 }
 
-void dullahan_callback_manager::setOnLoadErrorCallback(std::function<void(int status, const std::string error_text)> callback)
+void dullahan_callback_manager::setOnLoadErrorCallback(std::function<void(int status, const std::string error_text, const std::string error_url)> callback)
 {
     mOnLoadErrorCallbackFunc = callback;
 }
 
-void dullahan_callback_manager::onLoadError(int status, const std::string error_text)
+void dullahan_callback_manager::onLoadError(int status, const std::string error_text, const std::string error_url)
 {
     if (mOnLoadErrorCallbackFunc)
     {
-        mOnLoadErrorCallbackFunc(status, error_text);
+        mOnLoadErrorCallbackFunc(status, error_text, error_url);
     }
 }
 

@@ -24,6 +24,8 @@
     THE SOFTWARE.
 */
 
+#define NOMINMAX
+
 #include "cef_browser.h"
 #include "wrapper/cef_helpers.h"
 
@@ -263,7 +265,7 @@ void dullahan_browser_client::OnLoadError(CefRefPtr<CefBrowser> browser,
 
     if (frame->IsMain())
     {
-        mParent->getCallbackManager()->onLoadError(errorCode, std::string(errorText));
+        mParent->getCallbackManager()->onLoadError(errorCode, std::string(errorText), std::string(failedUrl) );
     }
 }
 
