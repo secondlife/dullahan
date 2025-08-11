@@ -27,8 +27,6 @@
 #ifndef _DULLAHAN
 #define _DULLAHAN
 
-#define NOMINMAX
-
 #include <memory>
 #include <string>
 #include <functional>
