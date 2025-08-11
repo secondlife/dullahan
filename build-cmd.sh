@@ -116,10 +116,12 @@ case "$AUTOBUILD_PLATFORM" in
         # obvious when a file is removed and this part of the script fails)
         cp "$cef_no_wrapper_dir/Release/chrome_elf.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/d3dcompiler_47.dll" "$stage/bin/release/"
+        cp "$cef_no_wrapper_dir/Release/dxcompiler.dll" "$stage/bin/release/"
+        cp "$cef_no_wrapper_dir/Release/dxil.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/libcef.dll" "$stage/bin/release/"
+        cp "$cef_no_wrapper_dir/Release/libcef.lib" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/libEGL.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/libGLESv2.dll" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/snapshot_blob.bin" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/v8_context_snapshot.bin" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/vk_swiftshader.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/vk_swiftshader_icd.json" "$stage/bin/release/"
