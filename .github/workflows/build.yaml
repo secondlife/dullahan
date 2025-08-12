@@ -8,7 +8,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-2022, macos-13, ubuntu-22.04]
+        os: [windows-2022, macos-13]
         addrsize: ["64"]
     continue-on-error: true
     runs-on: ${{ matrix.os }}
