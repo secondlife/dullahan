@@ -19,11 +19,11 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>63a053ce3368e74dda0397f3675bd1c850fc1e45</string>
+              <string>5842bf84e22803819eafc22f9619ae2f85118895</string>
               <key>hash_algorithm</key>
               <string>sha1</string>
               <key>url</key>
-              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-139.0.17_g6c347eb_chromium-139.0.7258.31-darwin64-252201629.tar.zst</string>
+              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-139.0.17_g6c347eb_chromium-139.0.7258.31-darwin64-252231804.tar.zst</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
