@@ -24,6 +24,8 @@
     THE SOFTWARE.
 */
 
+#define NOMINMAX
+
 #include "cef_browser.h"
 #include "wrapper/cef_helpers.h"
 
