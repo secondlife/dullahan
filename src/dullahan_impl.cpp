@@ -54,6 +54,7 @@
 #include "dullahan_impl_mac.cpp"
 #endif
 
+#include <iostream>
 
 dullahan_impl::dullahan_impl() :
     mInitialized(false),
@@ -291,12 +292,11 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     if (user_settings.cache_enabled && user_settings.root_cache_path.length())
     {
         CefString(&settings.root_cache_path) = user_settings.root_cache_path;
-    }
-
-    // set path to cache if enabled and set
-    if (user_settings.cache_enabled && user_settings.cache_path.length())
-    {
-        CefString(&settings.cache_path) = user_settings.cache_path;
+#ifdef WIN32
+        CefString(&settings.cache_path) = user_settings.root_cache_path + "\\" + "cache";
+#else
+        CefString(&settings.cache_path) = user_settings.root_cache_path + "/" + "cache";
+#endif
     }
 
     // as of CEF 90, the new way to disable cookies
@@ -407,7 +407,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 {
     DLNOUT("dullahan_impl::init()");
 
-    platormInitWidevine(user_settings.cache_path);
+    platormInitWidevine(user_settings.root_cache_path);
 
     if (!initCEF(user_settings))
     {
@@ -427,22 +427,17 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     CefString url = std::string();
     CefRefPtr<CefDictionaryValue> extra_info = nullptr;
 
-    if (user_settings.cache_enabled && user_settings.context_cache_path.length())
+    if (user_settings.cache_enabled)
     {
-        // Creating multiple contexts in same folder simultaneously will not share sessions!
         CefRequestContextSettings contextSettings;
-        CefString(&contextSettings.cache_path) = user_settings.context_cache_path;
+
+        std::string context_cache_path = user_settings.root_cache_path;
+        CefString(&contextSettings.cache_path) = context_cache_path;
         contextSettings.persist_session_cookies = user_settings.cookies_enabled;
 
         mRequestContext = CefRequestContext::CreateContext(contextSettings, nullptr);
     }
-    else
-    {
-        // Default context
-        // Since this reuses existing context when possible, all instances of browser will share cookies and sessions.
-        mRequestContext = nullptr;
-    }
-
+    
     CefRefPtr<CefCookieManager> manager;
     if (mRequestContext)
     {

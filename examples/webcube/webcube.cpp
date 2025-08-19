@@ -31,12 +31,14 @@
 #include <sstream>
 #include <fstream>
 #include <functional>
+#include <filesystem>
 #include <string>
 #include <ctime>
 
 #include <windows.h>
 #include <commctrl.h>
 #include <shlobj.h>
+#include <process.h>
 
 #include <gl\gl.h>
 #include <gl\glu.h>
@@ -128,7 +130,11 @@ void app::init_dullahan()
     settings.background_color = 0xff666666;
     settings.cache_enabled = true;
     settings.locales_dir_path = "";
-    settings.cache_path = ".\\webcube_cache";
+
+    // The root cache path needs to be (a) absolute and (b) unique for each instance
+    std::filesystem::path p = ".\\webcube_cache\\";
+    std::string abs_path = std::filesystem::absolute(p).string() + std::to_string(_getpid());
+    settings.root_cache_path = abs_path;
     settings.cookies_enabled = true;
     settings.disable_gpu = false;
     settings.disable_network_service = false;
@@ -1157,6 +1163,11 @@ const std::string app::getHomePageURL()
     }
 
     const std::string default_homepage_url("https://sl-viewer-media-system.s3.amazonaws.com/index.html");
+
+    // This is the Viewer login URL and (mysteriously) seems to trigger the transient loading
+    // error (ERR_SOCK_NOT_CONNECTED -15) more than other pages (although other pages do too).
+    // Leeaving it present for now until this issue is resolved.
+    //const std::string default_homepage_url("https://viewer-login.agni.lindenlab.com/");
 
     return default_homepage_url;
 }
