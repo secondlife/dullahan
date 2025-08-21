@@ -152,7 +152,6 @@ class dullahan
 
             // enable/disable features - most obvious but listed for completeness
             bool begin_frame_scheduling = false;        // fixes issue when onPaint not called
-            bool cache_enabled = true;                  // local cache
             bool cookies_enabled = true;                // cookies
             bool disable_gpu = true;                    // disable GPU and GPU compositing
             bool file_access_from_file_urls = false;    // allow access files from local file system

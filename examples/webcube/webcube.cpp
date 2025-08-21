@@ -128,7 +128,6 @@ void app::init_dullahan()
     settings.accept_language_list = "en-US";
     settings.proxy_host_port = std::string();
     settings.background_color = 0xff666666;
-    settings.cache_enabled = true;
     settings.locales_dir_path = "";
 
     // The root cache path needs to be (a) absolute and (b) unique for each instance
@@ -1162,12 +1161,13 @@ const std::string app::getHomePageURL()
         return mHomePageURL;
     }
 
-    const std::string default_homepage_url("https://sl-viewer-media-system.s3.amazonaws.com/index.html");
+    // New bookmarks page
+    std::string default_homepage_url("https://sl-viewer-media-system.s3.amazonaws.com/bookmarks/index.html");
 
-    // This is the Viewer login URL and (mysteriously) seems to trigger the transient loading
+    // This is the SL Viewer login URL and (mysteriously) seems to trigger the transient loading
     // error (ERR_SOCK_NOT_CONNECTED -15) more than other pages (although other pages do too).
     // Leeaving it present for now until this issue is resolved.
-    //const std::string default_homepage_url("https://viewer-login.agni.lindenlab.com/");
+    // default_homepage_url = "https://viewer-login.agni.lindenlab.com/";
 
     return default_homepage_url;
 }
