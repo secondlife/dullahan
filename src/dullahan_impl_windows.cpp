@@ -13,18 +13,19 @@ void dullahan_impl::platformAddCommandLines(CefRefPtr<CefCommandLine> command_li
         // that ise used to control the volume of media in a web page
         command_line->AppendSwitch("force-wave-audio");
 
+        bool bDisableAudioServiceOutOfProcess { true };
+#ifdef __linux__
         // <ND> This breaks twitch and friends. Allow to not add this via env override (for debugging)
         char const* pEnv { getenv("nd_AudioServiceOutOfProcess") };
-        bool bDisableAudioServiceOutOfProcess { true };
         if (pEnv && pEnv[0] == '1')
         {
             bDisableAudioServiceOutOfProcess = false;
         }
+#endif
 
         if (bDisableAudioServiceOutOfProcess)
         {
             command_line->AppendSwitchWithValue("disable-features", "AudioServiceOutOfProcess");
         }
     }
-
 }

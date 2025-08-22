@@ -24,6 +24,8 @@
     THE SOFTWARE.
 */
 
+#define NOMINMAX
+
 #include "wrapper/cef_helpers.h"
 
 #include "dullahan_render_handler.h"

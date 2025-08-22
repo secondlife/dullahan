@@ -137,7 +137,7 @@ class app
         bool onJSDialogCallback(const std::string origin_url, const std::string message_text, const std::string default_prompt_text);
         bool onJSBeforeUnloadCallback();
         void onLoadEnd(int status, const std::string url);
-        void onLoadError(int status, const std::string error_text);
+        void onLoadError(int status, const std::string error_text, const std::string error_url);
         void onLoadStart();
         void onOpenPopup(const std::string url, const std::string target);
         void onPageChangedCallback(const unsigned char* pixels, int x, int y, const int width, const int height);

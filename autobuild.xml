@@ -19,46 +19,32 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>fe25699d025bac8925a80e43564608e15d6811c9</string>
+              <string>75879a9d722b6bd2deda0e8d6fc46fa9f91c78bc</string>
               <key>hash_algorithm</key>
               <string>sha1</string>
               <key>url</key>
-              <string>https://github.com/secondlife/cef/releases/download/v118.0.5993.54b/cef_bin-118.4.1_g3dd6078_chromium-118.0.5993.54-darwin64-9522e46.tar.zst</string>
+              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-139.0.28_g55ab8a8_chromium-139.0.7258.139-darwin64-252341119.tar.zst</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
-          </map>
-          <key>windows</key>
-          <map>
-            <key>archive</key>
-            <map>
-              <key>hash</key>
-              <string>ecf47ff69172987dc246f06688dbbbfd4e79483a</string>
-              <key>hash_algorithm</key>
-              <string>sha1</string>
-              <key>url</key>
-              <string>https://github.com/secondlife/cef/releases/download/v113.1.5_ge452d82_chromium-113.0.5672.93-9175570/cef_bin-113.1.5_ge452d82_chromium-113.0.5672.93-windows-9175570.tar.zst</string>
-            </map>
-            <key>name</key>
-            <string>windows</string>
           </map>
           <key>windows64</key>
           <map>
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>b0a3386821d9e15715733e64cd4b83beef67b311</string>
+              <string>39566b8d18bfe9b8354865ad41d1791196a097f7</string>
               <key>hash_algorithm</key>
               <string>sha1</string>
               <key>url</key>
-              <string>https://github.com/secondlife/cef/releases/download/v118.0.5993.54b/cef_bin-118.4.1_g3dd6078_chromium-118.0.5993.54-windows64-9522e46.tar.zst</string>
+              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-139.0.28_g55ab8a8_chromium-139.0.7258.139-windows64-252341137.tar.zst</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
         <key>version</key>
-        <string>118.4.1_g3dd6078_chromium-118.0.5993.54</string>
+        <string>139.0.17_g6c347eb_chromium-139.0.7258.31</string>
       </map>
     </map>
     <key>package_description</key>

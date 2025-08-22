@@ -27,6 +27,8 @@
 #ifndef _DULLAHAN_IMPL
 #define _DULLAHAN_IMPL
 
+#define NOMINMAX
+
 #include <functional>
 #include <sstream>
 

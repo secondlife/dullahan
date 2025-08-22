@@ -52,8 +52,8 @@ class dullahan_callback_manager
         void setOnLoadEndCallback(std::function<void(int status, const std::string url)> callback);
         void onLoadEnd(int status, const std::string url);
 
-        void setOnLoadErrorCallback(std::function<void(int status, const std::string error_text)> callback);
-        void onLoadError(int status, const std::string error_text);
+        void setOnLoadErrorCallback(std::function<void(int status, const std::string error_text, const std::string error_url)> callback);
+        void onLoadError(int status, const std::string error_text, const std::string error_url);
 
         void setOnLoadStartCallback(std::function<void()> callback);
         void onLoadStart();
@@ -98,7 +98,7 @@ class dullahan_callback_manager
         std::function<void(const std::string, bool, bool)> mOnCustomSchemeURLCallbackFunc;
         std::function<bool(const std::string, const std::string, std::string&, std::string&)> mOnHTTPAuthCallbackFunc;
         std::function<void(int, const std::string)> mOnLoadEndCallbackFunc;
-        std::function<void(int, const std::string)> mOnLoadErrorCallbackFunc;
+        std::function<void(int, const std::string, const std::string)> mOnLoadErrorCallbackFunc;
         std::function<void()> mOnLoadStartCallbackFunc;
         std::function<void(const std::string, const std::string)> mOnOpenPopupCallbackFunc;
         std::function<void(const unsigned char*, int, int, int, int)> mOnPageChangedCallbackFunc;

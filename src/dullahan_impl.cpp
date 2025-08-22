@@ -54,6 +54,7 @@
 #include "dullahan_impl_mac.cpp"
 #endif
 
+#include <iostream>
 
 dullahan_impl::dullahan_impl() :
     mInitialized(false),
@@ -167,7 +168,7 @@ std::string convert_wide_to_string(const wchar_t* in, unsigned int code_page)
     std::string out;
     if (in)
     {
-        int len_in = wcslen(in);
+        int len_in = (int)wcslen(in);
         int len_out = WideCharToMultiByte(
             code_page,
             0,
@@ -288,16 +289,12 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     CefString(&settings.locales_dir_path) = user_settings.locales_dir_path;
 
     // set path to root cache if enabled and set
-    if (user_settings.cache_enabled && user_settings.root_cache_path.length())
-    {
-        CefString(&settings.root_cache_path) = user_settings.root_cache_path;
-    }
-
-    // set path to cache if enabled and set
-    if (user_settings.cache_enabled && user_settings.cache_path.length())
-    {
-        CefString(&settings.cache_path) = user_settings.cache_path;
-    }
+    CefString(&settings.root_cache_path) = user_settings.root_cache_path;
+#ifdef WIN32
+    CefString(&settings.cache_path) = user_settings.root_cache_path + "\\" + "cache";
+#else
+    CefString(&settings.cache_path) = user_settings.root_cache_path + "/" + "cache";
+#endif
 
     // as of CEF 90, the new way to disable cookies
     if (user_settings.cookies_enabled == false)
@@ -407,7 +404,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 {
     DLNOUT("dullahan_impl::init()");
 
-    platormInitWidevine(user_settings.cache_path);
+    platormInitWidevine(user_settings.root_cache_path);
 
     if (!initCEF(user_settings))
     {
@@ -424,38 +421,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     mRenderHandler = new dullahan_render_handler(this);
     mBrowserClient = new dullahan_browser_client(this, mRenderHandler);
 
-    CefString url = std::string();
-    CefRefPtr<CefDictionaryValue> extra_info = nullptr;
-
-    if (user_settings.cache_enabled && user_settings.context_cache_path.length())
-    {
-        // Creating multiple contexts in same folder simultaneously will not share sessions!
-        CefRequestContextSettings contextSettings;
-        CefString(&contextSettings.cache_path) = user_settings.context_cache_path;
-        contextSettings.persist_session_cookies = user_settings.cookies_enabled;
-
-        mRequestContext = CefRequestContext::CreateContext(contextSettings, nullptr);
-    }
-    else
-    {
-        // Default context
-        // Since this reuses existing context when possible, all instances of browser will share cookies and sessions.
-        mRequestContext = nullptr;
-    }
-
-    CefRefPtr<CefCookieManager> manager;
-    if (mRequestContext)
-    {
-        manager = mRequestContext->GetCookieManager(nullptr);
-    }
-    else
-    {
-        // set up how we handle cookies and persistance for global context
-        // (we probably shouldn't do this globally and use some context instead)
-        manager = CefCookieManager::GetGlobalManager(nullptr);
-    }
-
-    // off with it's head
+    // Windowspecific settings for OSR
     CefWindowInfo window_info;
     window_info.SetAsWindowless(0);
     window_info.windowless_rendering_enabled = true;
@@ -463,7 +429,39 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     const int height = user_settings.initial_height;
     window_info.bounds = { 0, 0, width, height };
 
-    mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), url, browser_settings, extra_info, mRequestContext.get());
+    // Create the RequestContext for this browser. The header comments
+    // say it must be the same as the root cache path or a sub-folder of 
+    // it. Doing the former seemed to work - doing the latter did not.
+    CefRequestContextSettings contextSettings;
+    std::string context_cache_path = user_settings.root_cache_path;
+    CefString(&contextSettings.cache_path) = context_cache_path;
+    contextSettings.persist_session_cookies = user_settings.cookies_enabled;
+    mRequestContext = CefRequestContext::CreateContext(contextSettings, nullptr);
+
+    // Generate a short pause between creating the request context and creating
+    // the browser. This is not a good solution but for the moment, seems to
+    // work - I can repro the error 1 in 5 times.  I've tried this hundreds of 
+    // times and haven't seen it. Probably hardware specific. Probably appear
+    // for me as soon as this ships! The correct solution is likely to be
+    // hooking up the callback in the second parameter of CreateContext and
+    // overriding the OnRequestContextINitialized() virtual override. Then,
+    // once that fires, continue with the rest of initialization. 
+    const int num_extra_cef_work_loops = 10;
+    const int sleep_time_between_calls = 5;
+    for (int i = 0; i < num_extra_cef_work_loops; ++i)
+    {
+        CefDoMessageLoopWork();
+#ifdef WIN32
+            Sleep(sleep_time_between_calls);
+#elif __APPLE__
+            sleep(sleep_time_between_calls);
+#elif __linux__
+            sleep(sleep_time_between_calls);
+#endif
+    }
+
+    // browser for this instance - empty URL and no extra_info
+    mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), std::string(), browser_settings, nullptr, mRequestContext.get());
 
     // important: set the size *after* we create a browser
     setSize(user_settings.initial_width, user_settings.initial_height);
