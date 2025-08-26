@@ -1,5 +1,5 @@
 ###############################################################################
-# Dullahan CMake file - Callum Prentice - 2020-05-03
+# Dullahan CMake file
 
 ###############################################################################
 cmake_minimum_required(VERSION 3.11)
@@ -136,12 +136,12 @@ endif()
 # Final layer of finding the right libs for each combination
 # of name, platform, configuration, type etc.
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  set(CEF_LIBRARY
-      optimized ${CEF_LIBRARY_RELEASE}
-  )
-  set(CEF_DLL_LIBRARY
-      optimized ${CEF_DLL_LIBRARY_RELEASE}
-  )
+    set(CEF_LIBRARY
+        optimized ${CEF_LIBRARY_RELEASE}
+    )
+    set(CEF_DLL_LIBRARY
+        optimized ${CEF_DLL_LIBRARY_RELEASE}
+    )
 endif()
 
 check_exists(CEF_LIBRARY)
@@ -160,7 +160,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
     if( NOT ENABLE_CXX11_ABI )
-      add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+        add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
     endif()
 endif()
 
@@ -332,105 +332,82 @@ add_custom_command(
 endif()
 
 ###############################################################################
-# examples
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+# Examples
 
-    ###############################################################################
-    # webcube example application
+# Third party APIs used by examples
+set (THIRD-PARTY-PREFIX ${CMAKE_SOURCE_DIR}/examples/opengl-example/third-party)
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set (GLFW_FOLDER "glfw-3.4.bin.WIN64")
+    set (GLFW_LIB_PATH "lib-vc2022/glfw3.lib")
+    set (GLAD_FOLDER "glad-0.1.36")
+    set (GLFW_FRAMEWORKS "")
+    set (IMGUI_FOLDER "imgui-1.92.2")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set (GLFW_FOLDER "glfw-3.4.bin.MACOS")
+    set (GLFW_LIB_PATH "lib-universal/libglfw3.a")
+    set (GLAD_FOLDER "glad-0.1.36")
+    set (GLFW_FRAMEWORKS "-framework Cocoa" "-framework OpenGL" "-framework IOKit")
+    set (IMGUI_FOLDER "imgui-1.92.2")
+endif ()
 
-    # add source file to application
-    add_executable(
-        webcube
-        examples/webcube/webcube.cpp
-        examples/webcube/webcube.h
-        examples/webcube/webcube.rc
-        examples/webcube/resource.h
-    )
+###############################################################################
+# OpenGL example application
 
-    # define which include directories to pull in
-    target_include_directories(
-        webcube
-        PUBLIC
-        src
-    )
+# add source file to application
+add_executable(
+    opengl-example
+    examples/opengl-example/src/opengl-example.cpp
+    examples/opengl-example/src/opengl-example.h
+    ${THIRD-PARTY-PREFIX}/${GLAD_FOLDER}/src/glad.c
+    ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui.cpp
+    ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui_draw.cpp
+    ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui_impl_glfw.cpp
+    ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui_impl_opengl2.cpp
+    ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui_tables.cpp
+    ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui_widgets.cpp
+    examples/opengl-example/README.md
+)
 
-    # define which libs to link against
-    target_link_libraries(
-        webcube
+# define which include directories to pull in
+target_include_directories(
+    opengl-example
+    PUBLIC
+    src
+    ${THIRD-PARTY-PREFIX}/${GLAD_FOLDER}/include
+    ${THIRD-PARTY-PREFIX}/${GLFW_FOLDER}/include
+    ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}
+)
+
+# Libraries to link against
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_link_libraries (
+        opengl-example
         dullahan
+        opengl32
         ${CEF_LIBRARY}
         ${CEF_DLL_LIBRARY}
-        opengl32
-        glu32
-        comctl32
-        winmm
+        ${THIRD-PARTY-PREFIX}/${GLFW_FOLDER}/${GLFW_LIB_PATH}
     )
 
-    # we are building Windows executable, not a console app (default) and turn off spurious linker warnings
-    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        set_target_properties(webcube PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
-        set_target_properties(webcube PROPERTIES LINK_FLAGS "/ignore:4099")
-    endif()
+    # set this example as the default startup project in Visual Studio
+    SET_PROPERTY(DIRECTORY PROPERTY VS_STARTUP_PROJECT "opengl-example")
 
-    # webcube example dependes on main library and host executable
-    add_dependencies(webcube dullahan)
-    add_dependencies(webcube dullahan_host)
-
-    # set the web cube example as the default startup project in Visual Studio
-    if("${CMAKE_VERSION}" VERSION_GREATER 3.6.2)
-        if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-            SET_PROPERTY(DIRECTORY PROPERTY VS_STARTUP_PROJECT "webcube")
-        endif()
-    endif()
-
-    add_custom_command(
-        TARGET webcube POST_BUILD
-        COMMAND "${CMAKE_MT}" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
-        COMMENT "Adding custom manifest...")
-
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-
-    ###############################################################################
-    # osxgl example application
-
-    # add source file to application
-    add_executable(
-        osxgl
-        MACOSX_BUNDLE
-        examples/osxgl/AppDelegate.h
-        examples/osxgl/AppDelegate.mm
-        examples/osxgl/LLOsxglView.h
-        examples/osxgl/LLOsxglView.mm
-        examples/osxgl/main.m
-    )
-
-    # define which include directories to pull in
-    target_include_directories(
-        osxgl
-        PUBLIC
-        src
-    )
-
-    # define which libs to link against
-    target_link_libraries(
-        osxgl
-        dullahan
-        ${CEF_DLL_LIBRARY}
-        "-F ${CEF_FRAMEWORK}"
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    find_library (OPENGL_FRAMEWORK OpenGL)
+    find_library (COCOA_FRAMEWORK Cocoa)
+    find_library (IO_FRAMEWORK IOKit)
+    target_link_libraries (
+        opengl-example 
+        ${THIRD-PARTY-PREFIX}/${GLFW_FOLDER}/${GLFW_LIB_PATH}
         ${OPENGL_FRAMEWORK}
-        ${COCOA_FRAMEWORK}
+        ${COCOA_FRAMEWORK} 
+        ${IO_FRAMEWORK}
     )
+endif ()
 
-    add_dependencies(osxgl dullahan)
-    add_dependencies(osxgl DullahanHelper)
-
-    # default Inof.plist.in template in CMake doesn't contain
-    # the NSPrincipalClass definition so we must add it
-    set(PRINCIPAL_CLASS "NSApplication")
-    set_target_properties(osxgl PROPERTIES
-        MACOSX_BUNDLE_BUNDLE_NAME "OSXGL Test"
-        MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/examples/osxgl/Info.plist.in")
-endif()
+# Examples depende on main library and host executable
+add_dependencies(opengl-example dullahan)
+add_dependencies(opengl-example dullahan_host)
 
 ###############################################################################
 # generic commands that have to go after everything else
@@ -446,19 +423,19 @@ if( USE_SPOTIFY_CEF )
   install( TARGETS dullahan ${CEF_DLL_LIBRARY} DESTINATION lib/release )
 
   foreach(binFile IN LISTS CEF_BINARY_FILES)
-	if(IS_DIRECTORY ${CEF_BINARY_DIR_RELEASE}/${binFile} )
-	  install( DIRECTORY ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION lib/release )
-	  install( DIRECTORY ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION bin/release )
-	else()
-	  install( PROGRAMS ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION lib/release )
-	  install( PROGRAMS ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION bin/release )
-	endif()
+    if(IS_DIRECTORY ${CEF_BINARY_DIR_RELEASE}/${binFile} )
+        install( DIRECTORY ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION lib/release )
+        install( DIRECTORY ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION bin/release )
+    else()
+        install( PROGRAMS ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION lib/release )
+        install( PROGRAMS ${CEF_BINARY_DIR_RELEASE}/${binFile} DESTINATION bin/release )
+    endif()
   endforeach()
   foreach(resFile IN LISTS CEF_RESOURCE_FILES)
-	if(IS_DIRECTORY ${CEF_RESOURCE_DIR}/${resFile} )
-	  install( DIRECTORY  ${CEF_RESOURCE_DIR}/${resFile}  DESTINATION resources)
-	else()
-	  install( FILES ${CEF_RESOURCE_DIR}/${resFile}  DESTINATION resources)
-	endif()
+    if(IS_DIRECTORY ${CEF_RESOURCE_DIR}/${resFile} )
+        install( DIRECTORY  ${CEF_RESOURCE_DIR}/${resFile}  DESTINATION resources)
+    else()
+        install( FILES ${CEF_RESOURCE_DIR}/${resFile}  DESTINATION resources)
+    endif()
   endforeach()
 endif()
