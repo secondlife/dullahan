@@ -16,10 +16,13 @@ project(dullahan)
 #  Determine platform
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(IS_WINDOWS TRUE)
+    set(BUILD_EXAMPLES TRUE)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(IS_MACOS TRUE)
+    set(BUILD_EXAMPLES FALSE)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set(IS_LINUX TRUE)
+    set(BUILD_EXAMPLES FALSE)
 else()
     message(FATAL_ERROR "Unsupported platform")
 endif()
@@ -353,92 +356,73 @@ if(IS_WINDOWS)
 endif()
 
 ###############################################################################
-# examples
-if(IS_WINDOWS)
+# Examples
+if (BUILD_EXAMPLES)
+    set (THIRD-PARTY-PREFIX ${CMAKE_SOURCE_DIR}/examples/opengl-example/third-party)
+    set (GLAD_FOLDER "glad-0.1.36")
+    set (IMGUI_FOLDER "imgui-1.92.2")
+    if(IS_WINDOWS)
+        set (GLFW_FOLDER "glfw-3.4.bin.WIN64")
+        set (GLFW_LIB_PATH "lib-vc2022/glfw3.lib")
+    elseif(IS_MACOS)
+        set (GLFW_FOLDER "glfw-3.4.bin.MACOS")
+        set (GLFW_LIB_PATH "lib-universal/libglfw3.a")
+        set (GLFW_FRAMEWORKS "-framework Cocoa" "-framework OpenGL" "-framework IOKit")
+    endif()
 
     ###############################################################################
-    # webcube example application
+    # OpenGL example application
 
-    # add source file to application
     add_executable(
-        webcube
-        WIN32
-        examples/webcube/webcube.cpp
-        examples/webcube/webcube.h
-        examples/webcube/webcube.rc
-        examples/webcube/resource.h
-        src/win/compatibility.manifest
+        opengl-example
+        examples/opengl-example/src/opengl-example.cpp
+        examples/opengl-example/src/opengl-example.h
+        ${THIRD-PARTY-PREFIX}/${GLAD_FOLDER}/src/glad.c
+        ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui.cpp
+        ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui_draw.cpp
+        ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui_impl_glfw.cpp
+        ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui_impl_opengl2.cpp
+        ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui_tables.cpp
+        ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}/imgui_widgets.cpp
+        examples/opengl-example/README.md
     )
 
-    # define which include directories to pull in
     target_include_directories(
-        webcube
+        opengl-example
         PUBLIC
         src
+        ${THIRD-PARTY-PREFIX}/${GLAD_FOLDER}/include
+        ${THIRD-PARTY-PREFIX}/${GLFW_FOLDER}/include
+        ${THIRD-PARTY-PREFIX}/${IMGUI_FOLDER}
     )
 
-    # define which libs to link against
-    target_link_libraries(
-        webcube
-        dullahan
-        ${CEF_LIBRARY}
-        ${CEF_DLL_LIBRARY}
-        opengl32
-        glu32
-        comctl32
-        winmm
-    )
+    if(IS_WINDOWS)
+        target_link_libraries (
+            opengl-example
+            dullahan
+            opengl32
+            ${CEF_LIBRARY}
+            ${CEF_DLL_LIBRARY}
+            ${THIRD-PARTY-PREFIX}/${GLFW_FOLDER}/${GLFW_LIB_PATH}
+        )
 
-    # Supress Pointless Warnings
-    set_target_properties(webcube PROPERTIES LINK_FLAGS "/ignore:4099")
+        SET_PROPERTY(DIRECTORY PROPERTY VS_STARTUP_PROJECT "opengl-example")
+    elseif(IS_MACOS)
+        find_library (OPENGL_FRAMEWORK OpenGL)
+        find_library (COCOA_FRAMEWORK Cocoa)
+        find_library (IO_FRAMEWORK IOKit)
+        target_link_libraries (
+            opengl-example 
+            ${THIRD-PARTY-PREFIX}/${GLFW_FOLDER}/${GLFW_LIB_PATH}
+            ${OPENGL_FRAMEWORK}
+            ${COCOA_FRAMEWORK} 
+            ${IO_FRAMEWORK}
+        )
+    endif()
 
-    # webcube example dependes on main library and host executable
-    add_dependencies(webcube dullahan_host)
+    add_dependencies(opengl-example dullahan)
+    add_dependencies(opengl-example dullahan_host)
 
-    # set the web cube example as the default startup project in Visual Studio
-    SET_PROPERTY(DIRECTORY PROPERTY VS_STARTUP_PROJECT "webcube")
-
-elseif(IS_MACOS)
-
-    ###############################################################################
-    # osxgl example application
-
-    # add source file to application
-    add_executable(
-        osxgl
-        MACOSX_BUNDLE
-        examples/osxgl/AppDelegate.h
-        examples/osxgl/AppDelegate.mm
-        examples/osxgl/LLOsxglView.h
-        examples/osxgl/LLOsxglView.mm
-        examples/osxgl/main.m
-    )
-
-    # define which include directories to pull in
-    target_include_directories(
-        osxgl
-        PUBLIC
-        src
-    )
-
-    # define which libs to link against
-    target_link_libraries(
-        osxgl
-        dullahan
-        ${CEF_DLL_LIBRARY}
-        ${OPENGL_FRAMEWORK}
-        ${COCOA_FRAMEWORK}
-    )
-
-    add_dependencies(osxgl dullahan)
-    #add_dependencies(osxgl DullahanHelper)
-
-    # default Inof.plist.in template in CMake doesn't contain
-    # the NSPrincipalClass definition so we must add it
-    set(PRINCIPAL_CLASS "NSApplication")
-    set_target_properties(osxgl PROPERTIES
-        MACOSX_BUNDLE_BUNDLE_NAME "OSXGL Test"
-        MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/examples/osxgl/Info.plist.in")
 endif()
 
 ###############################################################################
