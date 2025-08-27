@@ -55,6 +55,8 @@
 #endif
 
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 dullahan_impl::dullahan_impl() :
     mInitialized(false),
@@ -110,7 +112,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
             command_line->AppendSwitch("enable-begin-frame-scheduling");
         }
 
-        // The ability to access local files used to be a member of CefBrowserSettings but 
+        // The ability to access local files used to be a member of CefBrowserSettings but
         // now is is configured globally via command line switch (https://github.com/cefsharp/CefSharp/issues/3668)
         if (mAllowFileAccessFromFiles == true)
         {
@@ -255,7 +257,7 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     CefString(&settings.framework_dir_path) =
     [[NSString stringWithFormat:
       @"%@/Contents/Frameworks/Chromium Embedded Framework.framework", appBundlePath] UTF8String];
-    
+
 	settings.no_sandbox = true;
 #elif __linux__
     CefString(&settings.browser_subprocess_path) = getExeCwd() + "/dullahan_host";
@@ -436,6 +438,23 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     window_info.bounds = { 0, 0, width, height };
 
     mRequestContext = CefRequestContext::GetGlobalContext();
+
+    // Generate a short pause between creating the request context and creating
+    // the browser. This is not a good solution but for the moment, seems to
+    // work - I can repro the error 1 in 5 times.  I've tried this hundreds of
+    // times and haven't seen it. Probably hardware specific. Probably appear
+    // for me as soon as this ships! The correct solution is likely to be
+    // hooking up the callback in the second parameter of CreateContext and
+    // overriding the OnRequestContextINitialized() virtual override. Then,
+    // once that fires, continue with the rest of initialization.
+    const int num_extra_cef_work_loops = 10;
+    const int sleep_time_between_calls = 5;
+    for (int i = 0; i < num_extra_cef_work_loops; ++i)
+    {
+        CefDoMessageLoopWork();
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time_between_calls));
+    }
+
     // browser for this instance - empty URL and no extra_info
     mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), std::string(), browser_settings, nullptr, mRequestContext.get());
 
