@@ -627,6 +627,19 @@ void dullahan_impl::setFocus()
     }
 }
 
+
+bool dullahan_impl::editCanUndo()
+{
+    // TODO: ask CEF if we can do this
+    return true;
+}
+
+bool dullahan_impl::editCanRedo()
+{
+    // TODO: ask CEF if we can do this
+    return true;
+}
+
 bool dullahan_impl::editCanCopy()
 {
     // TODO: ask CEF if we can do this
@@ -643,6 +656,34 @@ bool dullahan_impl::editCanPaste()
 {
     // TODO: ask CEF if we can do this
     return true;
+}
+
+bool dullahan_impl::editCanDelete()
+{
+    // TODO: ask CEF if we can do this
+    return true;
+}
+
+bool dullahan_impl::editCanSelectAll()
+{
+    // TODO: ask CEF if we can do this
+    return true;
+}
+
+void dullahan_impl::editUndo()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->Undo();
+    }
+}
+
+void dullahan_impl::editRedo()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->Redo();
+    }
 }
 
 void dullahan_impl::editCopy()
@@ -666,6 +707,30 @@ void dullahan_impl::editPaste()
     if (mBrowser.get() && mBrowser->GetFocusedFrame())
     {
         mBrowser->GetFocusedFrame()->Paste();
+    }
+}
+
+void dullahan_impl::editDelete()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->Delete();
+    }
+}
+
+void dullahan_impl::editSelectAll()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->SelectAll();
+    }
+}
+
+void dullahan_impl::viewSource()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->ViewSource();
     }
 }
 

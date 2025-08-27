@@ -99,12 +99,22 @@ class dullahan_impl :
 
         void setPageZoom(const double zoom_val);
 
+        bool editCanUndo();
+        bool editCanRedo();
         bool editCanCopy();
         bool editCanCut();
         bool editCanPaste();
+        bool editCanDelete();
+        bool editCanSelectAll();
+        void editUndo();
+        void editRedo();
         void editCopy();
         void editCut();
         void editPaste();
+        void editDelete();
+        void editSelectAll();
+
+        void viewSource();
 
         void showDevTools();
         void closeDevTools();

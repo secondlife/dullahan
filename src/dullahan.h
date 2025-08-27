@@ -282,12 +282,22 @@ class dullahan
 
         // indicates if there is something available to be copy/cut/pasted
         // (for UI purposes) and if so, provides methods to do so
+        bool editCanUndo();
+        bool editCanRedo();
         bool editCanCopy();
         bool editCanCut();
         bool editCanPaste();
+        bool editCanDelete();
+        bool editCanSelectAll();
+        void editUndo();
+        void editRedo();
         void editCopy();
         void editCut();
         void editPaste();
+        void editDelete();
+        void editSelectAll();
+
+        void viewSource();
 
         // show/hide the dev tools
         void showDevTools();
