@@ -2,18 +2,27 @@
 # Dullahan CMake file - Callum Prentice - 2020-05-03
 
 ###############################################################################
-cmake_minimum_required(VERSION 3.11)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+cmake_minimum_required(VERSION 3.13...4.0)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    add_compile_options("-Wno-array-bounds")
-endif()
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ###############################################################################
 # Dullahan main project/solution
 project(dullahan)
+
+###############################################################################
+#  Determine platform
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    set(IS_WINDOWS TRUE)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(IS_MACOS TRUE)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    set(IS_LINUX TRUE)
+else()
+    message(FATAL_ERROR "Unsupported platform")
+endif()
 
 ###############################################################################
 # functions
@@ -72,7 +81,7 @@ endif()
 
 ###############################################################################
 # location of CEF libraries we link against
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(IS_WINDOWS)
     find_library(
         CEF_LIBRARY_RELEASE
         NAMES libcef.lib
@@ -91,24 +100,21 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     check_exists(CEF_LIBRARY_RELEASE)
     check_exists(CEF_DLL_LIBRARY_RELEASE)
 
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+elseif(IS_MACOS)
     find_library(
         CEF_DLL_LIBRARY_RELEASE
         NAMES libcef_dll_wrapper.a
         PATHS ${CEF_RELEASE_DLL_LIB_DIR}
     )
 
-    set(CEF_FRAMEWORK "'${CEF_RELEASE_BIN_DIR}/Chromium Embedded Framework.framework'")
-
     find_library(OPENGL_FRAMEWORK OpenGL)
     find_library(COCOA_FRAMEWORK Cocoa)
 
     # Check that we were able to find our build components
     check_exists(CEF_DLL_LIBRARY_RELEASE)
-    check_exists(CEF_FRAMEWORK)
     check_exists(OPENGL_FRAMEWORK)
     check_exists(COCOA_FRAMEWORK)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif(IS_LINUX)
     set(CMAKE_CXX_LINK_FLAGS "-Wl,--no-keep-memory -Wl,--build-id -Wl,-rpath,'$ORIGIN:$ORIGIN/../lib' -Wl,--exclude-libs,ALL")
 
     if( NOT USE_SPOTIFY_CEF )
@@ -135,7 +141,7 @@ endif()
 ###############################################################################
 # Final layer of finding the right libs for each combination
 # of name, platform, configuration, type etc.
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if(NOT IS_LINUX)
   set(CEF_LIBRARY
       optimized ${CEF_LIBRARY_RELEASE}
   )
@@ -153,26 +159,23 @@ check_exists(CEF_DLL_LIBRARY)
 #    4100 "unreferenced parameter" -  too much spew for cef code
 #    4127 "conditional is constant" - I use an explicity var to turn code on and off which triggers this
 #    4505 "unreferenced local function has been removed" - supress meaningless freeglut warning
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(IS_WINDOWS)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -W4 -wd4100 -wd4127 -wd4505")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11 -xobjective-c++")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-    if( NOT ENABLE_CXX11_ABI )
-      add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
-    endif()
+elseif(IS_MACOS)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -xobjective-c++")
+elseif(IS_LINUX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-array-bounds")
 endif()
 
 ###############################################################################
 # Dullahan libary
 
 # add source files to library
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(IS_WINDOWS)
     set(KEYBOARD_IMPL_SRC_FILE src/dullahan_impl_keyboard_win.cpp)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+elseif(IS_MACOS)
     set(KEYBOARD_IMPL_SRC_FILE src/dullahan_impl_keyboard_mac.mm)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif(IS_LINUX)
     set(KEYBOARD_IMPL_SRC_FILE src/dullahan_impl_keyboard_linux.cpp)
 endif()
 
@@ -205,7 +208,7 @@ target_include_directories(
 )
 
 # turn off spurious linker warnings
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(IS_WINDOWS)
     set_target_properties(dullahan PROPERTIES LINK_FLAGS "/ignore:4099")
 endif()
 
@@ -236,10 +239,12 @@ endif()
 # Dullahan host executable
 
 # add source files to the application
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(IS_WINDOWS)
     add_executable(
         dullahan_host
+        WIN32
         src/host/dullahan_host.cpp
+        src/win/compatibility.manifest
     )
 
     # define which include directories to pull in
@@ -249,91 +254,107 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         ${CEF_INCLUDE_DIR}
         ${CEF_INCLUDE_DIR}/..
     )
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    add_executable(
-        DullahanHelper
-        MACOSX_BUNDLE
-        src/host/dullahan_host.cpp
-    )
-    # define which include directories to pull in
-    target_include_directories(
-        DullahanHelper
-        PUBLIC
-        ${CEF_INCLUDE_DIR}
-        ${CEF_INCLUDE_DIR}/..
-    )
-    # Info.plist.in template adds a new key called "LSUIElement" with value "true"
-    # to surpress the appearance of the DullahanHelper app icon in the dock
-    set_target_properties(DullahanHelper PROPERTIES
-        MACOSX_BUNDLE_BUNDLE_NAME "DullahanHelper"
-        MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/src/host/Info.plist.in")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    add_executable(
-        dullahan_host
-        src/host/dullahan_host.cpp
-    )
-    target_include_directories(
-        dullahan_host
-        PUBLIC
-        ${CEF_INCLUDE_DIR}
-        ${CEF_INCLUDE_DIR}/..
-    )
-endif()
 
-# define which libs to link against
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    target_link_libraries(
-        dullahan_host
-        ${CEF_LIBRARY}
-        ${CEF_DLL_LIBRARY}
-    )
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    target_link_libraries(
-        DullahanHelper
-        ${CEF_DLL_LIBRARY}
-        "-F ${CEF_FRAMEWORK}"
-    )
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    target_link_libraries(
-        dullahan_host
-        ${CEF_DLL_LIBRARY}
-        ${CEF_LIBRARY}
-    )
-endif()
-
-# we are building Windows executable, not a console app (default) and turn off spurious linker warnings
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set_target_properties(dullahan_host PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
     set_target_properties(dullahan_host PROPERTIES LINK_FLAGS "/ignore:4099")
 
-    add_custom_command(
-        TARGET dullahan_host POST_BUILD
-        COMMAND "${CMAKE_MT}" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
-        COMMENT "Adding custom manifest...")
+    target_link_libraries(
+        dullahan_host
+        ${CEF_LIBRARY}
+        ${CEF_DLL_LIBRARY}
+    )
+elseif(IS_MACOS)
+    # Below based on official CEF example code
+
+    # CEF Helper app suffixes.
+    # Format is "<name suffix>:<target suffix>:<plist suffix>".
+    set(DULLAHAN_HELPER_APP_SUFFIXES
+        "::"
+        " (Alerts):_alerts:.alerts"
+        " (GPU):_gpu:.gpu"
+        " (Plugin):_plugin:.plugin"
+        " (Renderer):_renderer:.renderer"
+        )
+
+    # Create the multiple Helper app bundle targets.
+    foreach(_suffix_list ${DULLAHAN_HELPER_APP_SUFFIXES})
+        # Convert to a list and extract the suffix values.
+        string(REPLACE ":" ";" _suffix_list ${_suffix_list})
+        list(GET _suffix_list 0 _name_suffix)
+        list(GET _suffix_list 1 _target_suffix)
+        list(GET _suffix_list 2 _plist_suffix)
+
+        # Define Helper target and output names.
+        set(_helper_target "dullahan_host${_target_suffix}")
+        set(_helper_output_name "DullahanHelper${_name_suffix}")
+
+        # Create Helper-specific variants of the helper-Info.plist file. Do this
+        # manually because the configure_file command (which is executed as part of
+        # MACOSX_BUNDLE_INFO_PLIST) uses global env variables and would insert the
+        # wrong values with multiple targets.
+        set(_helper_info_plist "${CMAKE_CURRENT_BINARY_DIR}/helper-Info${_target_suffix}.plist")
+        file(READ "${PROJECT_SOURCE_DIR}/src/host/Info.plist.in" _plist_contents)
+        string(REPLACE "\${EXECUTABLE_NAME}" "${_helper_output_name}" _plist_contents ${_plist_contents})
+        string(REPLACE "\${PRODUCT_NAME}" "${_helper_output_name}" _plist_contents ${_plist_contents})
+        string(REPLACE "\${BUNDLE_ID_SUFFIX}" "${_plist_suffix}" _plist_contents ${_plist_contents})
+        file(WRITE ${_helper_info_plist} ${_plist_contents})
+
+        # Create Helper executable target.
+        add_executable(${_helper_target} MACOSX_BUNDLE src/host/dullahan_host.cpp)
+
+        # define which include directories to pull in
+        target_include_directories(
+            ${_helper_target}
+            PUBLIC
+            ${CEF_INCLUDE_DIR}
+            ${CEF_INCLUDE_DIR}/..
+        )
+        target_link_libraries(${_helper_target} ${CEF_DLL_LIBRARY} ${DULLAHAN_STANDARD_LIBS})
+        set_target_properties(${_helper_target} PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST ${_helper_info_plist}
+        OUTPUT_NAME ${_helper_output_name}
+        )
+    endforeach()
+elseif(IS_LINUX)
+    add_executable(
+        dullahan_host
+        src/host/dullahan_host.cpp
+    )
+    target_include_directories(
+        dullahan_host
+        PUBLIC
+        ${CEF_INCLUDE_DIR}
+        ${CEF_INCLUDE_DIR}/..
+    )
+
+    target_link_libraries(
+        dullahan_host
+        ${CEF_DLL_LIBRARY}
+        ${CEF_LIBRARY}
+    )
 endif()
 
 # Windows commands to copy CEF binaries and 'resources' folders to
 # executable dir since they're needed at runtime
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-add_custom_command(
-    TARGET dullahan_host POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_directory
-            "$<$<CONFIG:release>:${CEF_RELEASE_BIN_DIR}>"
-            "$<TARGET_FILE_DIR:dullahan_host>"
-    COMMENT "Copying runtime files to executable directory")
+if(IS_WINDOWS)
+    add_custom_command(
+        TARGET dullahan_host POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory
+                "$<$<CONFIG:release>:${CEF_RELEASE_BIN_DIR}>"
+                "$<TARGET_FILE_DIR:dullahan_host>"
+        COMMENT "Copying runtime files to executable directory")
 
-add_custom_command(
-    TARGET dullahan_host POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_directory
-            "${CEF_RESOURCES_DIR}"
-            "$<TARGET_FILE_DIR:dullahan_host>"
-    COMMENT "Copying resource files to executable directory")
+    add_custom_command(
+        TARGET dullahan_host POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory
+                "${CEF_RESOURCES_DIR}"
+                "$<TARGET_FILE_DIR:dullahan_host>"
+        COMMENT "Copying resource files to executable directory")
 endif()
 
 ###############################################################################
 # examples
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(IS_WINDOWS)
 
     ###############################################################################
     # webcube example application
@@ -341,10 +362,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # add source file to application
     add_executable(
         webcube
+        WIN32
         examples/webcube/webcube.cpp
         examples/webcube/webcube.h
         examples/webcube/webcube.rc
         examples/webcube/resource.h
+        src/win/compatibility.manifest
     )
 
     # define which include directories to pull in
@@ -366,29 +389,16 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         winmm
     )
 
-    # we are building Windows executable, not a console app (default) and turn off spurious linker warnings
-    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        set_target_properties(webcube PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
-        set_target_properties(webcube PROPERTIES LINK_FLAGS "/ignore:4099")
-    endif()
+    # Supress Pointless Warnings
+    set_target_properties(webcube PROPERTIES LINK_FLAGS "/ignore:4099")
 
     # webcube example dependes on main library and host executable
-    add_dependencies(webcube dullahan)
     add_dependencies(webcube dullahan_host)
 
     # set the web cube example as the default startup project in Visual Studio
-    if("${CMAKE_VERSION}" VERSION_GREATER 3.6.2)
-        if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-            SET_PROPERTY(DIRECTORY PROPERTY VS_STARTUP_PROJECT "webcube")
-        endif()
-    endif()
+    SET_PROPERTY(DIRECTORY PROPERTY VS_STARTUP_PROJECT "webcube")
 
-    add_custom_command(
-        TARGET webcube POST_BUILD
-        COMMAND "${CMAKE_MT}" -manifest \"$(ProjectDir)..\\src\\win\\compatibility.manifest\" -outputresource:"$(TargetDir)$(TargetFileName)"\;\#1
-        COMMENT "Adding custom manifest...")
-
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+elseif(IS_MACOS)
 
     ###############################################################################
     # osxgl example application
@@ -416,13 +426,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         osxgl
         dullahan
         ${CEF_DLL_LIBRARY}
-        "-F ${CEF_FRAMEWORK}"
         ${OPENGL_FRAMEWORK}
         ${COCOA_FRAMEWORK}
     )
 
     add_dependencies(osxgl dullahan)
-    add_dependencies(osxgl DullahanHelper)
+    #add_dependencies(osxgl DullahanHelper)
 
     # default Inof.plist.in template in CMake doesn't contain
     # the NSPrincipalClass definition so we must add it

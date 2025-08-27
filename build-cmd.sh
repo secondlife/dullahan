@@ -157,7 +157,7 @@ case "$AUTOBUILD_PLATFORM" in
               -DPROJECT_ARCH="x86_64" \
               -DCMAKE_C_FLAGS="$plainopts" \
               -DCMAKE_CXX_FLAGS="$opts" \
-                -DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET} \
+              -DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET} \
               $(cmake_cxx_standard $opts) \
               ../../x86_64
             cmake --build . --config Release --target libcef_dll_wrapper --parallel $AUTOBUILD_CPU_COUNT
@@ -170,26 +170,30 @@ case "$AUTOBUILD_PLATFORM" in
                 -DCMAKE_OSX_ARCHITECTURES="x86_64" \
                 -DCEF_WRAPPER_DIR="$cef_no_wrapper_dir/x86_64" \
                 -DCEF_WRAPPER_BUILD_DIR="$cef_no_wrapper_build_dir/x86_64" \
-            -DCMAKE_C_FLAGS:STRING="$plainopts" \
-            -DCMAKE_CXX_FLAGS:STRING="$opts" \
+                -DCMAKE_C_FLAGS:STRING="$plainopts" \
+                -DCMAKE_CXX_FLAGS:STRING="$opts" \
                 -DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET} \
                 $(cmake_cxx_standard $opts)
 
             cmake --build . --config Release --target dullahan
-            cmake --build . --config Release --target DullahanHelper --parallel $AUTOBUILD_CPU_COUNT
+            cmake --build . --config Release --target dullahan_host --parallel $AUTOBUILD_CPU_COUNT
+            cmake --build . --config Release --target dullahan_host_alerts --parallel $AUTOBUILD_CPU_COUNT
+            cmake --build . --config Release --target dullahan_host_gpu --parallel $AUTOBUILD_CPU_COUNT
+            cmake --build . --config Release --target dullahan_host_renderer --parallel $AUTOBUILD_CPU_COUNT
+            cmake --build . --config Release --target dullahan_host_plugin --parallel $AUTOBUILD_CPU_COUNT
         popd
 
         mkdir -p "$cef_no_wrapper_build_dir/arm64"
         pushd "$cef_no_wrapper_build_dir/arm64"
-                cmake -G Xcode -DCMAKE_BUILD_TYPE=Release \
-                    -DPROJECT_ARCH="arm64" \
-                    -DCMAKE_C_FLAGS="$plainopts" \
-                    -DCMAKE_CXX_FLAGS="$opts" \
-                    -DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET} \
-            $(cmake_cxx_standard $opts) \
+            cmake -G Xcode -DCMAKE_BUILD_TYPE=Release \
+                -DPROJECT_ARCH="arm64" \
+                -DCMAKE_C_FLAGS="$plainopts" \
+                -DCMAKE_CXX_FLAGS="$opts" \
+                -DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET} \
+                $(cmake_cxx_standard $opts) \
                 ../../arm64
-                cmake --build . --config Release --target libcef_dll_wrapper --parallel $AUTOBUILD_CPU_COUNT
-            popd
+            cmake --build . --config Release --target libcef_dll_wrapper --parallel $AUTOBUILD_CPU_COUNT
+        popd
 
         # build Dullahan
         mkdir -p "$stage/build_arm64"
@@ -204,7 +208,11 @@ case "$AUTOBUILD_PLATFORM" in
                 $(cmake_cxx_standard $opts)
 
             cmake --build . --config Release --target dullahan --parallel $AUTOBUILD_CPU_COUNT
-            cmake --build . --config Release --target DullahanHelper --parallel $AUTOBUILD_CPU_COUNT
+            cmake --build . --config Release --target dullahan_host --parallel $AUTOBUILD_CPU_COUNT
+            cmake --build . --config Release --target dullahan_host_alerts --parallel $AUTOBUILD_CPU_COUNT
+            cmake --build . --config Release --target dullahan_host_gpu --parallel $AUTOBUILD_CPU_COUNT
+            cmake --build . --config Release --target dullahan_host_renderer --parallel $AUTOBUILD_CPU_COUNT
+            cmake --build . --config Release --target dullahan_host_plugin --parallel $AUTOBUILD_CPU_COUNT
         popd
 
         # copy files to staging ready to be packaged
@@ -216,19 +224,16 @@ case "$AUTOBUILD_PLATFORM" in
         cp "$dullahan_source_dir/dullahan_version.h" "$stage/include/cef/"
         cp -R "$stage/build_x86_64/Release/DullahanHelper.app" "$stage/lib/release"
 
-        cp -R "$stage/build_x86_64/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (GPU).app"
-        mv "$stage/lib/release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper (GPU)"
-
-        cp -R "$stage/build_x86_64/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (Renderer).app"
-        mv "$stage/lib/release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper (Renderer)"
-
-        cp -R "$stage/build_x86_64/Release/DullahanHelper.app" "$stage/lib/release/DullahanHelper (Plugin).app"
-        mv "$stage/lib/release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper" "$stage/lib/release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper (Plugin)"
+        cp -R "$stage/build_x86_64/Release/DullahanHelper (Alerts).app" "$stage/lib/release/DullahanHelper (Alerts).app"
+        cp -R "$stage/build_x86_64/Release/DullahanHelper (GPU).app" "$stage/lib/release/DullahanHelper (GPU).app"
+        cp -R "$stage/build_x86_64/Release/DullahanHelper (Renderer).app" "$stage/lib/release/DullahanHelper (Renderer).app"
+        cp -R "$stage/build_x86_64/Release/DullahanHelper (Plugin).app" "$stage/lib/release/DullahanHelper (Plugin).app"
 
         lipo -create "$stage/build_x86_64/Release/DullahanHelper.app/Contents/MacOS/DullahanHelper" "$stage/build_arm64/Release/DullahanHelper.app/Contents/MacOS/DullahanHelper" -output "$stage/lib/release/DullahanHelper.app/Contents/MacOS/DullahanHelper"
-        lipo -create "$stage/build_x86_64/Release/DullahanHelper.app/Contents/MacOS/DullahanHelper" "$stage/build_arm64/Release/DullahanHelper.app/Contents/MacOS/DullahanHelper" -output "$stage/lib/release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper (GPU)"
-        lipo -create "$stage/build_x86_64/Release/DullahanHelper.app/Contents/MacOS/DullahanHelper" "$stage/build_arm64/Release/DullahanHelper.app/Contents/MacOS/DullahanHelper" -output "$stage/lib/release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper (Plugin)"
-        lipo -create "$stage/build_x86_64/Release/DullahanHelper.app/Contents/MacOS/DullahanHelper" "$stage/build_arm64/Release/DullahanHelper.app/Contents/MacOS/DullahanHelper" -output "$stage/lib/release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper (Renderer)"
+        lipo -create "$stage/build_x86_64/Release/DullahanHelper (Alerts).app/Contents/MacOS/DullahanHelper (Alerts)" "$stage/build_arm64/Release/DullahanHelper (Alerts).app/Contents/MacOS/DullahanHelper (Alerts)" -output "$stage/lib/release/DullahanHelper (Alerts).app/Contents/MacOS/DullahanHelper (Alerts)"
+        lipo -create "$stage/build_x86_64/Release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper (GPU)" "$stage/build_arm64/Release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper (GPU)" -output "$stage/lib/release/DullahanHelper (GPU).app/Contents/MacOS/DullahanHelper (GPU)"
+        lipo -create "$stage/build_x86_64/Release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper (Plugin)" "$stage/build_arm64/Release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper (Plugin)" -output "$stage/lib/release/DullahanHelper (Plugin).app/Contents/MacOS/DullahanHelper (Plugin)"
+        lipo -create "$stage/build_x86_64/Release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper (Renderer)" "$stage/build_arm64/Release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper (Renderer)" -output "$stage/lib/release/DullahanHelper (Renderer).app/Contents/MacOS/DullahanHelper (Renderer)"
 
         lipo -create -output "$stage/lib/release/libcef_dll_wrapper.a" "$cef_no_wrapper_build_dir/x86_64/libcef_dll_wrapper/Release/libcef_dll_wrapper.a" "$cef_no_wrapper_build_dir/arm64/libcef_dll_wrapper/Release/libcef_dll_wrapper.a"
 
