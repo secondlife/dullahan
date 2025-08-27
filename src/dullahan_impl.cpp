@@ -97,7 +97,6 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         command_line->AppendSwitchWithValue("enable-blink-features", "HTMLImports");
         if (mMediaStreamEnabled == true)
         {
-            command_line->AppendSwitch("disable-surfaces");
             command_line->AppendSwitch("enable-media-stream");
         }
 
@@ -246,14 +245,19 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     // finally, tell CEF where to find the host process helper
     CefString(&settings.browser_subprocess_path) = host_process_path + "\\" + user_settings.host_process_filename;
 
+    settings.no_sandbox = true;
 #elif __APPLE__
     NSString* appBundlePath = [[NSBundle mainBundle] bundlePath];
     CefString(&settings.browser_subprocess_path) =
         [[NSString stringWithFormat:
           @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
 
-#endif
-#ifdef __linux__
+    CefString(&settings.framework_dir_path) =
+    [[NSString stringWithFormat:
+      @"%@/Contents/Frameworks/Chromium Embedded Framework.framework", appBundlePath] UTF8String];
+    
+	settings.no_sandbox = true;
+#elif __linux__
     CefString(&settings.browser_subprocess_path) = getExeCwd() + "/dullahan_host";
     bool useSandbox = false;
     std::string sandboxName = getExeCwd() + "/chrome-sandbox";
@@ -270,8 +274,7 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
 
     settings.no_sandbox = !useSandbox;
 #else
-    // explicitly disable sandbox
-    settings.no_sandbox = true;
+#error "Unsupported Platform"
 #endif
     // required for CEF 72+ to indicate headless
     settings.windowless_rendering_enabled = true;
