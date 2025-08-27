@@ -44,25 +44,6 @@ source_environment_tempfile="$stage/source_environment.sh"
 # remove_cxxstd
 source "$(dirname "$AUTOBUILD_VARIABLES_FILE")/functions"
 
-# Use msbuild.exe instead of devenv.com
-build_sln() {
-    local solution=$1
-    local config=$2
-    local proj="${3:-}"
-    local toolset="${AUTOBUILD_WIN_VSTOOLSET:-v143}"
-
-    # e.g. config = "Release|$AUTOBUILD_WIN_VSPLATFORM" per devenv.com convention
-    local -a confparts
-    IFS="|" read -ra confparts <<< "$config"
-
-    msbuild.exe \
-        "$(cygpath -w "$solution")" \
-        ${proj:+-t:"$proj"} \
-        -p:Configuration="${confparts[0]}" \
-        -p:Platform="${confparts[1]}" \
-        -p:PlatformToolset=$toolset
-}
-
 build=${AUTOBUILD_BUILD_ID:=0}
 
 case "$AUTOBUILD_PLATFORM" in
@@ -77,21 +58,21 @@ case "$AUTOBUILD_PLATFORM" in
         cmake -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
               -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
               $(cmake_cxx_standard $LL_BUILD_RELEASE) \
-              -DCEF_RUNTIME_LIBRARY_FLAG=/MD -DUSE_SANDBOX=Off ..
-        build_sln cef.sln "Release|$AUTOBUILD_WIN_VSPLATFORM" "libcef_dll_wrapper"
+              -DCEF_RUNTIME_LIBRARY_FLAG=-MD -DUSE_SANDBOX=Off ..
+        cmake --build . --config Release --target libcef_dll_wrapper --parallel $AUTOBUILD_CPU_COUNT
 
         # generate the project files for Dullahan
         cd "$stage"
         cmake .. \
             -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
-            -DCEF_WRAPPER_DIR="$(cygpath -w "$cef_no_wrapper_dir")" \
-            -DCEF_WRAPPER_BUILD_DIR="$(cygpath -w "$cef_no_wrapper_build_dir")" \
+            -DCEF_WRAPPER_DIR="$(cygpath -m "$cef_no_wrapper_dir")" \
+            -DCEF_WRAPPER_BUILD_DIR="$(cygpath -m "$cef_no_wrapper_build_dir")" \
             -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
             $(cmake_cxx_standard $LL_BUILD_RELEASE) \
 
         # build individual dullahan libraries but not examples
-        build_sln "dullahan.sln" "Release|$AUTOBUILD_WIN_VSPLATFORM" dullahan
-        build_sln "dullahan.sln" "Release|$AUTOBUILD_WIN_VSPLATFORM" dullahan_host
+        cmake --build . --config Release --target dullahan --parallel $AUTOBUILD_CPU_COUNT
+        cmake --build . --config Release --target dullahan_host --parallel $AUTOBUILD_CPU_COUNT
 
         # prepare the staging dirs
         cd ..
@@ -114,6 +95,8 @@ case "$AUTOBUILD_PLATFORM" in
 
         # CEF run time binaries (copy individually except SwiftShader so it's
         # obvious when a file is removed and this part of the script fails)
+        cp "$cef_no_wrapper_dir/Release/bootstrap.exe" "$stage/bin/release/"
+        cp "$cef_no_wrapper_dir/Release/bootstrapc.exe" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/chrome_elf.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/d3dcompiler_47.dll" "$stage/bin/release/"
         cp "$cef_no_wrapper_dir/Release/dxcompiler.dll" "$stage/bin/release/"
@@ -136,10 +119,10 @@ case "$AUTOBUILD_PLATFORM" in
 
         # populate version_file (after CMake runs)
         cl \
-            /Fo"$(cygpath -w "$stage/version.obj")" \
-            /Fe"$(cygpath -w "$stage/version.exe")" \
-            /I "$(cygpath -w "$cef_no_wrapper_dir/include/")"  \
-            /I "$(cygpath -w "$top/src")"  \
+            -Fo"$(cygpath -w "$stage/version.obj")" \
+            -Fe"$(cygpath -w "$stage/version.exe")" \
+            -I "$(cygpath -w "$cef_no_wrapper_dir/include/")"  \
+            -I "$(cygpath -w "$top/src")"  \
             "$(cygpath -w "$top/tools/autobuild_version.cpp")"
         "$stage/version.exe" > "$stage/version.txt"
         rm "$stage"/version.{obj,exe}
