@@ -36,6 +36,8 @@
 #include "dullahan_impl.h"
 
 #include <algorithm>
+#include <chrono>
+#include <thread>
 
 dullahan_browser_client::dullahan_browser_client(dullahan_impl* parent,
     scoped_refptr<dullahan_render_handler> render_handler) :
@@ -128,13 +130,7 @@ void dullahan_browser_client::OnBeforeClose(CefRefPtr<CefBrowser> browser)
         for (int i = 0; i < num_extra_cef_work_loops; ++i)
         {
             CefDoMessageLoopWork();
-#ifdef WIN32
-            Sleep(sleep_time_between_calls);
-#elif __APPLE__
-            sleep(sleep_time_between_calls);
-#elif __linux__
-            sleep(sleep_time_between_calls);
-#endif
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time_between_calls));
         }
 
         mParent->getCallbackManager()->onRequestExit();

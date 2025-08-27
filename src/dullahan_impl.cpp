@@ -283,7 +283,7 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     settings.multi_threaded_message_loop = false;
 
     // act like a browser and do not persist session cookies ever
-    settings.persist_session_cookies = false;
+    settings.persist_session_cookies = user_settings.cookies_enabled;
 
     // explicitly set the path to the locales folder since defaults no longer work on some systems
     CefString(&settings.locales_dir_path) = user_settings.locales_dir_path;
@@ -390,8 +390,11 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     CefString(&settings.log_file) = user_settings.log_file;
     settings.log_severity = user_settings.log_verbose ? LOGSEVERITY_VERBOSE : LOGSEVERITY_DEFAULT;
 
-    // allow Chrome (or other CEF windoW) to debug at http://localhost::PORT_NUMBER
-    settings.remote_debugging_port = user_settings.remote_debugging_port;
+	if (user_settings.enable_remote_debug)
+	{
+		// allow Chrome (or other CEF windoW) to debug at http://localhost::PORT_NUMBER
+		settings.remote_debugging_port = user_settings.remote_debugging_port;
+	}
 
     // initiaize CEF
     bool result = CefInitialize(args, settings, this, nullptr);
@@ -429,37 +432,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     const int height = user_settings.initial_height;
     window_info.bounds = { 0, 0, width, height };
 
-    // Create the RequestContext for this browser. The header comments
-    // say it must be the same as the root cache path or a sub-folder of 
-    // it. Doing the former seemed to work - doing the latter did not.
-    CefRequestContextSettings contextSettings;
-    std::string context_cache_path = user_settings.root_cache_path;
-    CefString(&contextSettings.cache_path) = context_cache_path;
-    contextSettings.persist_session_cookies = user_settings.cookies_enabled;
-    mRequestContext = CefRequestContext::CreateContext(contextSettings, nullptr);
-
-    // Generate a short pause between creating the request context and creating
-    // the browser. This is not a good solution but for the moment, seems to
-    // work - I can repro the error 1 in 5 times.  I've tried this hundreds of 
-    // times and haven't seen it. Probably hardware specific. Probably appear
-    // for me as soon as this ships! The correct solution is likely to be
-    // hooking up the callback in the second parameter of CreateContext and
-    // overriding the OnRequestContextINitialized() virtual override. Then,
-    // once that fires, continue with the rest of initialization. 
-    const int num_extra_cef_work_loops = 10;
-    const int sleep_time_between_calls = 5;
-    for (int i = 0; i < num_extra_cef_work_loops; ++i)
-    {
-        CefDoMessageLoopWork();
-#ifdef WIN32
-            Sleep(sleep_time_between_calls);
-#elif __APPLE__
-            sleep(sleep_time_between_calls);
-#elif __linux__
-            sleep(sleep_time_between_calls);
-#endif
-    }
-
+    mRequestContext = CefRequestContext::GetGlobalContext();
     // browser for this instance - empty URL and no extra_info
     mBrowser = CefBrowserHost::CreateBrowserSync(window_info, mBrowserClient.get(), std::string(), browser_settings, nullptr, mRequestContext.get());
 

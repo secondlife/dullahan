@@ -198,6 +198,9 @@ class dullahan
             // whether to log verbosely (true) or not (false)
             int log_verbose = false;
 
+            // allow remote debugging
+            int enable_remote_debug = false;
+
             // allow Chrome (or other CEF windoW) to debug via http://localhost::PORT_NUMBER
             int remote_debugging_port = 1964;
         };
