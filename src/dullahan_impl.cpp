@@ -55,6 +55,8 @@
 #endif
 
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 dullahan_impl::dullahan_impl() :
     mInitialized(false),
@@ -97,7 +99,6 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         command_line->AppendSwitchWithValue("enable-blink-features", "HTMLImports");
         if (mMediaStreamEnabled == true)
         {
-            command_line->AppendSwitch("disable-surfaces");
             command_line->AppendSwitch("enable-media-stream");
         }
 
@@ -111,7 +112,7 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
             command_line->AppendSwitch("enable-begin-frame-scheduling");
         }
 
-        // The ability to access local files used to be a member of CefBrowserSettings but 
+        // The ability to access local files used to be a member of CefBrowserSettings but
         // now is is configured globally via command line switch (https://github.com/cefsharp/CefSharp/issues/3668)
         if (mAllowFileAccessFromFiles == true)
         {
@@ -246,14 +247,19 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     // finally, tell CEF where to find the host process helper
     CefString(&settings.browser_subprocess_path) = host_process_path + "\\" + user_settings.host_process_filename;
 
+    settings.no_sandbox = true;
 #elif __APPLE__
     NSString* appBundlePath = [[NSBundle mainBundle] bundlePath];
     CefString(&settings.browser_subprocess_path) =
         [[NSString stringWithFormat:
           @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
 
-#endif
-#ifdef __linux__
+    CefString(&settings.framework_dir_path) =
+    [[NSString stringWithFormat:
+      @"%@/Contents/Frameworks/Chromium Embedded Framework.framework", appBundlePath] UTF8String];
+
+	settings.no_sandbox = true;
+#elif __linux__
     CefString(&settings.browser_subprocess_path) = getExeCwd() + "/dullahan_host";
     bool useSandbox = false;
     std::string sandboxName = getExeCwd() + "/chrome-sandbox";
@@ -270,8 +276,7 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
 
     settings.no_sandbox = !useSandbox;
 #else
-    // explicitly disable sandbox
-    settings.no_sandbox = true;
+#error "Unsupported Platform"
 #endif
     // required for CEF 72+ to indicate headless
     settings.windowless_rendering_enabled = true;
@@ -283,7 +288,7 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     settings.multi_threaded_message_loop = false;
 
     // act like a browser and do not persist session cookies ever
-    settings.persist_session_cookies = false;
+    settings.persist_session_cookies = user_settings.cookies_enabled;
 
     // explicitly set the path to the locales folder since defaults no longer work on some systems
     CefString(&settings.locales_dir_path) = user_settings.locales_dir_path;
@@ -390,8 +395,11 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     CefString(&settings.log_file) = user_settings.log_file;
     settings.log_severity = user_settings.log_verbose ? LOGSEVERITY_VERBOSE : LOGSEVERITY_DEFAULT;
 
-    // allow Chrome (or other CEF windoW) to debug at http://localhost::PORT_NUMBER
-    settings.remote_debugging_port = user_settings.remote_debugging_port;
+	if (user_settings.enable_remote_debug)
+	{
+		// allow Chrome (or other CEF windoW) to debug at http://localhost::PORT_NUMBER
+		settings.remote_debugging_port = user_settings.remote_debugging_port;
+	}
 
     // initiaize CEF
     bool result = CefInitialize(args, settings, this, nullptr);
@@ -429,35 +437,22 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     const int height = user_settings.initial_height;
     window_info.bounds = { 0, 0, width, height };
 
-    // Create the RequestContext for this browser. The header comments
-    // say it must be the same as the root cache path or a sub-folder of 
-    // it. Doing the former seemed to work - doing the latter did not.
-    CefRequestContextSettings contextSettings;
-    std::string context_cache_path = user_settings.root_cache_path;
-    CefString(&contextSettings.cache_path) = context_cache_path;
-    contextSettings.persist_session_cookies = user_settings.cookies_enabled;
-    mRequestContext = CefRequestContext::CreateContext(contextSettings, nullptr);
+    mRequestContext = CefRequestContext::GetGlobalContext();
 
     // Generate a short pause between creating the request context and creating
     // the browser. This is not a good solution but for the moment, seems to
-    // work - I can repro the error 1 in 5 times.  I've tried this hundreds of 
+    // work - I can repro the error 1 in 5 times.  I've tried this hundreds of
     // times and haven't seen it. Probably hardware specific. Probably appear
     // for me as soon as this ships! The correct solution is likely to be
     // hooking up the callback in the second parameter of CreateContext and
     // overriding the OnRequestContextINitialized() virtual override. Then,
-    // once that fires, continue with the rest of initialization. 
+    // once that fires, continue with the rest of initialization.
     const int num_extra_cef_work_loops = 10;
     const int sleep_time_between_calls = 5;
     for (int i = 0; i < num_extra_cef_work_loops; ++i)
     {
         CefDoMessageLoopWork();
-#ifdef WIN32
-            Sleep(sleep_time_between_calls);
-#elif __APPLE__
-            sleep(sleep_time_between_calls);
-#elif __linux__
-            sleep(sleep_time_between_calls);
-#endif
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time_between_calls));
     }
 
     // browser for this instance - empty URL and no extra_info
@@ -651,6 +646,19 @@ void dullahan_impl::setFocus()
     }
 }
 
+
+bool dullahan_impl::editCanUndo()
+{
+    // TODO: ask CEF if we can do this
+    return true;
+}
+
+bool dullahan_impl::editCanRedo()
+{
+    // TODO: ask CEF if we can do this
+    return true;
+}
+
 bool dullahan_impl::editCanCopy()
 {
     // TODO: ask CEF if we can do this
@@ -667,6 +675,34 @@ bool dullahan_impl::editCanPaste()
 {
     // TODO: ask CEF if we can do this
     return true;
+}
+
+bool dullahan_impl::editCanDelete()
+{
+    // TODO: ask CEF if we can do this
+    return true;
+}
+
+bool dullahan_impl::editCanSelectAll()
+{
+    // TODO: ask CEF if we can do this
+    return true;
+}
+
+void dullahan_impl::editUndo()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->Undo();
+    }
+}
+
+void dullahan_impl::editRedo()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->Redo();
+    }
 }
 
 void dullahan_impl::editCopy()
@@ -690,6 +726,30 @@ void dullahan_impl::editPaste()
     if (mBrowser.get() && mBrowser->GetFocusedFrame())
     {
         mBrowser->GetFocusedFrame()->Paste();
+    }
+}
+
+void dullahan_impl::editDelete()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->Delete();
+    }
+}
+
+void dullahan_impl::editSelectAll()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->SelectAll();
+    }
+}
+
+void dullahan_impl::viewSource()
+{
+    if (mBrowser.get() && mBrowser->GetFocusedFrame())
+    {
+        mBrowser->GetFocusedFrame()->ViewSource();
     }
 }
 
