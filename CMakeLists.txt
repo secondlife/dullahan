@@ -7,6 +7,7 @@ cmake_minimum_required(VERSION 3.13...4.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_XCODE_GENERATE_TOP_LEVEL_PROJECT_ONLY ON)
 
 ###############################################################################
 # Dullahan main project/solution
@@ -19,7 +20,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(BUILD_EXAMPLES TRUE)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(IS_MACOS TRUE)
-    set(BUILD_EXAMPLES FALSE)
+    set(BUILD_EXAMPLES TRUE)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set(IS_LINUX TRUE)
     set(BUILD_EXAMPLES FALSE)
@@ -375,6 +376,7 @@ if (BUILD_EXAMPLES)
 
     add_executable(
         opengl-example
+        MACOSX_BUNDLE
         examples/opengl-example/src/opengl-example.cpp
         examples/opengl-example/src/opengl-example.h
         ${THIRD-PARTY-PREFIX}/${GLAD_FOLDER}/src/glad.c
@@ -412,12 +414,25 @@ if (BUILD_EXAMPLES)
         find_library (COCOA_FRAMEWORK Cocoa)
         find_library (IO_FRAMEWORK IOKit)
         target_link_libraries (
-            opengl-example 
+            opengl-example
+            dullahan
+            ${CEF_DLL_LIBRARY}
             ${THIRD-PARTY-PREFIX}/${GLFW_FOLDER}/${GLFW_LIB_PATH}
             ${OPENGL_FRAMEWORK}
-            ${COCOA_FRAMEWORK} 
+            ${COCOA_FRAMEWORK}
             ${IO_FRAMEWORK}
         )
+        set(EXAMPLE_FRAMEWORKS
+            "${CEF_WRAPPER_DIR}/Release/Chromium Embedded Framework.framework"
+            dullahan_host
+            dullahan_host_alerts
+            dullahan_host_gpu
+            dullahan_host_renderer
+            dullahan_host_plugin
+        )
+    set_target_properties(opengl-example
+                        PROPERTIES
+                        XCODE_EMBED_FRAMEWORKS "${EXAMPLE_FRAMEWORKS}")
     endif()
 
     add_dependencies(opengl-example dullahan)
