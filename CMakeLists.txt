@@ -64,20 +64,20 @@ add_library(
     src/dullahan_render_handler.h
 )
 
-if("${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in" IS_NEWER_THAN "${PROJECT_SOURCE_DIR}/src/dullahan_version.h")
-    file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CEF_VERSION_STR REGEX "\#define CEF_VERSION ")
-    file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_MAJOR_STR REGEX "\#define CHROME_VERSION_MAJOR ")
-    file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_MINOR_STR REGEX "\#define CHROME_VERSION_MINOR ")
-    file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_BUILD_STR REGEX "\#define CHROME_VERSION_BUILD ")
-    file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_PATCH_STR REGEX "\#define CHROME_VERSION_PATCH ")
-
-    string(TIMESTAMP BUILDNUMBER "#define DULLAHAN_VERSION_BUILD %Y%m%d%H%M")
-
-    configure_file(
-        "${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in"
-        "${PROJECT_SOURCE_DIR}/src/dullahan_version.h"
-    )
-endif()
+# ######################################################################################################################
+# Populate the version header file from the template
+#
+file(REMOVE "${PROJECT_SOURCE_DIR}/src/dullahan_version.h")
+file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CEF_VERSION_STR REGEX "\#define CEF_VERSION ")
+file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_MAJOR_STR REGEX "\#define CHROME_VERSION_MAJOR ")
+file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_MINOR_STR REGEX "\#define CHROME_VERSION_MINOR ")
+file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_BUILD_STR REGEX "\#define CHROME_VERSION_BUILD ")
+file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_PATCH_STR REGEX "\#define CHROME_VERSION_PATCH ")
+string(TIMESTAMP BUILDNUMBER "#define DULLAHAN_VERSION_BUILD %Y%m%d%H%M")
+configure_file(
+    "${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in"
+    "${PROJECT_SOURCE_DIR}/src/dullahan_version.h"
+)
 
 target_include_directories(
     dullahan

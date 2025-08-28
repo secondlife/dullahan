@@ -29,19 +29,13 @@ dullahan_source_dir=$top/src
 # The name of the directory that `autobuild install` drops the
 # CEF package into - no way to share this name between CEF and
 # Dullahan so they have to be kept in lock step manually
-cef_no_wrapper_dir="$stage/packages/cef"
-
-# The name of the directory that the libcef_dll_wrapper gets
-# built in - we also need to refer to it to get the build result
-# libraries for Dullahan so we must specify it exactly once here.
-cef_no_wrapper_build_dir="$cef_no_wrapper_dir/build"
+cef_dll_wrapper_dir="$stage/packages/cef"
 
 # load autobuild provided shell functions and variables
 source_environment_tempfile="$stage/source_environment.sh"
 "$autobuild" source_environment > "$source_environment_tempfile"
 . "$source_environment_tempfile"
 
-# remove_cxxstd
 source "$(dirname "$AUTOBUILD_VARIABLES_FILE")/functions"
 
 build=${AUTOBUILD_BUILD_ID:=0}
@@ -50,36 +44,21 @@ case "$AUTOBUILD_PLATFORM" in
     windows*)
         load_vsvars
 
-        # build the CEF c->C++ wrapper "libcef_dll_wrapper"
-        cd "$cef_no_wrapper_dir"
-        rm -rf "$cef_no_wrapper_build_dir"
-        mkdir -p "$cef_no_wrapper_build_dir"
-        cd "$cef_no_wrapper_build_dir"
-        cmake -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
-              -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
-              $(cmake_cxx_standard $LL_BUILD_RELEASE) \
-              -DCEF_RUNTIME_LIBRARY_FLAG=-MD -DUSE_SANDBOX=Off ..
-        cmake --build . --config Release --target libcef_dll_wrapper --parallel $AUTOBUILD_CPU_COUNT
-
-        # generate the project files for Dullahan
         cd "$stage"
-        cmake .. \
-            -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
-            -DCEF_WRAPPER_DIR="$(cygpath -m "$cef_no_wrapper_dir")" \
-            -DCEF_WRAPPER_BUILD_DIR="$(cygpath -m "$cef_no_wrapper_build_dir")" \
-            -DCMAKE_CXX_FLAGS="$LL_BUILD_RELEASE" \
-            $(cmake_cxx_standard $LL_BUILD_RELEASE) \
 
-        # build individual dullahan libraries but not examples
+        cmake .. \
+           -G "$AUTOBUILD_WIN_CMAKE_GEN" -A "$AUTOBUILD_WIN_VSPLATFORM" \
+            -DCEF_RUNTIME_LIBRARY_FLAG=/MD \
+            -DUSE_SANDBOX=Off \
+            -DCEF_PACKAGE_DIR="$(cygpath -m "$cef_dll_wrapper_dir")"
+
         cmake --build . --config Release --target dullahan --parallel $AUTOBUILD_CPU_COUNT
         cmake --build . --config Release --target dullahan_host --parallel $AUTOBUILD_CPU_COUNT
 
         # prepare the staging dirs
-        cd ..
         mkdir -p "$stage/include/cef"
         mkdir -p "$stage/lib/release"
         mkdir -p "$stage/bin/release"
-        mkdir -p "$stage/bin/release/swiftshader"
         mkdir -p "$stage/resources"
         mkdir -p "$stage/LICENSES"
 
@@ -90,28 +69,15 @@ case "$AUTOBUILD_PLATFORM" in
         cp "$stage/Release/dullahan_host.exe" "$stage/bin/release/"
 
         # CEF libraries
-        cp "$cef_no_wrapper_dir/Release/libcef.lib" "$stage/lib/release"
-        cp "$cef_no_wrapper_build_dir/libcef_dll_wrapper/Release/libcef_dll_wrapper.lib" "$stage/lib/release"
+        cp "$cef_dll_wrapper_dir/Release/libcef.lib" "$stage/lib/release"
+        cp "$stage/_deps/cef_prebuild-build/libcef_dll_wrapper/Release/libcef_dll_wrapper.lib" "$stage/lib/release"
 
-        # CEF run time binaries (copy individually except SwiftShader so it's
-        # obvious when a file is removed and this part of the script fails)
-        cp "$cef_no_wrapper_dir/Release/bootstrap.exe" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/bootstrapc.exe" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/chrome_elf.dll" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/d3dcompiler_47.dll" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/dxcompiler.dll" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/dxil.dll" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/libcef.dll" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/libcef.lib" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/libEGL.dll" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/libGLESv2.dll" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/v8_context_snapshot.bin" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/vk_swiftshader.dll" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/vk_swiftshader_icd.json" "$stage/bin/release/"
-        cp "$cef_no_wrapper_dir/Release/vulkan-1.dll" "$stage/bin/release/"
+        # CEF binary files
+        cp "$cef_dll_wrapper_dir/Release/"* "$stage/bin/release/"
+        rm "$stage/bin/release/libcef.lib"
 
         # CEF resources
-        cp -R "$cef_no_wrapper_dir/Resources/"* "$stage/resources/"
+        cp -R "$cef_dll_wrapper_dir/Resources/"* "$stage/resources/"
 
         # licenses
         cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"
@@ -121,7 +87,7 @@ case "$AUTOBUILD_PLATFORM" in
         cl \
             -Fo"$(cygpath -w "$stage/version.obj")" \
             -Fe"$(cygpath -w "$stage/version.exe")" \
-            -I "$(cygpath -w "$cef_no_wrapper_dir/include/")"  \
+            -I "$(cygpath -w "$cef_dll_wrapper_dir/include/")" \
             -I "$(cygpath -w "$top/src")"  \
             "$(cygpath -w "$top/tools/autobuild_version.cpp")"
         "$stage/version.exe" > "$stage/version.txt"
@@ -278,12 +244,12 @@ case "$AUTOBUILD_PLATFORM" in
 
         cmake -S . -B stage/build  -DCMAKE_BUILD_TYPE=Release -G Ninja -DCMAKE_INSTALL_PREFIX=stage -DENABLE_CXX11_ABI=ON \
         -DUSE_SPOTIFY_CEF=TRUE -DSPOTIFY_CEF_URL=https://cef-builds.spotifycdn.com/cef_binary_118.4.1%2Bg3dd6078%2Bchromium-118.0.5993.54_linux64_beta_minimal.tar.bz2
-		cmake --build stage/build
-		cmake --install stage/build
+        cmake --build stage/build
+        cmake --install stage/build
 
         strip stage/lib/release/libcef.so
-	rm stage/bin/release/*.so*
-	rm stage/bin/release/*.json
+        rm stage/bin/release/*.so*
+        rm stage/bin/release/*.json
 
         g++ -std=c++17  -I "${cef_no_wrapper_dir}/include"  -I "${dullahan_source_dir}" -o "$stage/version"  "$top/tools/autobuild_version.cpp"
 
