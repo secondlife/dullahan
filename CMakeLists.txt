@@ -4,6 +4,10 @@
 ###############################################################################
 cmake_minimum_required(VERSION 3.13...4.0)
 
+if(CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_CONFIGURATION_TYPES "Release")
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -312,7 +316,7 @@ elseif(IS_MACOS)
             ${CEF_INCLUDE_DIR}
             ${CEF_INCLUDE_DIR}/..
         )
-        target_link_libraries(${_helper_target} ${CEF_DLL_LIBRARY} ${DULLAHAN_STANDARD_LIBS})
+        target_link_libraries(${_helper_target} ${CEF_DLL_LIBRARY})
         set_target_properties(${_helper_target} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST ${_helper_info_plist}
         OUTPUT_NAME ${_helper_output_name}
@@ -436,15 +440,8 @@ if (BUILD_EXAMPLES)
     endif()
 
     add_dependencies(opengl-example dullahan)
-    add_dependencies(opengl-example dullahan_host)
+    add_dependencies(opengl-example dullahan_host dullahan_host_alerts dullahan_host_gpu dullahan_host_renderer dullahan_host_plugin)
 
-endif()
-
-###############################################################################
-# generic commands that have to go after everything else
-
-if(CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_CONFIGURATION_TYPES "Release")
 endif()
 
 # Install the Dullahan library and host executable
