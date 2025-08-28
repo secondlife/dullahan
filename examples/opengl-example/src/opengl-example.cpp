@@ -264,7 +264,7 @@ bool openglExample::init()
     std::uniform_int_distribution<> distrib(100000, 999999);
     int random_number = distrib(gen);
 
-    // As of CEF 139, the root cache folder must be unique and 
+    // As of CEF 139, the root cache folder must be unique and
     // an absolute path - std::Filesystem to the rescue
     std::filesystem::path root_cache_path = std::filesystem::absolute("./opengl-example-profile") / std::to_string(random_number);
     std::filesystem::path log_path = root_cache_path / "opengl-example-cef.log";
@@ -275,6 +275,9 @@ bool openglExample::init()
     settings.initial_height = mTextureWidth;
     settings.initial_width = mTextureHeight;
     settings.disable_gpu = false;
+#ifdef __APPLE__
+    settings.use_mock_keychain = true;
+#endif
 
     bool result = mDullahan->init(settings);
     if (result)
@@ -312,7 +315,7 @@ void openglExample::generatePickTexture()
     delete [] pick_texture_pixels;
 }
 
-// Converts the position of the mouse on the screen into 
+// Converts the position of the mouse on the screen into
 // the position within the quad - return true if hit and
 // location X, Y (0..texture size) is passed back
 bool openglExample::mousePosToTexturePos(int* tx, int* ty)
