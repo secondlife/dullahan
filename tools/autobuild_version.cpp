@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     std::cout << ".";
     std::cout << DULLAHAN_VERSION_POINT;
     std::cout << ".";
-    std::cout << DULLAHAN_VERSION_BUILD;
+    std::cout << DULLAHAN_VERSION_GITHASH;
     std::cout << "_";
     std::cout << CEF_VERSION_MAJOR;
     std::cout << ".";

@@ -196,10 +196,11 @@ endif()
 # ######################################################################################################################
 # Copy runtime files
 #
-# Also writes an extra copy of the folders to somewhere autobuild
-# will know where to look and doesn't need to know the details
-# of the CEF build in '_deps' etc.that might change in the future.
-# Not needed for manual builds using build.bat|sh
+# Also writes an extra copy of the bin and resource folders to 
+# somewhere autobuild knows where to look so that autobuild
+# does not need a list of bin/resource files to copy to staging.
+# and should be more future proof as CEF updates these folders
+# in the future. They are not needed for the standalone build.bat|sh
 #
 file(MAKE_DIRECTORY "${DESTINATION_DIR}")
 foreach(file_path IN LISTS CEF_BINARY_FILES)
