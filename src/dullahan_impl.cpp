@@ -1121,11 +1121,23 @@ const std::string dullahan_impl::append_bitwidth_string(std::ostringstream& stre
     return stream.str();
 }
 
-const std::string dullahan_impl::dullahan_cef_version(bool show_bitwidth)
+const std::string dullahan_impl::dullahan_cef_version(bool use_short, bool show_bitwidth)
 {
     std::ostringstream s;
-    s << CEF_VERSION;
-
+    
+    if (use_short)
+    {
+        s << CEF_VERSION_MAJOR;
+        s << ".";
+        s << CEF_VERSION_MINOR;
+        s << ".";
+        s << CEF_VERSION_PATCH;
+    }
+    else
+    { 
+        s << CEF_VERSION;
+    }
+    
     return append_bitwidth_string(s, show_bitwidth);
 }
 
@@ -1165,7 +1177,7 @@ const std::string dullahan_impl::composite_version()
     version << "Dullahan: ";
     version << dullahan_version(false);
     version << " (CEF: ";
-    version << dullahan_cef_version(false);
+    version << dullahan_cef_version(true, false);
     version << " - Chrome: ";
     version << dullahan_chrome_version(false);
     version << ")";

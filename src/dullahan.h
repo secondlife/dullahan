@@ -244,7 +244,7 @@ class dullahan
         void stop();
 
         // versions of CEF, Chrome and this library and one with everything
-        const std::string dullahan_cef_version(bool show_bitwidth);
+        const std::string dullahan_cef_version(bool use_short, bool show_bitwidth);
         const std::string dullahan_chrome_version(bool show_bitwidth);
         const std::string dullahan_version(bool show_bitwidth);
         const std::string composite_version();

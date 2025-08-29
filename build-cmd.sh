@@ -68,16 +68,14 @@ case "$AUTOBUILD_PLATFORM" in
         cp "$stage/Release/dullahan.lib" "$stage/lib/release/"
         cp "$stage/Release/dullahan_host.exe" "$stage/bin/release/"
 
-        # CEF libraries
+        # CEF libraries (we cannot ask CMake to put them in a well known
+        # location since they aren't present until cmake --build is run)
         cp "$cef_dll_wrapper_dir/Release/libcef.lib" "$stage/lib/release"
         cp "$stage/_deps/cef_prebuild-build/libcef_dll_wrapper/Release/libcef_dll_wrapper.lib" "$stage/lib/release"
 
-        # CEF binary files
-        cp "$cef_dll_wrapper_dir/Release/"* "$stage/bin/release/"
-        rm "$stage/bin/release/libcef.lib"
-
-        # CEF resources
-        cp -R "$cef_dll_wrapper_dir/Resources/"* "$stage/resources/"
+        # CEF binary & resource files from the additional spot CMake was kind enough to drop them
+        cp "$stage/_ab_bin/"* "$stage/bin/release/"
+        cp -R "$stage/_ab_resources/"* "$stage/resources/"
 
         # licenses
         cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"

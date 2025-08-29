@@ -146,7 +146,7 @@ class dullahan_impl :
         void showBrowserMessage(const std::string msg);
 
         const std::string append_bitwidth_string(std::ostringstream& stream, bool show_bitwidth);
-        const std::string dullahan_cef_version(bool show_bitwidth);
+        const std::string dullahan_cef_version(bool use_short, bool show_bitwidth);
         const std::string dullahan_chrome_version(bool show_bitwidth);
         const std::string dullahan_version(bool show_bitwidth);
         const std::string composite_version();

@@ -530,8 +530,9 @@ void openglExample::updateUI()
             ss << std::endl << std::endl;
             ss << "Dullahan version: " << mDullahan->dullahan_version(false);
             ss << std::endl << std::endl;
-            ss << "CEF version: " << mDullahan->dullahan_cef_version(false);
+            ss << "CEF version: " << mDullahan->dullahan_cef_version(true, false);
             ss << std::endl << std::endl;
+            ss << "Chromium version: " << mDullahan->dullahan_chrome_version(false);
 
             ImGui::Text(ss.str().c_str());
         }

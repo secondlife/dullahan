@@ -69,6 +69,10 @@ add_library(
 #
 file(REMOVE "${PROJECT_SOURCE_DIR}/src/dullahan_version.h")
 file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CEF_VERSION_STR REGEX "\#define CEF_VERSION ")
+file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CEF_VERSION_MAJOR_STR REGEX "\#define CEF_VERSION_MAJOR ")
+file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CEF_VERSION_MINOR_STR REGEX "\#define CEF_VERSION_MINOR ")
+file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CEF_VERSION_BUILD_STR REGEX "\#define CEF_VERSION_BUILD ")
+file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CEF_VERSION_PATCH_STR REGEX "\#define CEF_VERSION_PATCH ")
 file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_MAJOR_STR REGEX "\#define CHROME_VERSION_MAJOR ")
 file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_MINOR_STR REGEX "\#define CHROME_VERSION_MINOR ")
 file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_BUILD_STR REGEX "\#define CHROME_VERSION_BUILD ")
@@ -78,6 +82,29 @@ configure_file(
     "${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in"
     "${PROJECT_SOURCE_DIR}/src/dullahan_version.h"
 )
+
+
+
+
+
+
+#string(REGEX MATCH "[^\+]*" CEF_VERSION_STR_SHORT_PRE "${CEF_VERSION_STR}")
+#string(REPLACE "CEF_VERSION" "CEF_VERSION_SHORT" CEF_VERSION_STR_SHORT "${CEF_VERSION_STR_SHORT_PRE}")
+
+
+
+
+
+#file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CEF_VERSION_MAJOR_STR_PRE REGEX "\#define CEF_VERSION_MAJOR ")
+#string(REGEX MATCH "[0-9]+" CEF_VERSION_MAJOR_STR "${CEF_VERSION_MAJOR_STR_PRE}")
+#[[
+#string(REGEX MATCH "#define CEF_VERSION_MAJOR [0-9]+" macrodef "${header}")
+#string(REGEX MATCH "[0-9]+" CEF_VERSION_MAJOR_STR "${macrodef}")
+#string(REGEX MATCH "#define CEF_VERSION_MINOR [0-9]+" macrodef "${header}")
+#string(REGEX MATCH "[0-9]+" CEF_VERSION_MINOR_STR "${macrodef}")
+#string(REGEX MATCH "#define CEF_VERSION_PATCH [0-9]+" macrodef "${header}")
+#string(REGEX MATCH "[0-9]+" CEF_VERSION_PATCH_STR "${macrodef}")
+]]
 
 target_include_directories(
     dullahan
@@ -180,14 +207,28 @@ endif()
 # ######################################################################################################################
 # Copy runtime files
 #
-set(DESTINATION_DIR "${CMAKE_BINARY_DIR}/Release")
+# Also writes an extra copy of the folders to somewhere autobuild
+# will know where to look and doesn't need to know the details
+# of the CEF build in '_deps' etc.that might change in the future.
+# Not needed for manual builds using build.bat|sh
+#
 file(MAKE_DIRECTORY "${DESTINATION_DIR}")
 foreach(file_path IN LISTS CEF_BINARY_FILES)
     set(SOURCE_FILE "${cef_prebuild_SOURCE_DIR}/Release/${file_path}")
+
+    set(DESTINATION_DIR "${CMAKE_BINARY_DIR}/Release")
+    file(COPY "${SOURCE_FILE}" DESTINATION "${DESTINATION_DIR}")
+
+    set(DESTINATION_DIR "${CMAKE_BINARY_DIR}/_ab_bin")
     file(COPY "${SOURCE_FILE}" DESTINATION "${DESTINATION_DIR}")
 endforeach()
 foreach(file_path IN LISTS CEF_RESOURCE_FILES)
     set(SOURCE_FILE "${cef_prebuild_SOURCE_DIR}/Resources/${file_path}")
+
+    set(DESTINATION_DIR "${CMAKE_BINARY_DIR}/Release")
+    file(COPY "${SOURCE_FILE}" DESTINATION "${DESTINATION_DIR}")
+
+    set(DESTINATION_DIR "${CMAKE_BINARY_DIR}/_ab_resources")
     file(COPY "${SOURCE_FILE}" DESTINATION "${DESTINATION_DIR}")
 endforeach()
 

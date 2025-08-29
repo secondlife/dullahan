@@ -115,9 +115,9 @@ void dullahan::stop()
     mImpl->stop();
 }
 
-const std::string dullahan::dullahan_cef_version(bool show_bitwidth)
+const std::string dullahan::dullahan_cef_version(bool use_short, bool show_bitwidth)
 {
-    return mImpl->dullahan_cef_version(show_bitwidth);
+    return mImpl->dullahan_cef_version(use_short, show_bitwidth);
 }
 
 const std::string dullahan::dullahan_chrome_version(bool show_bitwidth)
