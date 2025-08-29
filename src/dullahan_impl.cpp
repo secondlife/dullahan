@@ -1165,7 +1165,7 @@ const std::string dullahan_impl::dullahan_version(bool show_bitwidth)
     s << ".";
     s << DULLAHAN_VERSION_POINT;
     s << ".";
-    s << DULLAHAN_VERSION_BUILD;
+    s << DULLAHAN_VERSION_GITHASH;
 
     return append_bitwidth_string(s, show_bitwidth);
 }

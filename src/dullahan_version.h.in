@@ -32,22 +32,13 @@
     THE SOFTWARE.
 */
 
-#ifndef _DULLAHAN_VERSION
-#define _DULLAHAN_VERSION
+#pragma once
 
-// version of this package
+// version of this package - parts pulled from git repo
 #define DULLAHAN_VERSION_MAJOR 1
-#define DULLAHAN_VERSION_MINOR 22
+#define DULLAHAN_VERSION_MINOR @GIT_COMMIT_COUNT@
 #define DULLAHAN_VERSION_POINT 0
-
-// The build version number as of v1.2 is now the date/time the build was made
-// It is only regenerated if the constructed version header (dullahan_version.h)
-// is not present when the Cmake script is executed. Not perfect - one can still
-// have different build numbers for same set of source files - but it thankfully
-// removed the requirement to remember to change the version/build number each
-// time a change is made to the Dullahan source (which was often missed).
-// Credit for suggestion to Henri Beauchamp
-@BUILDNUMBER@
+#define DULLAHAN_VERSION_GITHASH "@GIT_COMMIT_HASH@"
 
 // version numbers pulled from CEF build via Cmake
 @CEF_VERSION_STR@
@@ -60,5 +51,3 @@
 @CHROME_VERSION_MINOR_STR@
 @CHROME_VERSION_BUILD_STR@
 @CHROME_VERSION_PATCH_STR@
-
-#endif //  _DULLAHAN_VERSION

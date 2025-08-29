@@ -77,34 +77,23 @@ file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_MAJ
 file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_MINOR_STR REGEX "\#define CHROME_VERSION_MINOR ")
 file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_BUILD_STR REGEX "\#define CHROME_VERSION_BUILD ")
 file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CHROME_VERSION_PATCH_STR REGEX "\#define CHROME_VERSION_PATCH ")
-string(TIMESTAMP BUILDNUMBER "#define DULLAHAN_VERSION_BUILD %Y%m%d%H%M")
+execute_process(
+  COMMAND git rev-list HEAD --count
+  OUTPUT_VARIABLE GIT_COMMIT_COUNT
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
+)
+execute_process(
+  COMMAND git rev-parse --short HEAD
+  OUTPUT_VARIABLE GIT_COMMIT_HASH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
+)
 configure_file(
     "${PROJECT_SOURCE_DIR}/src/dullahan_version.h.in"
     "${PROJECT_SOURCE_DIR}/src/dullahan_version.h"
 )
 
-
-
-
-
-
-#string(REGEX MATCH "[^\+]*" CEF_VERSION_STR_SHORT_PRE "${CEF_VERSION_STR}")
-#string(REPLACE "CEF_VERSION" "CEF_VERSION_SHORT" CEF_VERSION_STR_SHORT "${CEF_VERSION_STR_SHORT_PRE}")
-
-
-
-
-
-#file(STRINGS ${cef_prebuild_SOURCE_DIR}/include/cef_version.h CEF_VERSION_MAJOR_STR_PRE REGEX "\#define CEF_VERSION_MAJOR ")
-#string(REGEX MATCH "[0-9]+" CEF_VERSION_MAJOR_STR "${CEF_VERSION_MAJOR_STR_PRE}")
-#[[
-#string(REGEX MATCH "#define CEF_VERSION_MAJOR [0-9]+" macrodef "${header}")
-#string(REGEX MATCH "[0-9]+" CEF_VERSION_MAJOR_STR "${macrodef}")
-#string(REGEX MATCH "#define CEF_VERSION_MINOR [0-9]+" macrodef "${header}")
-#string(REGEX MATCH "[0-9]+" CEF_VERSION_MINOR_STR "${macrodef}")
-#string(REGEX MATCH "#define CEF_VERSION_PATCH [0-9]+" macrodef "${header}")
-#string(REGEX MATCH "[0-9]+" CEF_VERSION_PATCH_STR "${macrodef}")
-]]
 
 target_include_directories(
     dullahan
