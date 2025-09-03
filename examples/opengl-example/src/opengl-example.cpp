@@ -556,6 +556,7 @@ void openglExample::updateUI()
     // Write bookmarks bar - a good place to add useful or interesting bookmarks
     const char* items[] =
     {
+        "chrome://version",
         "https://sl-viewer-media-system.s3.amazonaws.com/bookmarks/index.html",
         "https://viewer-login.agni.lindenlab.com/",
         "https://secondlife.com"

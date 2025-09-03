@@ -440,8 +440,11 @@ if (BUILD_EXAMPLES)
     endif()
 
     add_dependencies(opengl-example dullahan)
-    add_dependencies(opengl-example dullahan_host dullahan_host_alerts dullahan_host_gpu dullahan_host_renderer dullahan_host_plugin)
-
+    if(IS_WINDOWS)
+        add_dependencies(opengl-example dullahan_host)
+    elseif(IS_MACOS)
+        add_dependencies(opengl-example dullahan_host dullahan_host_alerts dullahan_host_gpu dullahan_host_renderer dullahan_host_plugin)
+    endif()
 endif()
 
 # Install the Dullahan library and host executable
