@@ -407,11 +407,11 @@ if (BUILD_EXAMPLES)
             opengl-example
             dullahan
             opengl32
+            comctl32
             ${CEF_LIBRARY}
             ${CEF_DLL_LIBRARY}
             ${THIRD-PARTY-PREFIX}/${GLFW_FOLDER}/${GLFW_LIB_PATH}
         )
-
         SET_PROPERTY(DIRECTORY PROPERTY VS_STARTUP_PROJECT "opengl-example")
     elseif(IS_MACOS)
         find_library (OPENGL_FRAMEWORK OpenGL)
@@ -445,6 +445,10 @@ if (BUILD_EXAMPLES)
     elseif(IS_MACOS)
         add_dependencies(opengl-example dullahan_host dullahan_host_alerts dullahan_host_gpu dullahan_host_renderer dullahan_host_plugin)
     endif()
+endif()
+
+if(CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_CONFIGURATION_TYPES "Release")
 endif()
 
 # Install the Dullahan library and host executable

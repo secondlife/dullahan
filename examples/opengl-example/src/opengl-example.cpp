@@ -74,13 +74,10 @@ void openglExample::resizeCallback(int width, int height)
         mDullahan->setSize(width, height);
     }
 }
+
 void openglExample::handleKeyEvent(int key, int scancode, int action, int mods)
 {
-    // Dullahan only has keyboard functions for native OS events
-    // I don't know if you can get msg, wparam, lparam etc. in GLFW
-    // Might have to forego keyboard input for the moment
-
-    // keey the ESC key to exit as well as File -> Quit since it's useful
+    // keep the ESC key to exit as well as File -> Quit since it's useful
     if (action == GLFW_PRESS)
     {
         if (key == GLFW_KEY_ESCAPE)
@@ -201,6 +198,21 @@ void openglExample::mouseScrollCallback(double xoffset, double yoffset)
 
 }
 
+#if defined(WIN32)
+// Windows subclass procedure for handling keyboard events using native
+// Windows messages and parameters which is what Dullahan requires.
+LRESULT CALLBACK openglExample::keyEventSubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+{
+    if (uMsg == WM_CHAR || uMsg == WM_KEYDOWN || uMsg == WM_KEYUP)
+    {
+        openglExample* parent = (openglExample*)dwRefData;
+        parent->mDullahan->nativeKeyboardEventWin(uMsg, (uint32_t)wParam, lParam);
+    }
+
+    return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+}
+#endif
+
 bool openglExample::init()
 {
     if (! glfwInit())
@@ -223,6 +235,13 @@ bool openglExample::init()
 
     // store this to so the static callbacks can get to an instance
     glfwSetWindowUserPointer(mWindow, this);
+
+    // Create a Windows subclass procedure for handling keyboard events using
+    // native Windows messages and parameters which is what Dullahan requires.
+    #if defined(WIN32)
+    HWND hwnd = glfwGetWin32Window(mWindow);
+    SetWindowSubclass(hwnd, keyEventSubClassProc, 0x01, (DWORD_PTR)this);
+    #endif
 
     glfwSetErrorCallback(errorCallback);
     glfwMakeContextCurrent(mWindow);

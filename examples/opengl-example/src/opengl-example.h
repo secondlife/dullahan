@@ -35,12 +35,21 @@
 #include "imgui_impl_opengl2.h"
 
 #include <glad/glad.h>
+#if defined(WIN32)
+#undef APIENTRY
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+#include <commctrl.h>
+#elif
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#endif
 
 class dullahan;
 
-class openglExample {
+class openglExample
+{
     public:
         openglExample();
 
@@ -96,20 +105,29 @@ class openglExample {
         void generatePickTexture();
         bool mousePosToTexturePos(int* tx, int* ty);
 
-        // Used to marshall staticfunction callbacks to a instance of the app class
-        static void resizeCallbackStatic(GLFWwindow* window, int width, int height) {
+        // Used to marshall static function callbacks to a instance of the app class
+        static void resizeCallbackStatic(GLFWwindow* window, int width, int height)
+        {
             static_cast<openglExample*>(glfwGetWindowUserPointer(window))->resizeCallback(width, height);
         }
-        static void keyCallbackStatic(GLFWwindow* window, int key, int scancode, int action, int mods) {
+        static void keyCallbackStatic(GLFWwindow* window, int key, int scancode, int action, int mods)
+        {
             static_cast<openglExample*>(glfwGetWindowUserPointer(window))->handleKeyEvent(key, scancode, action, mods);
         }
-        static void mouseButtonCallbackStatic(GLFWwindow* window, int button, int action, int mods) {
+        static void mouseButtonCallbackStatic(GLFWwindow* window, int button, int action, int mods)
+        {
             static_cast<openglExample*>(glfwGetWindowUserPointer(window))->mouseButtonCallback(button, action, mods);
         }
-        static void mouseMoveCallbackStatic(GLFWwindow* window, double xpos, double ypos) {
+        static void mouseMoveCallbackStatic(GLFWwindow* window, double xpos, double ypos)
+        {
             static_cast<openglExample*>(glfwGetWindowUserPointer(window))->mouseMoveCallback(xpos, ypos);
         }
-        static void mouseScrollCallbackStatic(GLFWwindow* window, double xoffset, double yoffset) {
+        static void mouseScrollCallbackStatic(GLFWwindow* window, double xoffset, double yoffset)
+        {
             static_cast<openglExample*>(glfwGetWindowUserPointer(window))->mouseScrollCallback(xoffset, yoffset);
         }
+
+        #if defined(WIN32)
+        static LRESULT CALLBACK keyEventSubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
+        #endif
 };
