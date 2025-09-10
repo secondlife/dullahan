@@ -1,6 +1,7 @@
 src/dullahan_version.h
 build
 build64
+build_arm64
 stage
 *.tar.bz2
 .DS_Store
