@@ -68,11 +68,6 @@ void openglExample::resizeCallback(int width, int height)
     glFrustum(-frustum_width, frustum_width, -frustum_height, frustum_height, near_plane, far_plane);
 
     glMatrixMode(GL_MODELVIEW);
-
-    if (mDullahan)
-    {
-        mDullahan->setSize(width, height);
-    }
 }
 
 void openglExample::handleKeyEvent(int key, int scancode, int action, int mods)
@@ -213,6 +208,17 @@ LRESULT CALLBACK openglExample::keyEventSubClassProc(HWND hWnd, UINT uMsg, WPARA
 }
 #endif
 
+void openglExample::resizeBrowser(int width, int height)
+{
+    mTextureWidth = width;
+    mTextureHeight = height;
+
+    if (mDullahan)
+    {
+        mDullahan->setSize(width, height);
+    }
+}
+
 bool openglExample::init()
 {
     if (! glfwInit())
@@ -301,6 +307,8 @@ bool openglExample::init()
     bool result = mDullahan->init(settings);
     if (result)
     {
+        resizeBrowser(mTextureWidth, mTextureHeight);
+
         mDullahan->setOnPageChangedCallback(std::bind(&openglExample::onPageChanged, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
         mDullahan->setOnRequestExitCallback(std::bind(&openglExample::onRequestExitCallback, this));
 
@@ -312,24 +320,23 @@ bool openglExample::init()
 
 void openglExample::generatePickTexture()
 {
-    unsigned char* pick_texture_pixels = new unsigned char[mTextureWidth * mTextureHeight * mTextureDepth];
+    unsigned char* pick_texture_pixels = new unsigned char[mPickTextureWidth * mPickTextureHeight * mPickTextureDepth];
 
     glGenTextures(1, (GLuint*)(&mPickTextureId));
-    for (size_t y = 0; y < mTextureHeight; ++y)
+    for (size_t y = 0; y < mPickTextureHeight; ++y)
     {
-        for (size_t x = 0; x < mTextureWidth; ++x)
+        for (size_t x = 0; x < mPickTextureWidth; ++x)
         {
-            // use use 12 bits for x and y position and some 'random' value for the ID
             unsigned long mask = ((unsigned long)x << 12) | ((unsigned long)y);
-            pick_texture_pixels[y * mTextureWidth * mTextureDepth + x * mTextureDepth + 0] = mask & 0xff;
-            pick_texture_pixels[y * mTextureWidth * mTextureDepth + x * mTextureDepth + 1] = (mask >> 8) & 0xff;
-            pick_texture_pixels[y * mTextureWidth * mTextureDepth + x * mTextureDepth + 2] = (mask >> 16) & 0xff;
-            pick_texture_pixels[y * mTextureWidth * mTextureDepth + x * mTextureDepth + 3] = mBrowserId;
+            pick_texture_pixels[y * mPickTextureWidth * mPickTextureDepth + x * mPickTextureDepth + 0] = mask & 0xff;
+            pick_texture_pixels[y * mPickTextureWidth * mPickTextureDepth + x * mPickTextureDepth + 1] = (mask >> 8) & 0xff;
+            pick_texture_pixels[y * mPickTextureWidth * mPickTextureDepth + x * mPickTextureDepth + 2] = (mask >> 16) & 0xff;
+            pick_texture_pixels[y * mPickTextureWidth * mPickTextureDepth + x * mPickTextureDepth + 3] = mBrowserId;
         };
     }
 
     glBindTexture(GL_TEXTURE_2D, (GLuint)mPickTextureId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)mTextureWidth, (GLsizei)mTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pick_texture_pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)mPickTextureWidth, (GLsizei)mPickTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pick_texture_pixels);
 
     delete [] pick_texture_pixels;
 }
@@ -339,9 +346,8 @@ void openglExample::generatePickTexture()
 // location X, Y (0..texture size) is passed back
 bool openglExample::mousePosToTexturePos(int* tx, int* ty)
 {
-    int width;
     int height;
-    glfwGetWindowSize(mWindow, &width, &height);
+    glfwGetWindowSize(mWindow, NULL, &height);
 
     double xpos;
     double ypos;
@@ -358,8 +364,15 @@ bool openglExample::mousePosToTexturePos(int* tx, int* ty)
         return false;
     }
 
-    *tx = (pick_pixel_color[2] << 4) | (pick_pixel_color[1] >> 4);
-    *ty = ((pick_pixel_color[1] & 0x0f) << 8) | (pick_pixel_color[0]);
+
+    // We do not create the pick texture when we change the resolution of the 
+    // browser so we must scale the pick result to match the browser resolution
+    int raw_tx = (pick_pixel_color[2] << 4) | (pick_pixel_color[1] >> 4);
+    int raw_ty = ((pick_pixel_color[1] & 0x0f) << 8) | pick_pixel_color[0];
+    int scaled_tx = (raw_tx * mTextureWidth) / mPickTextureWidth;
+    int scaled_ty = (raw_ty * mTextureHeight) / mPickTextureHeight;
+    *tx = scaled_tx;
+    *ty = scaled_ty;
 
     return true;
 }
@@ -429,12 +442,19 @@ bool openglExample::draw(int* tx, int* ty)
 // Triggered when browser page content changes
 void openglExample::onPageChanged(const unsigned char* pixels, int x, int y, const int width, const int height)
 {
-    // This should always be true but test just in case
-    if (width == mTextureWidth && height == mTextureHeight)
+    if (width != mTextureWidth || height != mTextureHeight)
     {
-        glBindTexture(GL_TEXTURE_2D, (GLuint)mTextureId);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)mTextureWidth, (GLsizei)mTextureHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDeleteTextures(1, &mTextureId);
+
+        glGenTextures(1, &mTextureId);
+        glBindTexture(GL_TEXTURE_2D, mTextureId);
     }
+
+    resizeBrowser(width, height);
+
+    glBindTexture(GL_TEXTURE_2D, (GLuint)mTextureId);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)mTextureWidth, (GLsizei)mTextureHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
 }
 
 // Triggered by Dullahan when cleanup is complete and it's okay to exit
@@ -493,24 +513,48 @@ void openglExample::updateUI()
             {
                 mDullahan->navigate(mHomeUrl);
             }
+            if (ImGui::MenuItem("Reload"))
+            {
+                bool ignore_cache = true;
+                mDullahan->reload(ignore_cache);
+            }
             if (ImGui::MenuItem("Dev Console"))
             {
                 mDullahan->showDevTools();
             }
 
+            if (ImGui::BeginMenu("Resize"))
+            {
+                std::vector<std::pair<int, int>> options;
+                options.push_back(std::make_pair(512, 512));
+                options.push_back(std::make_pair(800 , 800));
+                options.push_back(std::make_pair(1024 , 1024));
+                options.push_back(std::make_pair(1536, 1536));
+                options.push_back(std::make_pair(2048 , 2048));
+                std::vector<std::pair<int, int>>::iterator options_iter = options.begin();
+                while( options_iter != options.end())
+                {
+                    std::string label = std::to_string(options_iter->first) + " x " + std::to_string(options_iter->second);
+                    if (ImGui::MenuItem(label.c_str()))
+                    {
+                        resizeBrowser(options_iter->first, options_iter->second);
+                    }
+                    ++options_iter;
+                }
+                ImGui::EndMenu();
+            }
             if (ImGui::BeginMenu("Zoom"))
             {
-                if (ImGui::MenuItem("0.5"))
+                std::vector<int> options = {25, 50, 100, 200, 400};
+                std::vector<int>::iterator options_iter = options.begin();
+                while( options_iter != options.end())
                 {
-                    mDullahan->setPageZoom(0.5);
-                }
-                if (ImGui::MenuItem("1.0"))
-                {
-                    mDullahan->setPageZoom(1.0);
-                }
-                if (ImGui::MenuItem("2.0"))
-                {
-                    mDullahan->setPageZoom(2.0);
+                    std::string label = std::to_string(*options_iter) + "%";
+                    if (ImGui::MenuItem(label.c_str()))
+                    {
+                        mDullahan->setPageZoom(static_cast<float>(*options_iter) / 100.0f);
+                    }
+                    ++options_iter;
                 }
                 ImGui::EndMenu();
             }

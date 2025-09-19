@@ -94,16 +94,20 @@ class openglExample
         const double mZoomSensitivity = 10.0;
         const double mZoomMin = -20.0;
         const double mZoomMax = -0.2;
-        GLuint mTextureId;
         GLuint mPickTextureId;
-        const int mTextureWidth = 1024;
-        const int mTextureHeight = 1024;
+        const int mPickTextureWidth = 1024;
+        const int mPickTextureHeight = 1024;
+        const int mPickTextureDepth = 4;
+        GLuint mTextureId;
+        int mTextureWidth = 1024;
+        int mTextureHeight = 1024;
         const int mTextureDepth = 4;
         const unsigned char mBrowserId = 23;
         dullahan* mDullahan;
 
         void generatePickTexture();
         bool mousePosToTexturePos(int* tx, int* ty);
+        void resizeBrowser(int width, int height);
 
         // Used to marshall static function callbacks to a instance of the app class
         static void resizeCallbackStatic(GLFWwindow* window, int width, int height)
