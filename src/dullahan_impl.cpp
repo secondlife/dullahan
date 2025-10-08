@@ -158,6 +158,16 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
             command_line->AppendSwitchWithValue("--proxy-server", mProxyHostPort);
         }
 
+        // Hardcode the switch to turn off the HTTP Basic Auth dialogs
+        // as per this issue: https://github.com/chromiumembedded/cef/issues/3603
+        // Having these dialogs appear with new (139) version of the CEF is
+        // regarded as a griefing vector - easy to create a prim with media
+        // that spams these dialogs / taskbar icons to the user.
+        // This change lets us intercept the auth request as before and deal with
+        // it using native Viewer UI as before.
+        // Details captured in this GHI: https://github.com/secondlife/viewer-private/issues/489
+        command_line->AppendSwitch("disable-chrome-login-prompt");
+
         platformAddCommandLines(command_line);
     }
 }
