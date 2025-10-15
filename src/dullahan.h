@@ -31,6 +31,7 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <cstdint>
 
 class dullahan_impl;
 
