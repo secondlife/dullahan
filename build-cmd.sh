@@ -276,14 +276,26 @@ case "$AUTOBUILD_PLATFORM" in
         #Force version regeneration.
         rm -f src/dullahan_version.h
 
-        cmake -S . -B stage/build  -DCMAKE_BUILD_TYPE=Release -G Ninja -DCMAKE_INSTALL_PREFIX=stage -DENABLE_CXX11_ABI=ON \
-        -DUSE_SPOTIFY_CEF=TRUE -DSPOTIFY_CEF_URL=https://cef-builds.spotifycdn.com/cef_binary_118.4.1%2Bg3dd6078%2Bchromium-118.0.5993.54_linux64_beta_minimal.tar.bz2
-		cmake --build stage/build
-		cmake --install stage/build
+        # Default target per autobuild build --address-size
+        opts="-m$AUTOBUILD_ADDRSIZE $LL_BUILD_RELEASE"
+        plainopts="$(remove_cxxstd $opts)"
+
+        cmake -S . -B stage/build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=stage \
+            -DCMAKE_C_FLAGS="$plainopts" \
+            -DCMAKE_CXX_FLAGS="$opts" \
+            $(cmake_cxx_standard $opts) \
+            -DUSE_SPOTIFY_CEF=TRUE -DSPOTIFY_CEF_URL=https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_binary_139.0.40%2Bg465474a%2Bchromium-139.0.7258.139_linux64_minimal.tar.bz2
+
+        cmake --build stage/build
+        cmake --install stage/build
 
         strip stage/lib/release/libcef.so
-	rm stage/bin/release/*.so*
-	rm stage/bin/release/*.json
+        rm stage/bin/release/*.bin
+        rm stage/bin/release/*.so*
+        rm stage/bin/release/*.json
+        rm stage/lib/release/chrome-sandbox
 
         g++ -std=c++17  -I "${cef_no_wrapper_dir}/include"  -I "${dullahan_source_dir}" -o "$stage/version"  "$top/tools/autobuild_version.cpp"
 
@@ -297,5 +309,5 @@ case "$AUTOBUILD_PLATFORM" in
         cp ${dullahan_source_dir}/dullahan_version.h ${stage}/include/cef/
         cp "$top/CEF_LICENSE.txt" "$stage/LICENSES"
         cp "$top/LICENSE.txt" "$stage/LICENSES"
-        ;;
+    ;;
 esac

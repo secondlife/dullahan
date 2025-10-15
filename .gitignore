@@ -5,3 +5,4 @@ build_arm64
 stage
 *.tar.bz2
 .DS_Store
+*.orig
