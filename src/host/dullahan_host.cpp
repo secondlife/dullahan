@@ -29,6 +29,9 @@
 #include "cef_app.h"
 
 #ifdef __linux__
+#if defined(NO_STACK_PROTECTOR)
+NO_STACK_PROTECTOR
+#endif
 int main(int argc, char* argv[])
 {
     CefMainArgs main_args(argc, argv);
@@ -128,6 +131,9 @@ HANDLE GetParentProcess()
 }
 #endif
 
+#if defined(NO_STACK_PROTECTOR)
+NO_STACK_PROTECTOR
+#endif
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                      LPSTR lpCmdLine, int nCmdShow)
 {
@@ -154,6 +160,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #include "include/wrapper/cef_library_loader.h"
 
 // Entry point function for sub-processes.
+#if defined(NO_STACK_PROTECTOR)
+NO_STACK_PROTECTOR
+#endif
 int main(int argc, char* argv[])
 {
     CefScopedLibraryLoader library_loader;
