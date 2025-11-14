@@ -1,4 +1,26 @@
-astyle *.cpp *.h --lineend=linux --indent-classes ^
- --convert-tabs --add-brackets --style=allman --align-pointer=type ^
- --unpad-paren --pad-header --pad-oper --close-templates ^
- --indent-switches --suffix=none --recursive
+astyle src/*.cpp src/*.h ^
+    --add-braces ^
+    --align-pointer=type ^
+    --align-reference=type ^
+    --attach-classes ^
+    --attach-closing-while ^
+    --attach-inlines ^
+    --attach-namespaces ^
+    --close-templates ^
+    --convert-tabs ^
+    --indent-classes ^
+    --indent-modifiers ^
+    --indent-namespaces ^
+    --indent-preproc-define ^
+    --indent-switches ^
+    --indent=spaces=4 ^
+    --lineend=linux ^
+    --pad-comma ^
+    --pad-header ^
+    --pad-include ^
+    --pad-negation ^
+    --pad-oper ^
+    --squeeze-ws ^
+    --style=allman ^
+    --suffix=none ^
+    --unpad-paren

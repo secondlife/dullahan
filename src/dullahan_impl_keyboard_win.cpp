@@ -39,7 +39,7 @@ int GetCefKeyboardModifiers(uint32_t msg, WPARAM wparam, LPARAM lparam)
     // Viewer won't get WM_CHAR event from TranslateMessage with Alt+Ctrl pressed unless it
     // is AltGr, so in case of WM_CHAR+Ctrl+Alt mark as EVENTFLAG_ALTGR_DOWN or drop all modifers.
     bool alt_gr_mode = (msg == WM_CHAR) && isKeyDown(VK_CONTROL) && isKeyDown(VK_MENU);
-    if (!alt_gr_mode)
+    if (! alt_gr_mode)
     {
         if (isKeyDown(VK_LSHIFT))
         {

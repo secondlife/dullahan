@@ -47,8 +47,7 @@ class CefRequestContext;
 
 class dullahan_impl :
     public CefApp,
-    public CefPdfPrintCallback
-{
+    public CefPdfPrintCallback {
         void platormInitWidevine(std::string cachePath);
         void platformAddCommandLines(CefRefPtr<CefCommandLine> command_line);
     public:

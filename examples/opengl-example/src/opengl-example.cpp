@@ -244,10 +244,10 @@ bool openglExample::init()
 
     // Create a Windows subclass procedure for handling keyboard events using
     // native Windows messages and parameters which is what Dullahan requires.
-    #if defined(WIN32)
+#if defined(WIN32)
     HWND hwnd = glfwGetWin32Window(mWindow);
     SetWindowSubclass(hwnd, keyEventSubClassProc, 0x01, (DWORD_PTR)this);
-    #endif
+#endif
 
     glfwSetErrorCallback(errorCallback);
     glfwMakeContextCurrent(mWindow);
@@ -365,7 +365,7 @@ bool openglExample::mousePosToTexturePos(int* tx, int* ty)
     }
 
 
-    // We do not create the pick texture when we change the resolution of the 
+    // We do not create the pick texture when we change the resolution of the
     // browser so we must scale the pick result to match the browser resolution
     int raw_tx = (pick_pixel_color[2] << 4) | (pick_pixel_color[1] >> 4);
     int raw_ty = ((pick_pixel_color[1] & 0x0f) << 8) | pick_pixel_color[0];
@@ -527,12 +527,12 @@ void openglExample::updateUI()
             {
                 std::vector<std::pair<int, int>> options;
                 options.push_back(std::make_pair(512, 512));
-                options.push_back(std::make_pair(800 , 800));
-                options.push_back(std::make_pair(1024 , 1024));
+                options.push_back(std::make_pair(800, 800));
+                options.push_back(std::make_pair(1024, 1024));
                 options.push_back(std::make_pair(1536, 1536));
-                options.push_back(std::make_pair(2048 , 2048));
+                options.push_back(std::make_pair(2048, 2048));
                 std::vector<std::pair<int, int>>::iterator options_iter = options.begin();
-                while( options_iter != options.end())
+                while (options_iter != options.end())
                 {
                     std::string label = std::to_string(options_iter->first) + " x " + std::to_string(options_iter->second);
                     if (ImGui::MenuItem(label.c_str()))
@@ -547,7 +547,7 @@ void openglExample::updateUI()
             {
                 std::vector<int> options = {25, 50, 100, 200, 400};
                 std::vector<int>::iterator options_iter = options.begin();
-                while( options_iter != options.end())
+                while (options_iter != options.end())
                 {
                     std::string label = std::to_string(*options_iter) + "%";
                     if (ImGui::MenuItem(label.c_str()))
@@ -622,7 +622,8 @@ void openglExample::updateUI()
         "chrome://version",
         "https://sl-viewer-media-system.s3.amazonaws.com/bookmarks/index.html",
         "https://viewer-login.agni.lindenlab.com/",
-        "https://secondlife.com"
+        "https://secondlife.com",
+        "https://www.youtube.com/embed/W3Cv3VI0-go",
     };
     static const char* current_item = "Select a bookmark";
     ImGui::SetNextItemWidth(main_viewport->Size.x);

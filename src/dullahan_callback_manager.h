@@ -31,8 +31,7 @@
 
 #include "dullahan.h"
 
-class dullahan_callback_manager
-{
+class dullahan_callback_manager {
     public:
         void setOnAddressChangeCallback(std::function<void(const std::string url)> callback);
         void onAddressChange(const std::string url);

@@ -212,12 +212,12 @@ void dullahan::setPageZoom(const double zoom_val)
 
 bool dullahan::editCanUndo()
 {
-	return mImpl->editCanUndo();
+    return mImpl->editCanUndo();
 }
 
 bool dullahan::editCanRedo()
 {
-	return mImpl->editCanRedo();
+    return mImpl->editCanRedo();
 }
 
 bool dullahan::editCanCopy()
@@ -237,22 +237,22 @@ bool dullahan::editCanPaste()
 
 bool dullahan::editCanDelete()
 {
-	return mImpl->editCanDelete();
+    return mImpl->editCanDelete();
 }
 
 bool dullahan::editCanSelectAll()
 {
-	return mImpl->editCanSelectAll();
+    return mImpl->editCanSelectAll();
 }
 
 void dullahan::editUndo()
 {
-	mImpl->editUndo();
+    mImpl->editUndo();
 }
 
 void dullahan::editRedo()
 {
-	mImpl->editRedo();
+    mImpl->editRedo();
 }
 
 void dullahan::editCopy()
@@ -272,17 +272,17 @@ void dullahan::editPaste()
 
 void dullahan::editDelete()
 {
-	mImpl->editDelete();
+    mImpl->editDelete();
 }
 
 void dullahan::editSelectAll()
 {
-	mImpl->editSelectAll();
+    mImpl->editSelectAll();
 }
 
 void dullahan::viewSource()
 {
-	mImpl->viewSource();
+    mImpl->viewSource();
 }
 
 void dullahan::showDevTools()
@@ -360,9 +360,9 @@ void dullahan::setOnCursorChangedCallback(std::function<void(const ECursorType t
     mImpl->getCallbackManager()->setOnCursorChangedCallback(callback);
 }
 
-void dullahan::setOnCustomSchemeURLCallback(std::function<void(const std::string url, 
-                                            bool user_gesture, 
-                                            bool is_redirect)> callback)
+void dullahan::setOnCustomSchemeURLCallback(std::function<void(const std::string url,
+        bool user_gesture,
+        bool is_redirect)> callback)
 {
     mImpl->getCallbackManager()->setOnCustomSchemeURLCallback(callback);
 }

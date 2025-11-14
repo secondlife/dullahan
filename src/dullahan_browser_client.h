@@ -42,42 +42,40 @@ class dullahan_browser_client :
     public CefRequestHandler,
     public CefDownloadHandler,
     public CefDialogHandler,
-    public CefJSDialogHandler
-{
+    public CefJSDialogHandler,
+    public CefResourceRequestHandler {
     public:
         dullahan_browser_client(dullahan_impl* parent,
-            scoped_refptr<dullahan_render_handler> render_handler);
+                                scoped_refptr<dullahan_render_handler> render_handler);
         ~dullahan_browser_client();
 
         // CefClient override
         CefRefPtr<CefRenderHandler> GetRenderHandler() override;
 
         // CefLifeSpanHandler overrides
-        CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override
-        {
+        CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override {
             return this;
         }
 
         bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
-                             CefRefPtr<CefFrame> frame,
-                             int popup_id,
-                             const CefString& target_url,
-                             const CefString& target_frame_name,
-                             CefLifeSpanHandler::WindowOpenDisposition target_disposition,
-                             bool user_gesture,
-                             const CefPopupFeatures& popupFeatures,
-                             CefWindowInfo& windowInfo,
-                             CefRefPtr<CefClient>& client,
-                             CefBrowserSettings& settings,
-                             CefRefPtr<CefDictionaryValue>& extra_info,
-                             bool* no_javascript_access) override;
+                           CefRefPtr<CefFrame> frame,
+                           int popup_id,
+                           const CefString& target_url,
+                           const CefString& target_frame_name,
+                           CefLifeSpanHandler::WindowOpenDisposition target_disposition,
+                           bool user_gesture,
+                           const CefPopupFeatures& popupFeatures,
+                           CefWindowInfo& windowInfo,
+                           CefRefPtr<CefClient>& client,
+                           CefBrowserSettings& settings,
+                           CefRefPtr<CefDictionaryValue>& extra_info,
+                           bool* no_javascript_access) override;
         void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
         void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
         bool DoClose(CefRefPtr<CefBrowser> browser) override;
 
         // CefDisplayhandler overrides
-        CefRefPtr<CefDisplayHandler> GetDisplayHandler() override
-        {
+        CefRefPtr<CefDisplayHandler> GetDisplayHandler() override {
             return this;
         }
         void OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
@@ -95,8 +93,7 @@ class dullahan_browser_client :
                             const CefCursorInfo& custom_cursor_info) override;
 
         // CefLoadHandler overrides
-        CefRefPtr<CefLoadHandler> GetLoadHandler() override
-        {
+        CefRefPtr<CefLoadHandler> GetLoadHandler() override {
             return this;
         }
         void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,
@@ -111,8 +108,7 @@ class dullahan_browser_client :
                          const CefString& errorText, const CefString& failedUrl) override;
 
         // CefRequestHandler overrides
-        CefRefPtr<CefRequestHandler> GetRequestHandler() override
-        {
+        CefRefPtr<CefRequestHandler> GetRequestHandler() override {
             return this;
         }
         bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
@@ -121,37 +117,50 @@ class dullahan_browser_client :
                                 const CefString& host, int port, const CefString& realm,
                                 const CefString& scheme, CefRefPtr<CefAuthCallback> callback) override;
 
+
+        CefResourceRequestHandler::ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                CefRefPtr<CefFrame> frame,
+                CefRefPtr<CefRequest> request,
+                CefRefPtr<CefCallback> callback) override;
+
+        CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(
+            CefRefPtr<CefBrowser> browser,
+            CefRefPtr<CefFrame> frame,
+            CefRefPtr<CefRequest> request,
+            bool is_navigation,
+            bool is_download,
+            const CefString& request_initiator,
+            bool& disable_default_handling) override;
+
+
         // CefDownloadHandler overrides
-        CefRefPtr<CefDownloadHandler> GetDownloadHandler() override
-        {
+        CefRefPtr<CefDownloadHandler> GetDownloadHandler() override {
             return this;
         }
 
         bool OnBeforeDownload(CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefDownloadItem> download_item,
-                                const CefString& suggested_name,
-                                CefRefPtr<CefBeforeDownloadCallback> callback) override;
+                              CefRefPtr<CefDownloadItem> download_item,
+                              const CefString& suggested_name,
+                              CefRefPtr<CefBeforeDownloadCallback> callback) override;
         void OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
                                CefRefPtr<CefDownloadItem> download_item,
                                CefRefPtr<CefDownloadItemCallback> callback) override;
 
         // CefDialogHandler orerrides
-        CefRefPtr<CefDialogHandler> GetDialogHandler() override
-        {
+        CefRefPtr<CefDialogHandler> GetDialogHandler() override {
             return this;
         }
         bool OnFileDialog(CefRefPtr<CefBrowser> browser,
-                            FileDialogMode mode,
-                            const CefString& title,
-                            const CefString& default_file_path,
-                            const std::vector<CefString>& accept_filters,
-                            const std::vector<CefString>& accept_extensions,
-                            const std::vector<CefString>& accept_descriptions,
-                            CefRefPtr<CefFileDialogCallback> callback) override;
+                          FileDialogMode mode,
+                          const CefString& title,
+                          const CefString& default_file_path,
+                          const std::vector<CefString>& accept_filters,
+                          const std::vector<CefString>& accept_extensions,
+                          const std::vector<CefString>& accept_descriptions,
+                          CefRefPtr<CefFileDialogCallback> callback) override;
 
         // CefJSDialogHandler overrides
-        CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override
-        {
+        CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override {
             return this;
         }
         bool OnJSDialog(CefRefPtr<CefBrowser> browser,

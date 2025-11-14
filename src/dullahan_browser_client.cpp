@@ -40,7 +40,7 @@
 #include <thread>
 
 dullahan_browser_client::dullahan_browser_client(dullahan_impl* parent,
-    scoped_refptr<dullahan_render_handler> render_handler) :
+        scoped_refptr<dullahan_render_handler> render_handler) :
     mParent(parent),
     mRenderHandler(render_handler)
 {
@@ -60,18 +60,18 @@ CefRefPtr<CefRenderHandler> dullahan_browser_client::GetRenderHandler()
 
 // CefLifeSpanHandler override
 bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
-                             CefRefPtr<CefFrame> frame,
-                             int popup_id,
-                             const CefString& target_url,
-                             const CefString& target_frame_name,
-                             CefLifeSpanHandler::WindowOpenDisposition target_disposition,
-                             bool user_gesture,
-                             const CefPopupFeatures& popupFeatures,
-                             CefWindowInfo& windowInfo,
-                             CefRefPtr<CefClient>& client,
-                             CefBrowserSettings& settings,
-                             CefRefPtr<CefDictionaryValue>& extra_info,
-                             bool* no_javascript_access)
+        CefRefPtr<CefFrame> frame,
+        int popup_id,
+        const CefString& target_url,
+        const CefString& target_frame_name,
+        CefLifeSpanHandler::WindowOpenDisposition target_disposition,
+        bool user_gesture,
+        const CefPopupFeatures& popupFeatures,
+        CefWindowInfo& windowInfo,
+        CefRefPtr<CefClient>& client,
+        CefBrowserSettings& settings,
+        CefRefPtr<CefDictionaryValue>& extra_info,
+        bool* no_javascript_access)
 {
     CEF_REQUIRE_UI_THREAD();
 
@@ -261,7 +261,7 @@ void dullahan_browser_client::OnLoadError(CefRefPtr<CefBrowser> browser,
 
     if (frame->IsMain())
     {
-        mParent->getCallbackManager()->onLoadError(errorCode, std::string(errorText), std::string(failedUrl) );
+        mParent->getCallbackManager()->onLoadError(errorCode, std::string(errorText), std::string(failedUrl));
     }
 }
 
@@ -288,7 +288,7 @@ bool dullahan_browser_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
             // get URL again since we lower cased it for comparison
             url = request->GetURL();
 
-            // also pass over the user_gesture and isRedirect flags - see the CefRequestHandler 
+            // also pass over the user_gesture and isRedirect flags - see the CefRequestHandler
             // header file for details - the user_gesture tells us if a link was clicked
             // or navigated to - something we care about deeply for the custom scheme support
             mParent->getCallbackManager()->onCustomSchemeURL(url, user_gesture, isRedirect);
@@ -330,11 +330,24 @@ bool dullahan_browser_client::GetAuthCredentials(CefRefPtr<CefBrowser> browser, 
     }
 }
 
+// CefRequestHandler override
+CefRefPtr<CefResourceRequestHandler> dullahan_browser_client::GetResourceRequestHandler(
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefRequest> request,
+    bool is_navigation,
+    bool is_download,
+    const CefString& request_initiator,
+    bool& disable_default_handling)
+{
+    return this;
+}
+
 // CefDownloadHandler overrides
 bool dullahan_browser_client::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefDownloadItem> download_item,
-    const CefString& suggested_name,
-    CefRefPtr<CefBeforeDownloadCallback> callback)
+        CefRefPtr<CefDownloadItem> download_item,
+        const CefString& suggested_name,
+        CefRefPtr<CefBeforeDownloadCallback> callback)
 {
     CEF_REQUIRE_UI_THREAD();
 
@@ -364,18 +377,18 @@ void dullahan_browser_client::OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
 
 // CefDialogHandler orerrides
 bool dullahan_browser_client::OnFileDialog(CefRefPtr<CefBrowser> browser,
-    FileDialogMode mode,
-    const CefString& title,
-    const CefString& default_file_path,
-    const std::vector<CefString>& accept_filters,
-    const std::vector<CefString>& accept_extensions,
-    const std::vector<CefString>& accept_descriptions,
-    CefRefPtr<CefFileDialogCallback> callback)
+        FileDialogMode mode,
+        const CefString& title,
+        const CefString& default_file_path,
+        const std::vector<CefString>& accept_filters,
+        const std::vector<CefString>& accept_extensions,
+        const std::vector<CefString>& accept_descriptions,
+        CefRefPtr<CefFileDialogCallback> callback)
 {
     CEF_REQUIRE_UI_THREAD();
 
     dullahan::EFileDialogType dialog_type = dullahan::FD_UNKNOWN;
-    if ((mode & 0x0f) ==  FileDialogMode::FILE_DIALOG_OPEN)
+    if ((mode & 0x0f) == FileDialogMode::FILE_DIALOG_OPEN)
     {
         dialog_type = dullahan::FD_OPEN_FILE;
     }
@@ -459,4 +472,21 @@ bool dullahan_browser_client::OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser
     }
 
     return false;
+}
+
+// CefResourceRequestHandler override
+CefResourceRequestHandler::ReturnValue dullahan_browser_client::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
+        CefRefPtr<CefRequest> request,
+        CefRefPtr<CefCallback> callback)
+{
+    std::string url = request->GetURL();
+    // TODO: Improve this search. Probably more possibilities we should handle (youtu.be for example)
+    if (url.find("youtube.com/embed") != std::string::npos)
+    {
+        // TODO: make the referrer URL a setting
+        request->SetReferrer("https://secondlife.com", CefRequest::ReferrerPolicy::REFERRER_POLICY_NEVER_CLEAR_REFERRER);
+    }
+
+    return RV_CONTINUE;
 }

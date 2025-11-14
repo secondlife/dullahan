@@ -35,8 +35,7 @@
 
 class dullahan_impl;
 
-class dullahan
-{
+class dullahan {
     public:
         ////////// keyboard constants //////////
         typedef enum e_key_event
@@ -343,7 +342,7 @@ class dullahan
 
         // custom URL scheme link is clicked (see setCustomSchemes(..))
         void setOnCustomSchemeURLCallback(std::function<void(const std::string url,
-                                          bool user_gesture, 
+                                          bool user_gesture,
                                           bool is_redirect)> callback);
 
         // HTTP auth request triggered

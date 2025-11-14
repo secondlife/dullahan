@@ -181,14 +181,14 @@ std::string convert_wide_to_string(const wchar_t* in, unsigned int code_page)
     {
         int len_in = (int)wcslen(in);
         int len_out = WideCharToMultiByte(
-            code_page,
-            0,
-            in,
-            len_in,
-            NULL,
-            0,
-            0,
-            0);
+                          code_page,
+                          0,
+                          in,
+                          len_in,
+                          NULL,
+                          0,
+                          0,
+                          0);
         // We will need two more bytes for the double NULL ending
         // created in WideCharToMultiByte().
         char* pout = new char[len_out + 2];
@@ -218,7 +218,7 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     CefMainArgs args(GetModuleHandle(nullptr));
 #elif __APPLE__
     CefScopedLibraryLoader library_loader;
-    if (!library_loader.LoadInMain())
+    if (! library_loader.LoadInMain())
     {
         return false;
     }
@@ -265,17 +265,17 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
           @"%@/Contents/Frameworks/DullahanHelper.app/Contents/MacOS/DullahanHelper", appBundlePath] UTF8String];
 
     CefString(&settings.framework_dir_path) =
-    [[NSString stringWithFormat:
-      @"%@/Contents/Frameworks/Chromium Embedded Framework.framework", appBundlePath] UTF8String];
+        [[NSString stringWithFormat:
+          @"%@/Contents/Frameworks/Chromium Embedded Framework.framework", appBundlePath] UTF8String];
 
-	settings.no_sandbox = true;
+    settings.no_sandbox = true;
 #elif __linux__
     CefString(&settings.browser_subprocess_path) = getExeCwd() + "/dullahan_host";
     bool useSandbox = false;
     std::string sandboxName = getExeCwd() + "/chrome-sandbox";
     struct stat st;
 
-    if (!stat(sandboxName.c_str(), &st))
+    if (! stat(sandboxName.c_str(), &st))
     {
         // Sandbox must be owned by root:root and has the suid bit set, otherwise cef won't use it.
         if (st.st_uid == 0 && st.st_gid == 0 && (st.st_mode & S_ISUID) == S_ISUID)
@@ -284,7 +284,7 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
         }
     }
 
-    settings.no_sandbox = !useSandbox;
+    settings.no_sandbox = ! useSandbox;
 #else
 #error "Unsupported Platform"
 #endif
@@ -405,11 +405,11 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     CefString(&settings.log_file) = user_settings.log_file;
     settings.log_severity = user_settings.log_verbose ? LOGSEVERITY_VERBOSE : LOGSEVERITY_DEFAULT;
 
-	if (user_settings.enable_remote_debug)
-	{
-		// allow Chrome (or other CEF windoW) to debug at http://localhost::PORT_NUMBER
-		settings.remote_debugging_port = user_settings.remote_debugging_port;
-	}
+    if (user_settings.enable_remote_debug)
+    {
+        // allow Chrome (or other CEF windoW) to debug at http://localhost::PORT_NUMBER
+        settings.remote_debugging_port = user_settings.remote_debugging_port;
+    }
 
     // initiaize CEF
     bool result = CefInitialize(args, settings, this, nullptr);
@@ -424,7 +424,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     platormInitWidevine(user_settings.root_cache_path);
 
-    if (!initCEF(user_settings))
+    if (! initCEF(user_settings))
     {
         return false;
     }
@@ -817,7 +817,7 @@ void dullahan_impl::showDevTools()
     if (mBrowser.get() && mBrowser->GetHost())
     {
         CefWindowInfo window_info;
-        window_info.bounds = { 0,0, 600, 800 };
+        window_info.bounds = { 0, 0, 600, 800 };
 #ifdef WIN32
         window_info.SetAsPopup(nullptr, "Dullahan Dev Tools");
 #elif __APPLE__
@@ -887,16 +887,13 @@ bool dullahan_impl::setCookie(const std::string url, const std::string name,
 
         // wait for cookie to be set in setCookie callback
         class setCookieCallback :
-            public CefSetCookieCallback
-        {
+            public CefSetCookieCallback {
             public:
                 explicit setCookieCallback(CefRefPtr<CefWaitableEvent> event)
-                    : mEvent(event)
-                {
+                    : mEvent(event) {
                 }
 
-                void OnComplete(bool success) override
-                {
+                void OnComplete(bool success) override {
                     mEvent->Signal();
                 }
 
@@ -923,19 +920,16 @@ bool dullahan_impl::setCookie(const std::string url, const std::string name,
 }
 
 // TODO: This does not pass back the vector of strings correctly.
-//       Plus we should consider adding a cookie class and use that to represent a cookie vs. just name as a string
+// Plus we should consider adding a cookie class and use that to represent a cookie vs. just name as a string
 const std::vector<std::string> dullahan_impl::getAllCookies()
 {
-    class CookieVisitor : public CefCookieVisitor
-    {
+    class CookieVisitor : public CefCookieVisitor {
         public:
             CookieVisitor(std::vector<std::string> cookies) :
-                mCookies(cookies)
-            {
+                mCookies(cookies) {
             }
 
-            bool Visit(const CefCookie& cookie, int count, int total, bool& deleteCookie) override
-            {
+            bool Visit(const CefCookie& cookie, int count, int total, bool& deleteCookie) override {
                 const std::string name = std::string(CefString(&cookie.name));
                 const std::string value = std::string(CefString(&cookie.value));
 
@@ -1007,16 +1001,13 @@ void dullahan_impl::flushAllCookies()
     if (manager)
     {
         class flushStoreCallback :
-            public CefCompletionCallback
-        {
+            public CefCompletionCallback {
             public:
                 explicit flushStoreCallback(CefRefPtr<CefWaitableEvent> event)
-                    : mEvent(event)
-                {
+                    : mEvent(event) {
                 }
 
-                void OnComplete() override
-                {
+                void OnComplete() override {
                     mEvent->Signal();
                 }
 

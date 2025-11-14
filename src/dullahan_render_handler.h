@@ -32,8 +32,7 @@
 class dullahan_impl;
 
 class dullahan_render_handler :
-    public CefRenderHandler
-{
+    public CefRenderHandler {
     public:
         dullahan_render_handler(dullahan_impl* parent);
         ~dullahan_render_handler();
