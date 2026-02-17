@@ -595,6 +595,8 @@ void openglExample::updateUI()
             ss << std::endl << std::endl;
             ss << "CEF version: " << mDullahan->dullahan_cef_version(false);
             ss << std::endl << std::endl;
+            ss << "IMGUI version: " << IMGUI_VERSION;
+            ss << std::endl << std::endl;
 
             ImGui::Text(ss.str().c_str());
         }
