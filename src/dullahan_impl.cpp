@@ -210,6 +210,23 @@ std::string convert_wide_to_string(const wchar_t* in, unsigned int code_page)
     }
     return out;
 }
+
+std::wstring convert_string_to_wide(const char* in, size_t len, unsigned int code_page)
+{
+    // reserve an output buffer that will be destroyed on exit, with a place
+    // to put NULL terminator
+    std::vector<wchar_t> w_out(len + 1);
+
+    memset(&w_out[0], 0, w_out.size());
+    int real_output_str_len = MultiByteToWideChar(code_page, 0, in, static_cast<int>(len),
+                                                  &w_out[0], static_cast<int>(w_out.size() - 1));
+
+    //looks like MultiByteToWideChar didn't add null terminator to converted string, see EXT-4858.
+    w_out[real_output_str_len] = 0;
+
+    // construct string<wchar_t> from our temporary output buffer
+    return {&w_out[0]};
+}
 #endif
 
 bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
@@ -410,6 +427,15 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
 		// allow Chrome (or other CEF windoW) to debug at http://localhost::PORT_NUMBER
 		settings.remote_debugging_port = user_settings.remote_debugging_port;
 	}
+
+#ifdef WIN32
+    // On Windows there is a large amount of files being created in %TEMP% and never cleaned up
+    // So lets move them to our cache path so they can be cleaned up during CEF cache purges
+    std::string tempPath = user_settings.root_cache_path + "\\cache";
+    std::wstring tempPathW = convert_string_to_wide(tempPath.c_str(), tempPath.length(), CP_UTF8);
+    SetEnvironmentVariableW(L"TMP", tempPathW.c_str());
+    SetEnvironmentVariableW(L"TEMP", tempPathW.c_str());
+#endif
 
     // initiaize CEF
     bool result = CefInitialize(args, settings, this, nullptr);
