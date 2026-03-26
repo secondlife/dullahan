@@ -5,7 +5,7 @@
       <key>cef-bin</key>
       <map>
         <key>copyright</key>
-        <string>Copyright (c) 2008-2020 Marshall A. Greenblatt. Portions Copyright (c) 2006-2009 Google Inc. All rights reserved</string>
+        <string>Copyright (c) 2008-2026 Marshall A. Greenblatt. Portions Copyright (c) 2006-2009 Google Inc. All rights reserved</string>
         <key>license</key>
         <string>bsd</string>
         <key>license_file</key>
@@ -19,11 +19,11 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>f6803c42c9468419d281cbc5afb99ed21942fd30</string>
+              <string>c349d1a0b9608d88e1e001d89a7807956399a145</string>
               <key>hash_algorithm</key>
               <string>sha1</string>
               <key>url</key>
-              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-139.0.40_g465474a_chromium-139.0.7258.139-darwin64-252542250.tar.zst</string>
+              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-146.0.7_ga6b143f_chromium-146.0.7680.165-darwin64-260841928.tar.zst</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
@@ -33,18 +33,18 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>1b09d806f4fe041f800c4bf2e1e0e0884f76973b</string>
+              <string>12dc4abccabc3e82d6f6c6ee717abcdd3ffcac5f</string>
               <key>hash_algorithm</key>
               <string>sha1</string>
               <key>url</key>
-              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-139.0.40_g465474a_chromium-139.0.7258.139-windows64-252550005.tar.zst</string>
+              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-146.0.7_ga6b143f_chromium-146.0.7680.165-windows64-260841936.tar.zst</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
         <key>version</key>
-        <string>139.0.17_g6c347eb_chromium-139.0.7258.31</string>
+        <string>146.0.7_ga6b143f_chromium-146.0.7680.165</string>
       </map>
     </map>
     <key>package_description</key>
