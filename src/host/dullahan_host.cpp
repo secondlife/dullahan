@@ -47,7 +47,8 @@ int main(int argc, char* argv[])
 // Ignore c:\program files (x86)\microsoft visual studio 12.0\vc\include\thr\xthread(196): warning C4702: unreachable code
 #pragma warning( disable : 4702)
 #include <thread>
-#include <tlhelp32.h>
+
+#include "dullahan_platform_utils.h"
 
 /*
   Nasty hack to stop flash from displaying a popup with "NO SANDBOX"
@@ -98,36 +99,6 @@ void enablePPAPIFlashHack(LPSTR lpCmdLine)
 
     ::CloseHandle(hProc);
     ::CloseHandle(hJob);
-}
-
-// taken from http://magpcss.org/ceforum/viewtopic.php?f=6&t=15817&start=10#p37820
-// works around a CEF issue (yet to be filed) where the host process is not destroyed
-// after CEF exits in some case on Windows 7
-// Making it switchable for now while I investigate it a bit
-HANDLE GetParentProcess()
-{
-    HANDLE Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-
-    PROCESSENTRY32 ProcessEntry = {};
-    ProcessEntry.dwSize = sizeof(PROCESSENTRY32);
-
-    if (Process32First(Snapshot, &ProcessEntry))
-    {
-        DWORD CurrentProcessId = GetCurrentProcessId();
-
-        do
-        {
-            if (ProcessEntry.th32ProcessID == CurrentProcessId)
-            {
-                break;
-            }
-        }
-        while (Process32Next(Snapshot, &ProcessEntry));
-    }
-
-    CloseHandle(Snapshot);
-
-    return OpenProcess(SYNCHRONIZE, FALSE, ProcessEntry.th32ParentProcessID);
 }
 #endif
 

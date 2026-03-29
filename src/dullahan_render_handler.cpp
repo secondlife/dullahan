@@ -33,6 +33,7 @@
 #include "dullahan_impl.h"
 #include "dullahan_callback_manager.h"
 
+
 dullahan_render_handler::dullahan_render_handler(dullahan_impl* parent) :
     mParent(parent)
 {
@@ -199,4 +200,34 @@ bool dullahan_render_handler::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefSc
 
     // indicate we changed the structure
     return true;
+}
+
+// CefRenderHandler override
+void dullahan_render_handler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
+                                                  PaintElementType type,
+                                                  const RectList& dirtyRects,
+                                                  const CefAcceleratedPaintInfo& info)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    // convert CEF dirty rects to dullahan rects
+    std::vector<dullahan::dullahan_rect> dullahan_dirty_rects;
+    dullahan_dirty_rects.reserve(dirtyRects.size());
+    for (const auto& rect : dirtyRects)
+    {
+        dullahan::dullahan_rect dr;
+        dr.x = rect.x;
+        dr.y = rect.y;
+        dr.width = rect.width;
+        dr.height = rect.height;
+        dullahan_dirty_rects.push_back(dr);
+    }
+
+#ifdef WIN32
+    mParent->getCallbackManager()->onAcceleratedPageChanged(info.shared_texture_handle, dullahan_dirty_rects);
+#elif defined(__APPLE__) || defined(__linux__)
+    // TODO: implement accelerated paint for this platform
+    (void)info;
+    mParent->getCallbackManager()->onAcceleratedPageChanged(nullptr, dullahan_dirty_rects);
+#endif
 }

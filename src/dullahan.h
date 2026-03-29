@@ -130,6 +130,14 @@ class dullahan
             FD_SAVE_FILE,
         } EFileDialogType;
 
+        struct dullahan_rect
+        {
+            int x;
+            int y;
+            int width;
+            int height;
+        };
+
     public:
         //////////// initialization settings ////////////
         struct dullahan_settings
@@ -396,6 +404,10 @@ class dullahan
 
         // JS before unload callback (alert)
         void setOnJSBeforeUnloadCallback(std::function<bool()> callback);
+
+        // accelerated (GPU) page contents change - handle is a duplicated D3D11 shared texture HANDLE on Windows
+        void setOnAcceleratedPageChangedCallback(std::function<void(void* handle,
+                                                  const std::vector<dullahan_rect>& dirty_rects)> callback);
 
     private:
         std::unique_ptr <dullahan_impl> mImpl;

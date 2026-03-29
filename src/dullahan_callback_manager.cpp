@@ -292,3 +292,17 @@ bool dullahan_callback_manager::onJSBeforeUnloadCallback()
     return false;
 }
 
+void dullahan_callback_manager::setOnAcceleratedPageChangedCallback(
+    std::function<void(void* handle, const std::vector<dullahan::dullahan_rect>& dirty_rects)> callback)
+{
+    mOnAcceleratedPageChangedCallbackFunc = callback;
+}
+
+void dullahan_callback_manager::onAcceleratedPageChanged(void* handle, const std::vector<dullahan::dullahan_rect>& dirty_rects)
+{
+    if (mOnAcceleratedPageChangedCallbackFunc)
+    {
+        mOnAcceleratedPageChangedCallbackFunc(handle, dirty_rects);
+    }
+}
+

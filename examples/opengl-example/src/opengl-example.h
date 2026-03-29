@@ -41,12 +41,25 @@
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 #include <commctrl.h>
+#include <d3d11_1.h>
 #else
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #endif
 
-class dullahan;
+#include "dullahan.h"
+
+#ifdef WIN32
+// WGL_NV_DX_interop2 function typedefs
+typedef HANDLE (WINAPI *PFNWGLDXOPENDEVICENVPROC)(void*);
+typedef BOOL (WINAPI *PFNWGLDXCLOSEDEVICENVPROC)(HANDLE);
+typedef HANDLE (WINAPI *PFNWGLDXREGISTEROBJECTNVPROC)(HANDLE, void*, GLuint, GLenum, GLenum);
+typedef BOOL (WINAPI *PFNWGLDXUNREGISTEROBJECTNVPROC)(HANDLE, HANDLE);
+typedef BOOL (WINAPI *PFNWGLDXLOCKOBJECTSNVPROC)(HANDLE, GLint, HANDLE*);
+typedef BOOL (WINAPI *PFNWGLDXUNLOCKOBJECTSNVPROC)(HANDLE, GLint, HANDLE*);
+
+#define WGL_ACCESS_READ_ONLY_NV 0x0000
+#endif
 
 class openglExample
 {
@@ -67,7 +80,11 @@ class openglExample
         bool reset();
 
         // callbacks
+#ifdef WIN32
+        void onAcceleratedPageChanged(void* handle, const std::vector<dullahan::dullahan_rect>& dirty_rects);
+#else
         void onPageChanged(const unsigned char* pixels, int x, int y, const int width, const int height);
+#endif
         void onRequestExitCallback();
 
     private:
@@ -104,6 +121,25 @@ class openglExample
         const int mTextureDepth = 4;
         const unsigned char mBrowserId = 23;
         dullahan* mDullahan;
+
+#ifdef WIN32
+        // D3D11/GL interop for accelerated paint
+        ID3D11Device1* mD3DDevice = nullptr;
+        ID3D11DeviceContext* mD3DContext = nullptr;
+        HANDLE mInteropDevice = nullptr;
+        HANDLE mInteropObject = nullptr;
+        ID3D11Texture2D* mSharedTexture = nullptr;
+        ID3D11Texture2D* mLocalTexture = nullptr;
+        int mLocalTextureWidth = 0;
+        int mLocalTextureHeight = 0;
+
+        PFNWGLDXOPENDEVICENVPROC wglDXOpenDeviceNV = nullptr;
+        PFNWGLDXCLOSEDEVICENVPROC wglDXCloseDeviceNV = nullptr;
+        PFNWGLDXREGISTEROBJECTNVPROC wglDXRegisterObjectNV = nullptr;
+        PFNWGLDXUNREGISTEROBJECTNVPROC wglDXUnregisterObjectNV = nullptr;
+        PFNWGLDXLOCKOBJECTSNVPROC wglDXLockObjectsNV = nullptr;
+        PFNWGLDXUNLOCKOBJECTSNVPROC wglDXUnlockObjectsNV = nullptr;
+#endif
 
         void generatePickTexture();
         bool mousePosToTexturePos(int* tx, int* ty);

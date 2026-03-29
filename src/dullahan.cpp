@@ -446,3 +446,9 @@ void dullahan::setOnJSBeforeUnloadCallback(std::function<bool()> callback)
 {
     mImpl->getCallbackManager()->setOnJSBeforeUnloadCallback(callback);
 }
+
+void dullahan::setOnAcceleratedPageChangedCallback(std::function<void(void* handle,
+                                                    const std::vector<dullahan_rect>& dirty_rects)> callback)
+{
+    mImpl->getCallbackManager()->setOnAcceleratedPageChangedCallback(callback);
+}
