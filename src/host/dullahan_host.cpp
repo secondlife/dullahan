@@ -135,7 +135,8 @@ int main(int argc, char* argv[])
 // Ignore c:\program files (x86)\microsoft visual studio 12.0\vc\include\thr\xthread(196): warning C4702: unreachable code
 #pragma warning( disable : 4702)
 #include <thread>
-#include <tlhelp32.h>
+
+#include "dullahan_platform_utils.h"
 
 // taken from http://magpcss.org/ceforum/viewtopic.php?f=6&t=15817&start=10#p37820
 // works around a CEF issue (yet to be filed) where the host process is not destroyed
@@ -165,6 +166,57 @@ HANDLE GetParentProcess()
     CloseHandle(Snapshot);
 
     return OpenProcess(SYNCHRONIZE, FALSE, ProcessEntry.th32ParentProcessID);
+}
+
+/*
+  Nasty hack to stop flash from displaying a popup with "NO SANDBOX"
+  Flashplayer will try to spawn a cmd.exe and echo this message into it, we
+  use a process group to limit the number of processes allowed to 1, thus preventing
+  popup.
+
+  Limitation: NeedsWindows 8 or higher, the viewer already does put SLPlugin (and with that
+  all sub processes) into a job, so all plugin instances get killed when the viewer does exit.
+  Anything before Windows 8 will not allow a process being part of more than one job.
+
+  Using the sandbox would fix this problem, but for using the sandbox the same executable
+  must be used  for browser and all sub processes (see cef_sandbox_win.h); but the viewer
+  uses slplugin.exe and llceflib_host.exe.
+*/
+void enablePPAPIFlashHack(LPSTR lpCmdLine)
+{
+    if (!lpCmdLine)
+    {
+        return;
+    }
+
+    std::string strCmdLine = lpCmdLine;
+
+    std::string strType = "--type=ppapi";
+    std::string::size_type i = strCmdLine.find(strType);
+
+    if (i == std::string::npos)
+    {
+        return;
+    }
+
+    HANDLE hJob = CreateJobObject(nullptr, nullptr);
+    HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ::GetCurrentProcessId());
+
+    if (!AssignProcessToJobObject(hJob, hProc))
+    {
+        ::CloseHandle(hProc);
+        ::CloseHandle(hJob);
+        return;
+    }
+
+    JOBOBJECT_BASIC_LIMIT_INFORMATION baseLimits = {};
+    baseLimits.LimitFlags = JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
+    baseLimits.ActiveProcessLimit = 1;
+
+    SetInformationJobObject(hJob, JobObjectBasicLimitInformation, &baseLimits, sizeof(baseLimits));
+
+    ::CloseHandle(hProc);
+    ::CloseHandle(hJob);
 }
 #endif
 

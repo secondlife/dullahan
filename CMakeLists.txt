@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.13...4.0)
 
 if(CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_CONFIGURATION_TYPES "Release")
+    set(CMAKE_CONFIGURATION_TYPES "Release;RelWithDebInfo")
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
@@ -169,8 +169,11 @@ check_exists(CEF_DLL_LIBRARY)
 #    4505 "unreferenced local function has been removed" - supress meaningless freeglut warning
 if(IS_WINDOWS)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -W4 -wd4100 -wd4127 -wd4505")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -W4 -wd4100 -wd4127 -wd4505")
+    set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /DEBUG:FULL")
 elseif(IS_MACOS)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -xobjective-c++")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -xobjective-c++")
 elseif(IS_LINUX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-array-bounds")
 endif()
@@ -199,6 +202,7 @@ add_library(
     src/dullahan_debug.h
     src/dullahan_impl.cpp
     src/dullahan_impl.h
+    src/dullahan_platform_utils.h
     src/dullahan_version.h
     src/dullahan_version.h.in
     ${KEYBOARD_IMPL_SRC_FILE}
@@ -259,6 +263,7 @@ if(IS_WINDOWS)
     target_include_directories(
         dullahan_host
         PUBLIC
+        ${CMAKE_SOURCE_DIR}/src
         ${CEF_INCLUDE_DIR}
         ${CEF_INCLUDE_DIR}/..
     )
@@ -313,6 +318,7 @@ elseif(IS_MACOS)
         target_include_directories(
             ${_helper_target}
             PUBLIC
+            ${CMAKE_SOURCE_DIR}/src
             ${CEF_INCLUDE_DIR}
             ${CEF_INCLUDE_DIR}/..
         )
@@ -330,6 +336,7 @@ elseif(IS_LINUX)
     target_include_directories(
         dullahan_host
         PUBLIC
+        ${CMAKE_SOURCE_DIR}/src
         ${CEF_INCLUDE_DIR}
         ${CEF_INCLUDE_DIR}/..
     )
@@ -348,7 +355,7 @@ if(IS_WINDOWS)
     add_custom_command(
         TARGET dullahan_host POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy_directory
-                "$<$<CONFIG:release>:${CEF_RELEASE_BIN_DIR}>"
+                "$<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>:${CEF_RELEASE_BIN_DIR}>"
                 "$<TARGET_FILE_DIR:dullahan_host>"
         COMMENT "Copying runtime files to executable directory")
 
@@ -408,6 +415,8 @@ if (BUILD_EXAMPLES)
             dullahan
             opengl32
             comctl32
+            d3d11
+            dxgi
             ${CEF_LIBRARY}
             ${CEF_DLL_LIBRARY}
             ${THIRD-PARTY-PREFIX}/${GLFW_FOLDER}/${GLFW_LIB_PATH}
@@ -448,7 +457,7 @@ if (BUILD_EXAMPLES)
 endif()
 
 if(CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_CONFIGURATION_TYPES "Release")
+    set(CMAKE_CONFIGURATION_TYPES "Release;RelWithDebInfo")
 endif()
 
 # Install the Dullahan library and host executable

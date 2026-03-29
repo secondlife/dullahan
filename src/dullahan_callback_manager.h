@@ -94,6 +94,9 @@ class dullahan_callback_manager
         void setOnJStoCPPMsgCallback(std::function<std::string(const std::string id, const std::string msg)> callback);
         std::string onJStoCPPMsgCallback(const std::string id, const std::string msg);
 
+        void setOnAcceleratedPageChangedCallback(std::function<void(void* handle, const std::vector<dullahan::dullahan_rect>& dirty_rects)> callback);
+        void onAcceleratedPageChanged(void* handle, const std::vector<dullahan::dullahan_rect>& dirty_rects);
+
     private:
         std::function<void(const std::string)> mOnAddressChangeCallbackFunc;
         std::function<void(const std::string, const std::string, int)> mOnConsoleMessageCallbackFunc;
@@ -115,6 +118,7 @@ class dullahan_callback_manager
         std::function<bool(const std::string, const std::string, const std::string)> mOnJSDialogCallbackFunc;
         std::function<bool()> mOnJSBeforeUnloadCallbackFunc;
         std::function<std::string(const std::string id, const std::string)> mOnJStoCPPMsgCallbackFunc;
+        std::function<void(void*, const std::vector<dullahan::dullahan_rect>&)> mOnAcceleratedPageChangedCallbackFunc;
 };
 
 #endif //_DULLAHAN_CALLBACK_MANAGER
