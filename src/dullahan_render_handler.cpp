@@ -223,5 +223,10 @@ void dullahan_render_handler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
         dullahan_dirty_rects.push_back(dr);
     }
 
+    // Dullahan for Linux does not currently support accelerated painting and will fall back to OnPaint
+#ifdef WIN32
     mParent->getCallbackManager()->onAcceleratedPageChanged(info.shared_texture_handle, dullahan_dirty_rects);
+#elif defined(__APPLE__)
+    mParent->getCallbackManager()->onAcceleratedPageChanged(info.shared_texture_io_surface, dullahan_dirty_rects);
+#endif
 }
