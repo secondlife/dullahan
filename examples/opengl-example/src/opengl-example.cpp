@@ -321,24 +321,73 @@ bool openglExample::init()
     settings.use_mock_keychain = true;
 #endif
 
+#ifdef WIN32
+    settings.shared_texture_enable = true;
+#endif
+
+#ifdef WIN32
+    // Enumerate DXGI adapters to find the default GPU, create a D3D11
+    // device on it, and pass its LUID to dullahan so CEF renders on
+    // the same adapter.
+    IDXGIFactory1* dxgiFactory = nullptr;
+    IDXGIAdapter1* dxgiAdapter = nullptr;
+    CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&dxgiFactory);
+    if (dxgiFactory)
+    {
+        // Use adapter index 1 (secondary GPU)
+        if (dxgiFactory->EnumAdapters1(0, &dxgiAdapter) != DXGI_ERROR_NOT_FOUND)
+        {
+            DXGI_ADAPTER_DESC1 adapterDesc;
+            dxgiAdapter->GetDesc1(&adapterDesc);
+
+            settings.use_adapter_luid = true;
+            settings.adapter_luid.low_part = adapterDesc.AdapterLuid.LowPart;
+            settings.adapter_luid.high_part = adapterDesc.AdapterLuid.HighPart;
+
+            std::cerr << "Using GPU adapter: ";
+            std::wcerr << adapterDesc.Description;
+            std::cerr << " LUID=" << adapterDesc.AdapterLuid.HighPart
+                      << ":" << adapterDesc.AdapterLuid.LowPart << std::endl;
+        }
+    }
+
+    // Create D3D11 device on the selected adapter for shared texture interop
+    ID3D11Device* baseDevice = nullptr;
+    D3D_FEATURE_LEVEL featureLevel;
+    if (dxgiAdapter)
+    {
+        D3D11CreateDevice(dxgiAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, 0,
+                          nullptr, 0, D3D11_SDK_VERSION,
+                          &baseDevice, &featureLevel, &mD3DContext);
+    }
+    else
+    {
+        D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
+                          nullptr, 0, D3D11_SDK_VERSION,
+                          &baseDevice, &featureLevel, &mD3DContext);
+    }
+    if (baseDevice)
+    {
+        baseDevice->QueryInterface(__uuidof(ID3D11Device1), (void**)&mD3DDevice);
+        baseDevice->Release();
+    }
+
+    if (dxgiAdapter)
+    {
+        dxgiAdapter->Release();
+    }
+    if (dxgiFactory)
+    {
+        dxgiFactory->Release();
+    }
+#endif
+
     bool result = mDullahan->init(settings);
     if (result)
     {
         resizeBrowser(mTextureWidth, mTextureHeight);
 
 #ifdef WIN32
-        // Create D3D11 device for shared texture interop
-        ID3D11Device* baseDevice = nullptr;
-        D3D_FEATURE_LEVEL featureLevel;
-        D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
-                          nullptr, 0, D3D11_SDK_VERSION,
-                          &baseDevice, &featureLevel, &mD3DContext);
-        if (baseDevice)
-        {
-            baseDevice->QueryInterface(__uuidof(ID3D11Device1), (void**)&mD3DDevice);
-            baseDevice->Release();
-        }
-
         // Load WGL_NV_DX_interop2 extension functions
         wglDXOpenDeviceNV = (PFNWGLDXOPENDEVICENVPROC)wglGetProcAddress("wglDXOpenDeviceNV");
         wglDXCloseDeviceNV = (PFNWGLDXCLOSEDEVICENVPROC)wglGetProcAddress("wglDXCloseDeviceNV");
@@ -503,10 +552,18 @@ void openglExample::onAcceleratedPageChanged(void* handle, const std::vector<dul
     {
         return;
     }
-
+    HANDLE viewer_handle = 0;
+    DuplicateHandle(
+        GetCurrentProcess(),
+        handle,
+        GetCurrentProcess(),
+        &viewer_handle,
+        0,
+        FALSE,
+        DUPLICATE_SAME_ACCESS);
     // Open the shared D3D11 texture from the NT handle
     ID3D11Texture2D* sharedTexture = nullptr;
-    HRESULT hr = mD3DDevice->OpenSharedResource1((HANDLE)handle, __uuidof(ID3D11Texture2D), (void**)&sharedTexture);
+    HRESULT hr = mD3DDevice->OpenSharedResource1((HANDLE)viewer_handle, __uuidof(ID3D11Texture2D), (void**)&sharedTexture);
     if (FAILED(hr))
     {
         return;

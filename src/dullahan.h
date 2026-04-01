@@ -176,6 +176,7 @@ class dullahan
             bool javascript_enabled = true;             // javascript
             bool media_stream_enabled = false;          // web cams etc. (caution)
             bool plugins_enabled = true;                // all plugins
+            bool shared_texture_enable = false;          // enable shared texture for accelerated rendering
             bool webgl_enabled = true;                  // webgl
 
             // explicitly set the path to the locales folder since defaults no longer work on some systems
