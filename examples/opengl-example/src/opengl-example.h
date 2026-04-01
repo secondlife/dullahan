@@ -42,6 +42,7 @@
 #include <GLFW/glfw3native.h>
 #include <commctrl.h>
 #include <d3d11_1.h>
+#include <dxgi1_2.h>
 #else
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>

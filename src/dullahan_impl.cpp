@@ -38,6 +38,7 @@
 #include "include/cef_request_context_handler.h"
 #include "include/cef_waitable_event.h"
 #include "include/base/cef_logging.h"
+#include <iomanip> // Required for std::hex, std::setw, std::setfill
 
 #include "dullahan_version.h"
 #ifdef __APPLE__
@@ -402,9 +403,10 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     mUseAdapterLUID = user_settings.use_adapter_luid;
     if (mUseAdapterLUID)
     {
-        int64_t luid_val = ((int64_t)user_settings.adapter_luid.high_part << 32) |
-                           (int64_t)(uint32_t)user_settings.adapter_luid.low_part;
-        mAdapterLUIDStr = std::to_string(luid_val);
+        std::ostringstream oss;
+        oss << "0x" << std::hex << std::setw(8) << std::setfill('0') << user_settings.adapter_luid.high_part
+            << ":0x" << std::hex << std::setw(8) << std::setfill('0') << user_settings.adapter_luid.low_part;
+        mAdapterLUIDStr = oss.str();
     }
 
     // if true, this setting inverts the pixels in Y direction - useful if your texture
@@ -457,7 +459,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     CefWindowInfo window_info;
     window_info.SetAsWindowless(0);
     window_info.windowless_rendering_enabled = true;
-    window_info.shared_texture_enabled = true;
+    window_info.shared_texture_enabled = user_settings.shared_texture_enable;
     const int width = user_settings.initial_width;
     const int height = user_settings.initial_height;
     window_info.bounds = { 0, 0, width, height };

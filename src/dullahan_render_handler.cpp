@@ -223,11 +223,5 @@ void dullahan_render_handler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
         dullahan_dirty_rects.push_back(dr);
     }
 
-#ifdef WIN32
     mParent->getCallbackManager()->onAcceleratedPageChanged(info.shared_texture_handle, dullahan_dirty_rects);
-#elif defined(__APPLE__) || defined(__linux__)
-    // TODO: implement accelerated paint for this platform
-    (void)info;
-    mParent->getCallbackManager()->onAcceleratedPageChanged(nullptr, dullahan_dirty_rects);
-#endif
 }
