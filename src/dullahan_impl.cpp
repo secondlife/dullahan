@@ -159,10 +159,12 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
             command_line->AppendSwitchWithValue("--proxy-server", mProxyHostPort);
         }
 
+#ifdef WIN32
         if (mUseAdapterLUID)
         {
             command_line->AppendSwitchWithValue("use-adapter-luid", mAdapterLUIDStr);
         }
+#endif
 
         // Hardcode the switch to turn off the HTTP Basic Auth dialogs
         // as per this issue: https://github.com/chromiumembedded/cef/issues/3603
@@ -399,6 +401,7 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     // provide their own ("Allow, "Disallow") UI.
     mFakeUIForMediaStream = user_settings.fake_ui_for_media_stream;
 
+#ifdef WIN32
     // the adapter LUID to use for GPU rendering - pass through to CEF command line
     mUseAdapterLUID = user_settings.use_adapter_luid;
     if (mUseAdapterLUID)
@@ -408,6 +411,7 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
             << ":0x" << std::hex << std::setw(8) << std::setfill('0') << user_settings.adapter_luid.low_part;
         mAdapterLUIDStr = oss.str();
     }
+#endif
 
     // if true, this setting inverts the pixels in Y direction - useful if your texture
     // coords are upside down compared to default for Dullahan

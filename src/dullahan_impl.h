@@ -178,8 +178,10 @@ class dullahan_impl :
         bool mUseMockKeyChain;
         bool mAutoPlayWithoutGesture;
         bool mFakeUIForMediaStream;
+#ifdef WIN32
         bool mUseAdapterLUID;
         std::string mAdapterLUIDStr;
+#endif
         bool mFlipPixelsY;
         bool mFlipMouseY;
         double mRequestedPageZoom;

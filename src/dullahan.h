@@ -193,6 +193,7 @@ class dullahan
             // host name:port to use as a web proxy
             std::string proxy_host_port = std::string();
 
+#ifdef WIN32
             // adapter LUID to use for GPU rendering
             // like adding --use-adapter-luid=VALUE to Chrome command line
             // set use_adapter_luid to true and populate adapter_luid to enable
@@ -201,6 +202,7 @@ class dullahan
                 uint32_t low_part = 0;
                 int32_t high_part = 0;
             } adapter_luid;
+#endif
 
             // background color displayed before first page loaded (RRGGBB)
             unsigned int background_color = 0xffffff;
