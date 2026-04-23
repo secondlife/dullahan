@@ -19,11 +19,11 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>5027396a1d0c335af202dc71e63aa989223b1b5a</string>
+              <string>ae1ac4b5fef7eb5db8e6e459023b1ed15f5ab18d</string>
               <key>hash_algorithm</key>
               <string>sha1</string>
               <key>url</key>
-              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-146.0.10_g8219561_chromium-146.0.7680.179-darwin64-261032122.tar.zst</string>
+             z<string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-146.0.12_g6214c8e_chromium-146.0.7680.179-darwin64-261122357.tar.zst</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
@@ -33,18 +33,18 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>ee56c848f79789b409334b33829da89698193af1</string>
+              <string>79f52835bca76f738825ae1c28033af28cdc3f24</string>
               <key>hash_algorithm</key>
               <string>sha1</string>
               <key>url</key>
-              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-146.0.10_g8219561_chromium-146.0.7680.179-windows64-261032049.tar.zst</string>
+              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-146.0.12_g6214c8e_chromium-146.0.7680.179-windows64-261122358.tar.zst</string>
             </map>
             <key>name</key>
             <string>windows64</string>
           </map>
         </map>
         <key>version</key>
-        <string>cef_bin-146.0.10_g8219561_chromium-146.0.7680.179</string>
+        <string>cef_bin-146.0.12_g6214c8e_chromium-146.0.7680.179</string>
       </map>
     </map>
     <key>package_description</key>
