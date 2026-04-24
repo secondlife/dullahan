@@ -235,6 +235,9 @@ class dullahan
         // Note: complimentary to run();
         void update();
 
+        // update the frame rate for CEF
+        void setFrameRate(int frame_rate);
+
         // transport control
         bool canGoBack();
         void goBack();

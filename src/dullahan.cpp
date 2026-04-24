@@ -80,6 +80,11 @@ void dullahan::update()
     mImpl->update();
 }
 
+void dullahan::setFrameRate(int frame_rate)
+{
+    mImpl->setFrameRate(frame_rate);
+}
+
 bool dullahan::canGoBack()
 {
     return mImpl->canGoBack();

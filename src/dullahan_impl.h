@@ -68,6 +68,7 @@ class dullahan_impl :
 
         void run();
         void update();
+        void setFrameRate(int frame_rate);
 
         bool canGoBack();
         void goBack();

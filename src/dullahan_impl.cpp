@@ -554,6 +554,14 @@ void dullahan_impl::update()
     requestPageZoom();
 }
 
+void dullahan_impl::setFrameRate(int frame_rate)
+{
+    if (mBrowser && mBrowser->GetHost())
+    {
+        mBrowser->GetHost()->SetWindowlessFrameRate(frame_rate);
+    }
+}
+
 bool dullahan_impl::canGoBack()
 {
     if (mBrowser.get() && mBrowser->GetHost())
