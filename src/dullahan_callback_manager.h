@@ -28,6 +28,7 @@
 #define _DULLAHAN_CALLBACK_MANAGER
 
 #include <functional>
+#include <memory>
 
 #include "dullahan.h"
 
@@ -61,8 +62,8 @@ class dullahan_callback_manager
         void setOnOpenPopupCallback(std::function<void(const std::string url, const std::string target)> callback);
         void onOpenPopup(const std::string url, const std::string target);
 
-        void setOnPageChangedCallback(std::function<void(const unsigned char* pixels, int x, int y, int width, int height)> callback);
-        void onPageChanged(const unsigned char* pixels, int x, int y, int width, int height);
+        void setOnPageChangedCallback(std::function<void(std::shared_ptr<const unsigned char[]> pixels, int x, int y, int width, int height)> callback);
+        void onPageChanged(std::shared_ptr<const unsigned char[]> pixels, int x, int y, int width, int height);
 
         void setOnStatusMessageCallback(std::function<void(const std::string message)> callback);
         void onStatusMessage(const std::string message);
@@ -101,7 +102,7 @@ class dullahan_callback_manager
         std::function<void(int, const std::string, const std::string)> mOnLoadErrorCallbackFunc;
         std::function<void()> mOnLoadStartCallbackFunc;
         std::function<void(const std::string, const std::string)> mOnOpenPopupCallbackFunc;
-        std::function<void(const unsigned char*, int, int, int, int)> mOnPageChangedCallbackFunc;
+        std::function<void(std::shared_ptr<const unsigned char[]>, int, int, int, int)> mOnPageChangedCallbackFunc;
         std::function<void(const std::string)> mOnStatusMessageCallbackFunc;
         std::function<void()> mOnRequestExitCallbackFunc;
         std::function<void(const std::string)> mOnTitleChangeCallbackFunc;

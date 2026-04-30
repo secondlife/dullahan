@@ -365,7 +365,7 @@ class dullahan
                                     const std::string target)> callback);
 
         // contents of the pages changes
-        void setOnPageChangedCallback(std::function<void(const unsigned char* pixels,
+        void setOnPageChangedCallback(std::function<void(std::shared_ptr<const unsigned char[]> pixels,
                                       int x, int y,
                                       int width, int height)> callback);
 

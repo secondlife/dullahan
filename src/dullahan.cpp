@@ -395,7 +395,7 @@ void dullahan::setOnOpenPopupCallback(std::function<void(const std::string url,
     mImpl->getCallbackManager()->setOnOpenPopupCallback(callback);
 }
 
-void dullahan::setOnPageChangedCallback(std::function<void(const unsigned char* pixels,
+void dullahan::setOnPageChangedCallback(std::function<void(std::shared_ptr<const unsigned char[]> pixels,
                                         int x, int y,
                                         int width, int height)> callback)
 {

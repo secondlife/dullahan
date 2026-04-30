@@ -40,7 +40,7 @@ dullahan_render_handler::dullahan_render_handler(dullahan_impl* parent) :
     mFlipYPixels = parent->getFlipPixelsY();
 
     // the pixel buffer
-    mPixelBuffer = nullptr;
+    mPixelBuffer.reset();
     mPixelBufferWidth = 0;
     mPixelBufferHeight = 0;
 
@@ -56,7 +56,7 @@ dullahan_render_handler::dullahan_render_handler(dullahan_impl* parent) :
 
 dullahan_render_handler::~dullahan_render_handler()
 {
-    delete[] mPixelBuffer;
+    mPixelBuffer.reset();
 
     delete[] mPopupBuffer;
 
@@ -67,11 +67,11 @@ void dullahan_render_handler::resizePixelBuffer(int width, int height)
 {
     if (mPixelBufferWidth != width || mPixelBufferHeight != height)
     {
-        delete[] mPixelBuffer;
+        mPixelBuffer.reset();
         mPixelBufferWidth = width;
         mPixelBufferHeight = height;
-        mPixelBuffer = new unsigned char[mPixelBufferWidth * mPixelBufferHeight * mBufferDepth];
-        memset(mPixelBuffer, 0xff, mPixelBufferWidth * mPixelBufferHeight * mBufferDepth);
+        mPixelBuffer = std::shared_ptr<unsigned char[]>(new unsigned char[mPixelBufferWidth * mPixelBufferHeight * mBufferDepth]);
+        memset(mPixelBuffer.get(), 0xff, mPixelBufferWidth * mPixelBufferHeight * mBufferDepth);
 
         delete[] mPixelBufferRow;
         mPixelBufferRow = new unsigned char[mPixelBufferWidth * mBufferDepth];
@@ -95,7 +95,7 @@ void dullahan_render_handler::copyPopupIntoView()
 {
     int popup_y = (mFlipYPixels ? (mPixelBufferHeight - mPopupBufferRect.y) : mPopupBufferRect.y);
     unsigned char* src = (unsigned char*)mPopupBuffer;
-    unsigned char* dst = mPixelBuffer + popup_y * mPixelBufferWidth * mBufferDepth + mPopupBufferRect.x * mBufferDepth;
+    unsigned char* dst = mPixelBuffer.get() + popup_y * mPixelBufferWidth * mBufferDepth + mPopupBufferRect.x * mBufferDepth;
     while (src < (unsigned char*)mPopupBuffer + mPopupBufferRect.width * mPopupBufferRect.height * mBufferDepth)
     {
         memcpy(dst, src, mPopupBufferRect.width * mBufferDepth);
@@ -119,14 +119,14 @@ void dullahan_render_handler::OnPaint(CefRefPtr<CefBrowser> browser,
         // create (firs time) or resize (browser size changed) a buffer for pixels
         // and copy them in
         resizePixelBuffer(width, height);
-        memcpy(mPixelBuffer, buffer, width * height * mBufferDepth);
+        memcpy(mPixelBuffer.get(), buffer, width * height * mBufferDepth);
 
         // we need to flip pixel buffer in Y direction as per settings
         if (mFlipYPixels)
         {
             const size_t stride = mPixelBufferWidth * mBufferDepth;
-            unsigned char* lower = mPixelBuffer;
-            unsigned char* upper = mPixelBuffer + (mPixelBufferHeight - 1) * stride;
+            unsigned char* lower = mPixelBuffer.get();
+            unsigned char* upper = mPixelBuffer.get() + (mPixelBufferHeight - 1) * stride;
             while (lower < upper)
             {
                 memcpy(mPixelBufferRow, lower, stride);

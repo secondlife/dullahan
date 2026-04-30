@@ -29,6 +29,8 @@
 
 #include "cef_render_handler.h"
 
+#include <memory>
+
 class dullahan_impl;
 
 class dullahan_render_handler :
@@ -53,7 +55,7 @@ class dullahan_render_handler :
         void resizePixelBuffer(int width, int height);
         void copyPopupIntoView();
 
-        unsigned char* mPixelBuffer;
+        std::shared_ptr<unsigned char[]> mPixelBuffer;
         int mPixelBufferWidth;
         int mPixelBufferHeight;
         unsigned char* mPopupBuffer;

@@ -152,12 +152,12 @@ void dullahan_callback_manager::onOpenPopup(const std::string url, const std::st
 }
 
 void dullahan_callback_manager::setOnPageChangedCallback(
-    std::function<void(const unsigned char* pixels, int x, int y, int width, int height)> callback)
+    std::function<void(std::shared_ptr<const unsigned char[]> pixels, int x, int y, int width, int height)> callback)
 {
     mOnPageChangedCallbackFunc = callback;
 }
 
-void dullahan_callback_manager::onPageChanged(const unsigned char* pixels, int x, int y, int width, int height)
+void dullahan_callback_manager::onPageChanged(std::shared_ptr<const unsigned char[]> pixels, int x, int y, int width, int height)
 {
     if (mOnPageChangedCallbackFunc)
     {
