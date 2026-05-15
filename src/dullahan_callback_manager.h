@@ -64,6 +64,18 @@ class dullahan_callback_manager
         void setOnPageChangedCallback(std::function<void(const unsigned char* pixels, int x, int y, int width, int height)> callback);
         void onPageChanged(const unsigned char* pixels, int x, int y, int width, int height);
 
+        void setOnAudioStreamStartedCallback(std::function<void(const dullahan::dullahan_audio_stream_info& info)> callback);
+        void onAudioStreamStarted(const dullahan::dullahan_audio_stream_info& info);
+
+        void setOnAudioStreamPacketCallback(std::function<void(const float** data, int frames, int64_t pts)> callback);
+        void onAudioStreamPacket(const float** data, int frames, int64_t pts);
+
+        void setOnAudioStreamStoppedCallback(std::function<void()> callback);
+        void onAudioStreamStopped();
+
+        void setOnAudioStreamErrorCallback(std::function<void(const std::string message)> callback);
+        void onAudioStreamError(const std::string message);
+
         void setOnStatusMessageCallback(std::function<void(const std::string message)> callback);
         void onStatusMessage(const std::string message);
 
@@ -102,6 +114,10 @@ class dullahan_callback_manager
         std::function<void()> mOnLoadStartCallbackFunc;
         std::function<void(const std::string, const std::string)> mOnOpenPopupCallbackFunc;
         std::function<void(const unsigned char*, int, int, int, int)> mOnPageChangedCallbackFunc;
+        std::function<void(const dullahan::dullahan_audio_stream_info&)> mOnAudioStreamStartedCallbackFunc;
+        std::function<void(const float**, int, int64_t)> mOnAudioStreamPacketCallbackFunc;
+        std::function<void()> mOnAudioStreamStoppedCallbackFunc;
+        std::function<void(const std::string)> mOnAudioStreamErrorCallbackFunc;
         std::function<void(const std::string)> mOnStatusMessageCallbackFunc;
         std::function<void()> mOnRequestExitCallbackFunc;
         std::function<void(const std::string)> mOnTitleChangeCallbackFunc;

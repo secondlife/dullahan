@@ -29,6 +29,7 @@
 
 #include <list>
 
+#include "cef_audio_handler.h"
 #include "cef_client.h"
 
 class dullahan_impl;
@@ -42,7 +43,8 @@ class dullahan_browser_client :
     public CefRequestHandler,
     public CefDownloadHandler,
     public CefDialogHandler,
-    public CefJSDialogHandler
+    public CefJSDialogHandler,
+    public CefAudioHandler
 {
     public:
         dullahan_browser_client(dullahan_impl* parent,
@@ -51,6 +53,10 @@ class dullahan_browser_client :
 
         // CefClient override
         CefRefPtr<CefRenderHandler> GetRenderHandler() override;
+        CefRefPtr<CefAudioHandler> GetAudioHandler() override
+        {
+            return this;
+        }
 
         // CefLifeSpanHandler overrides
         CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override
@@ -166,6 +172,20 @@ class dullahan_browser_client :
                                   const CefString& message_text,
                                   bool is_reload,
                                   CefRefPtr<CefJSDialogCallback> callback) override;
+
+        // CefAudioHandler overrides
+        bool GetAudioParameters(CefRefPtr<CefBrowser> browser,
+                                CefAudioParameters& params) override;
+        void OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
+                                  const CefAudioParameters& params,
+                                  int channels) override;
+        void OnAudioStreamPacket(CefRefPtr<CefBrowser> browser,
+                                 const float** data,
+                                 int frames,
+                                 int64_t pts) override;
+        void OnAudioStreamStopped(CefRefPtr<CefBrowser> browser) override;
+        void OnAudioStreamError(CefRefPtr<CefBrowser> browser,
+                                const CefString& message) override;
     private:
         dullahan_impl* mParent;
         CefRefPtr<CefRenderHandler> mRenderHandler;

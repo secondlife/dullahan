@@ -396,10 +396,32 @@ void dullahan::setOnOpenPopupCallback(std::function<void(const std::string url,
 }
 
 void dullahan::setOnPageChangedCallback(std::function<void(const unsigned char* pixels,
-                                        int x, int y,
-                                        int width, int height)> callback)
+                                      int x, int y,
+                                      int width, int height)> callback)
 {
     mImpl->getCallbackManager()->setOnPageChangedCallback(callback);
+}
+
+void dullahan::setOnAudioStreamStartedCallback(std::function<void(const dullahan_audio_stream_info& info)> callback)
+{
+    mImpl->getCallbackManager()->setOnAudioStreamStartedCallback(callback);
+}
+
+void dullahan::setOnAudioStreamPacketCallback(std::function<void(const float** data,
+                                            int frames,
+                                            int64_t pts)> callback)
+{
+    mImpl->getCallbackManager()->setOnAudioStreamPacketCallback(callback);
+}
+
+void dullahan::setOnAudioStreamStoppedCallback(std::function<void()> callback)
+{
+    mImpl->getCallbackManager()->setOnAudioStreamStoppedCallback(callback);
+}
+
+void dullahan::setOnAudioStreamErrorCallback(std::function<void(const std::string message)> callback)
+{
+    mImpl->getCallbackManager()->setOnAudioStreamErrorCallback(callback);
 }
 
 void dullahan::setOnRequestExitCallback(std::function<void()> callback)
