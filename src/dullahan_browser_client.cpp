@@ -99,6 +99,9 @@ bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
 bool dullahan_browser_client::GetAudioParameters(CefRefPtr<CefBrowser> browser,
                                                  CefAudioParameters& params)
 {
+    params.channel_layout = CEF_CHANNEL_LAYOUT_7_1;
+    params.sample_rate = 48000;
+    params.frames_per_buffer = 1024;
     return true;
 }
 
