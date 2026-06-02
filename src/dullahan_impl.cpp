@@ -441,7 +441,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
 
     // Windowspecific settings for OSR
     CefWindowInfo window_info;
-    window_info.SetAsWindowless(0);
+    window_info.SetAsWindowless(0, user_settings.transparent_background);
     window_info.windowless_rendering_enabled = true;
     const int width = user_settings.initial_width;
     const int height = user_settings.initial_height;

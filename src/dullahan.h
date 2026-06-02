@@ -187,6 +187,9 @@ class dullahan
             // background color displayed before first page loaded (RRGGBB)
             unsigned int background_color = 0xffffff;
 
+            // enable transparent background painting
+            bool transparent_background = false;
+
             // flip pixel buffer in Y direction
             bool flip_pixels_y = false;
 
