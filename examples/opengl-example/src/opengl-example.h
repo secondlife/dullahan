@@ -69,12 +69,14 @@ class openglExample
         // callbacks
         void onPageChanged(const unsigned char* pixels, int x, int y, const int width, const int height);
         void onRequestExitCallback();
+        std::string onJStoCPPMsgCallback(const std::string msg);
 
     private:
         GLFWwindow* mWindow;
         const std::string mWindowTitle = "Dullahan OpenGL Example";
         const std::string mAppVersionStr = "0.0.1";
-        const std::string mHomeUrl = "https://sl-viewer-media-system.s3.amazonaws.com/bookmarks/index.html";
+        //const std::string mHomeUrl = "https://sl-viewer-media-system.s3.amazonaws.com/bookmarks/index.html";
+        const std::string mHomeUrl = "localhost";
         const int mWindowWidth = 1280;
         const int mWindowHeight = 1280;
         bool mShowAbout;

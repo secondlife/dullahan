@@ -58,6 +58,11 @@ class dullahan_browser_client :
             return this;
         }
 
+        bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+            CefRefPtr<CefFrame> frame,
+            CefProcessId source_process,
+            CefRefPtr<CefProcessMessage> message) override;
+
         bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
                              int popup_id,

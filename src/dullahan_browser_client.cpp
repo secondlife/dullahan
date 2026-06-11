@@ -37,6 +37,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <iostream>
 #include <thread>
 
 dullahan_browser_client::dullahan_browser_client(dullahan_impl* parent,
@@ -56,6 +57,30 @@ dullahan_browser_client::~dullahan_browser_client()
 CefRefPtr<CefRenderHandler> dullahan_browser_client::GetRenderHandler()
 {
     return mRenderHandler;
+}
+
+// CefClient override
+bool dullahan_browser_client::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
+        CefProcessId source_process,
+        CefRefPtr<CefProcessMessage> message)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    if (message->GetName() == "JSONtoCPP_MSG")
+    {
+        CefRefPtr<CefListValue> args = message->GetArgumentList();
+        if (args)
+        {
+            //std::cout << ">>> Received JSONtoCPP_MSG from render process: " << args->GetString(0).ToString() << std::endl;
+            mParent->getCallbackManager()->onJStoCPPMsgCallback(args->GetString(0).ToString());
+        }
+
+        // Indicate we processed this message and it should not be sent to other handlers
+        return true;
+    }
+
+    return false;
 }
 
 // CefLifeSpanHandler override
