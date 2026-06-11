@@ -155,10 +155,15 @@ public:
         global->SetValue("JSONtoCPP", func, V8_PROPERTY_ATTRIBUTE_NONE);
 
         // Friendly greeting to the browser process to confirm the context was created
-        CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("JSONtoCPP_MSG");
-        CefRefPtr<CefListValue> args = msg->GetArgumentList();
-        args->SetString(0, "Hello from the OnContextCreated in the sub-process!");
-        browser->GetMainFrame()->SendProcessMessage(PID_BROWSER, msg);
+        //
+        // TODO:
+        //      I think we need to craft each message with an ID that the browser process
+        //      can use to route the message to the correct callback
+        //
+        //CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("JSONtoCPP_MSG");
+        //CefRefPtr<CefListValue> args = msg->GetArgumentList();
+        //args->SetString(0, "Hello from the OnContextCreated in the sub-process!");
+        //browser->GetMainFrame()->SendProcessMessage(PID_BROWSER, msg);
     }
 
 private:
