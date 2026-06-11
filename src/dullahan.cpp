@@ -447,7 +447,7 @@ void dullahan::setOnJSBeforeUnloadCallback(std::function<bool()> callback)
     mImpl->getCallbackManager()->setOnJSBeforeUnloadCallback(callback);
 }
 
-void dullahan::setOnJStoCPPMsgCallback(std::function<std::string(const std::string msg)> callback)
+void dullahan::setOnJStoCPPMsgCallback(std::function<std::string(const std::string id, const std::string msg)> callback)
 {
     mImpl->getCallbackManager()->setOnJStoCPPMsgCallback(callback);
 }

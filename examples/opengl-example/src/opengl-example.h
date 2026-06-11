@@ -69,7 +69,7 @@ class openglExample
         // callbacks
         void onPageChanged(const unsigned char* pixels, int x, int y, const int width, const int height);
         void onRequestExitCallback();
-        std::string onJStoCPPMsgCallback(const std::string msg);
+        std::string onJStoCPPMsgCallback(const std::string id, const std::string msg);
 
     private:
         GLFWwindow* mWindow;

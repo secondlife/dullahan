@@ -73,7 +73,7 @@ bool dullahan_browser_client::OnProcessMessageReceived(CefRefPtr<CefBrowser> bro
         if (args)
         {
             //std::cout << ">>> Received JSONtoCPP_MSG from render process: " << args->GetString(0).ToString() << std::endl;
-            mParent->getCallbackManager()->onJStoCPPMsgCallback(args->GetString(0).ToString());
+            mParent->getCallbackManager()->onJStoCPPMsgCallback(args->GetString(0).ToString(), args->GetString(1).ToString());
         }
 
         // Indicate we processed this message and it should not be sent to other handlers

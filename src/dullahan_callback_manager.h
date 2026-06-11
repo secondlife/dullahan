@@ -91,8 +91,8 @@ class dullahan_callback_manager
         void setOnJSBeforeUnloadCallback(std::function<bool()> callback);
         bool onJSBeforeUnloadCallback();
 
-        void setOnJStoCPPMsgCallback(std::function<std::string(const std::string msg)> callback);
-        std::string onJStoCPPMsgCallback(const std::string msg);
+        void setOnJStoCPPMsgCallback(std::function<std::string(const std::string id, const std::string msg)> callback);
+        std::string onJStoCPPMsgCallback(const std::string id, const std::string msg);
 
     private:
         std::function<void(const std::string)> mOnAddressChangeCallbackFunc;
@@ -114,7 +114,7 @@ class dullahan_callback_manager
         std::function<const std::vector<std::string>(dullahan::EFileDialogType, const std::string, const std::string, const std::string, bool&)> mOnFileDialogCallbackFunc;
         std::function<bool(const std::string, const std::string, const std::string)> mOnJSDialogCallbackFunc;
         std::function<bool()> mOnJSBeforeUnloadCallbackFunc;
-        std::function<std::string(const std::string)> mOnJStoCPPMsgCallbackFunc;
+        std::function<std::string(const std::string id, const std::string)> mOnJStoCPPMsgCallbackFunc;
 };
 
 #endif //_DULLAHAN_CALLBACK_MANAGER

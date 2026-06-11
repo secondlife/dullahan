@@ -293,16 +293,16 @@ bool dullahan_callback_manager::onJSBeforeUnloadCallback()
 }
 
 void dullahan_callback_manager::setOnJStoCPPMsgCallback(
-    std::function<std::string(const std::string msg)> callback)
+    std::function<std::string(const std::string id, const std::string msg)> callback)
 {
     mOnJStoCPPMsgCallbackFunc = callback;
 }
 
-std::string dullahan_callback_manager::onJStoCPPMsgCallback(const std::string msg)
+std::string dullahan_callback_manager::onJStoCPPMsgCallback(const std::string id, const std::string msg)
 {
     if (mOnJStoCPPMsgCallbackFunc)
     {
-        return mOnJStoCPPMsgCallbackFunc(msg);
+        return mOnJStoCPPMsgCallbackFunc(id, msg);
     }
 
     return std::string();

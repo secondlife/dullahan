@@ -398,7 +398,7 @@ class dullahan
         void setOnJSBeforeUnloadCallback(std::function<bool()> callback);
 
         // Message from JS to CPP
-        void setOnJStoCPPMsgCallback(std::function<std::string(const std::string msg)> callback);
+        void setOnJStoCPPMsgCallback(std::function<std::string(const std::string id, const std::string msg)> callback);
 
     private:
         std::unique_ptr <dullahan_impl> mImpl;

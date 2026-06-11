@@ -100,15 +100,16 @@ class JSONtoCPPHandler : public CefV8Handler
             if (name == "JSONtoCPP")
             {
                 // Check args
-                if (arguments.size() != 1 || ! arguments[0]->IsString())
+                if (arguments.size() != 2 || ! arguments[0]->IsString() || ! arguments[1]->IsString())
                 {
-                    exception = "JSONtoCPP(json) expects one string argument";
+                    exception = "JSONtoCPP(json, id) expects two string arguments";
                     return true;
                 }
 
                 // Send the JSON string to the browser process and return an acknowledgment
-                std::string json = arguments[0]->GetStringValue();
-                std::string result = DoJSONtoCPP(json);
+                std::string id = arguments[0]->GetStringValue();
+                std::string json = arguments[1]->GetStringValue();
+                std::string result = DoJSONtoCPP(id, json);
                 retval = CefV8Value::CreateString(result);
 
                 // Indicate we handled the function call, even 
@@ -120,12 +121,13 @@ class JSONtoCPPHandler : public CefV8Handler
         }
 
     private:
-        std::string DoJSONtoCPP(const std::string& json)
+        std::string DoJSONtoCPP(const std::string& id, const std::string& json)
         {
             // Send the JSON string to the browser process via IPC
             CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("JSONtoCPP_MSG");
             CefRefPtr<CefListValue> args = msg->GetArgumentList();
-            args->SetString(0, json);
+            args->SetString(0, id);
+            args->SetString(1, json);
             mBrowser->GetMainFrame()->SendProcessMessage(PID_BROWSER, msg);
 
             // Acknowledge receipt of the JSON string
@@ -155,15 +157,11 @@ public:
         global->SetValue("JSONtoCPP", func, V8_PROPERTY_ATTRIBUTE_NONE);
 
         // Friendly greeting to the browser process to confirm the context was created
-        //
-        // TODO:
-        //      I think we need to craft each message with an ID that the browser process
-        //      can use to route the message to the correct callback
-        //
-        //CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("JSONtoCPP_MSG");
-        //CefRefPtr<CefListValue> args = msg->GetArgumentList();
-        //args->SetString(0, "Hello from the OnContextCreated in the sub-process!");
-        //browser->GetMainFrame()->SendProcessMessage(PID_BROWSER, msg);
+        CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("JSONtoCPP_MSG");
+        CefRefPtr<CefListValue> args = msg->GetArgumentList();
+        args->SetString(0, "INFO");
+        args->SetString(1, "Hello from the OnContextCreated in the sub-process!");
+        browser->GetMainFrame()->SendProcessMessage(PID_BROWSER, msg);
     }
 
 private:
