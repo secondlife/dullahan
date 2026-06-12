@@ -649,7 +649,8 @@ void openglExample::updateUI()
         "chrome://version",
         "https://sl-viewer-media-system.s3.amazonaws.com/bookmarks/index.html",
         "https://viewer-login.agni.lindenlab.com/",
-        "https://secondlife.com"
+        "https://secondlife.com",
+        "https://sl-viewer-media-system.s3.amazonaws.com/apps/v8-msg/index.html",
     };
     static const char* current_item = "Select a bookmark";
     ImGui::SetNextItemWidth(main_viewport->Size.x);
