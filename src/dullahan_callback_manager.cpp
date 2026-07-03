@@ -165,6 +165,60 @@ void dullahan_callback_manager::onPageChanged(const unsigned char* pixels, int x
     }
 }
 
+void dullahan_callback_manager::setOnAudioStreamStartedCallback(
+    std::function<void(const dullahan::dullahan_audio_stream_info& info)> callback)
+{
+    mOnAudioStreamStartedCallbackFunc = callback;
+}
+
+void dullahan_callback_manager::onAudioStreamStarted(const dullahan::dullahan_audio_stream_info& info)
+{
+    if (mOnAudioStreamStartedCallbackFunc)
+    {
+        mOnAudioStreamStartedCallbackFunc(info);
+    }
+}
+
+void dullahan_callback_manager::setOnAudioStreamPacketCallback(
+    std::function<void(const float** data, int frames, int64_t pts)> callback)
+{
+    mOnAudioStreamPacketCallbackFunc = callback;
+}
+
+void dullahan_callback_manager::onAudioStreamPacket(const float** data, int frames, int64_t pts)
+{
+    if (mOnAudioStreamPacketCallbackFunc)
+    {
+        mOnAudioStreamPacketCallbackFunc(data, frames, pts);
+    }
+}
+
+void dullahan_callback_manager::setOnAudioStreamStoppedCallback(std::function<void()> callback)
+{
+    mOnAudioStreamStoppedCallbackFunc = callback;
+}
+
+void dullahan_callback_manager::onAudioStreamStopped()
+{
+    if (mOnAudioStreamStoppedCallbackFunc)
+    {
+        mOnAudioStreamStoppedCallbackFunc();
+    }
+}
+
+void dullahan_callback_manager::setOnAudioStreamErrorCallback(std::function<void(const std::string message)> callback)
+{
+    mOnAudioStreamErrorCallbackFunc = callback;
+}
+
+void dullahan_callback_manager::onAudioStreamError(const std::string message)
+{
+    if (mOnAudioStreamErrorCallbackFunc)
+    {
+        mOnAudioStreamErrorCallbackFunc(message);
+    }
+}
+
 void dullahan_callback_manager::setOnStatusMessageCallback(std::function<void(const std::string message)> callback)
 {
     mOnStatusMessageCallbackFunc = callback;
@@ -291,4 +345,3 @@ bool dullahan_callback_manager::onJSBeforeUnloadCallback()
     // default to cancel request if no callback set up
     return false;
 }
-

@@ -96,6 +96,46 @@ bool dullahan_browser_client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
     return true;
 }
 
+bool dullahan_browser_client::GetAudioParameters(CefRefPtr<CefBrowser> browser,
+                                                 CefAudioParameters& params)
+{
+    params.channel_layout = CEF_CHANNEL_LAYOUT_7_1;
+    params.sample_rate = 48000;
+    params.frames_per_buffer = 1024;
+    return true;
+}
+
+void dullahan_browser_client::OnAudioStreamStarted(CefRefPtr<CefBrowser> browser,
+                                                   const CefAudioParameters& params,
+                                                   int channels)
+{
+    dullahan::dullahan_audio_stream_info info;
+    info.sample_rate = params.sample_rate;
+    info.channels = channels;
+    info.channel_layout = static_cast<int>(params.channel_layout);
+    info.frames_per_buffer = params.frames_per_buffer;
+    mParent->getCallbackManager()->onAudioStreamStarted(info);
+}
+
+void dullahan_browser_client::OnAudioStreamPacket(CefRefPtr<CefBrowser> browser,
+                                                  const float** data,
+                                                  int frames,
+                                                  int64_t pts)
+{
+    mParent->getCallbackManager()->onAudioStreamPacket(data, frames, pts);
+}
+
+void dullahan_browser_client::OnAudioStreamStopped(CefRefPtr<CefBrowser> browser)
+{
+    mParent->getCallbackManager()->onAudioStreamStopped();
+}
+
+void dullahan_browser_client::OnAudioStreamError(CefRefPtr<CefBrowser> browser,
+                                                 const CefString& message)
+{
+    mParent->getCallbackManager()->onAudioStreamError(std::string(message));
+}
+
 // CefLifeSpanHandler override
 void dullahan_browser_client::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {

@@ -130,6 +130,14 @@ class dullahan
             FD_SAVE_FILE,
         } EFileDialogType;
 
+        struct dullahan_audio_stream_info
+        {
+            int sample_rate = 0;
+            int channels = 0;
+            int channel_layout = 0;
+            int frames_per_buffer = 0;
+        };
+
     public:
         //////////// initialization settings ////////////
         struct dullahan_settings
@@ -368,6 +376,20 @@ class dullahan
         void setOnPageChangedCallback(std::function<void(const unsigned char* pixels,
                                       int x, int y,
                                       int width, int height)> callback);
+
+        // browser audio stream starts
+        void setOnAudioStreamStartedCallback(std::function<void(const dullahan_audio_stream_info& info)> callback);
+
+        // browser audio PCM packet. Data is planar float PCM and valid only during the callback.
+        void setOnAudioStreamPacketCallback(std::function<void(const float** data,
+                                            int frames,
+                                            int64_t pts)> callback);
+
+        // browser audio stream stops
+        void setOnAudioStreamStoppedCallback(std::function<void()> callback);
+
+        // browser audio stream error
+        void setOnAudioStreamErrorCallback(std::function<void(const std::string message)> callback);
 
         // exit app requested
         void setOnRequestExitCallback(std::function<void()> callback);
