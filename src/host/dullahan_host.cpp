@@ -28,66 +28,14 @@
 
 #include "cef_app.h"
 
-#ifdef __linux__
-#if defined(NO_STACK_PROTECTOR)
-NO_STACK_PROTECTOR
-#endif
-int main(int argc, char* argv[])
-{
-    CefMainArgs main_args(argc, argv);
-    return CefExecuteProcess(main_args, nullptr, nullptr);
-}
-#endif
-#ifdef WIN32
-#include <windows.h>
-
-#define HOST_PROCESS_REAPER
-
-#ifdef HOST_PROCESS_REAPER
-// Ignore c:\program files (x86)\microsoft visual studio 12.0\vc\include\thr\xthread(196): warning C4702: unreachable code
-#pragma warning( disable : 4702)
-#include <thread>
-#include <tlhelp32.h>
-
-// taken from http://magpcss.org/ceforum/viewtopic.php?f=6&t=15817&start=10#p37820
-// works around a CEF issue (yet to be filed) where the host process is not destroyed
-// after CEF exits in some case on Windows 7
-// Making it switchable for now while I investigate it a bit
-HANDLE GetParentProcess()
-{
-    HANDLE Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-
-    PROCESSENTRY32 ProcessEntry = {};
-    ProcessEntry.dwSize = sizeof(PROCESSENTRY32);
-
-    if (Process32First(Snapshot, &ProcessEntry))
-    {
-        DWORD CurrentProcessId = GetCurrentProcessId();
-
-        do
-        {
-            if (ProcessEntry.th32ProcessID == CurrentProcessId)
-            {
-                break;
-            }
-        }
-        while (Process32Next(Snapshot, &ProcessEntry));
-    }
-
-    CloseHandle(Snapshot);
-
-    return OpenProcess(SYNCHRONIZE, FALSE, ProcessEntry.th32ParentProcessID);
-}
-#endif
-
-
+// Shared by Windows and Mac sub-process entry points
 class JSONtoCPPHandler : public CefV8Handler
 {
     public:
-        JSONtoCPPHandler(CefRefPtr<CefBrowser> browser) : 
+        JSONtoCPPHandler(CefRefPtr<CefBrowser> browser) :
             // Save the browser reference from OnContextCreated()
             // for later use in IPC communication
-            mBrowser(browser) 
+            mBrowser(browser)
         {
         }
 
@@ -168,6 +116,58 @@ private:
     IMPLEMENT_REFCOUNTING(MyApp);
 };
 
+#ifdef __linux__
+#if defined(NO_STACK_PROTECTOR)
+NO_STACK_PROTECTOR
+#endif
+int main(int argc, char* argv[])
+{
+    CefMainArgs main_args(argc, argv);
+    return CefExecuteProcess(main_args, nullptr, nullptr);
+}
+#endif
+#ifdef WIN32
+#include <windows.h>
+
+#define HOST_PROCESS_REAPER
+
+#ifdef HOST_PROCESS_REAPER
+// Ignore c:\program files (x86)\microsoft visual studio 12.0\vc\include\thr\xthread(196): warning C4702: unreachable code
+#pragma warning( disable : 4702)
+#include <thread>
+#include <tlhelp32.h>
+
+// taken from http://magpcss.org/ceforum/viewtopic.php?f=6&t=15817&start=10#p37820
+// works around a CEF issue (yet to be filed) where the host process is not destroyed
+// after CEF exits in some case on Windows 7
+// Making it switchable for now while I investigate it a bit
+HANDLE GetParentProcess()
+{
+    HANDLE Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+
+    PROCESSENTRY32 ProcessEntry = {};
+    ProcessEntry.dwSize = sizeof(PROCESSENTRY32);
+
+    if (Process32First(Snapshot, &ProcessEntry))
+    {
+        DWORD CurrentProcessId = GetCurrentProcessId();
+
+        do
+        {
+            if (ProcessEntry.th32ProcessID == CurrentProcessId)
+            {
+                break;
+            }
+        }
+        while (Process32Next(Snapshot, &ProcessEntry));
+    }
+
+    CloseHandle(Snapshot);
+
+    return OpenProcess(SYNCHRONIZE, FALSE, ProcessEntry.th32ParentProcessID);
+}
+#endif
+
 
 #if defined(NO_STACK_PROTECTOR)
 NO_STACK_PROTECTOR
@@ -214,7 +214,10 @@ int main(int argc, char* argv[])
     // Provide CEF with command-line arguments.
     CefMainArgs args(argc, argv);
 
+    // Important: same as Windows, CefApp instance should be created in the main function
+    const CefRefPtr<MyApp> app = new MyApp();
+
     // Execute the sub-process.
-    return CefExecuteProcess(args, nullptr, nullptr);
+    return CefExecuteProcess(args, app, nullptr);
 }
 #endif
