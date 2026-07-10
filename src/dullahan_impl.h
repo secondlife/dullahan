@@ -135,6 +135,13 @@ class dullahan_impl :
         bool getFlipPixelsY();
         bool getFlipMouseY();
 
+#ifdef WIN32
+        // adapter LUID CEF was told to render on (if any) - used to create the
+        // accelerated-paint flip device on the same adapter. use is false when
+        // no explicit adapter was configured.
+        void getAdapterLUID(bool& use, uint32_t& low_part, int32_t& high_part);
+#endif
+
         void requestPageZoom();
 
         void setCustomSchemes(std::vector<std::string> custom_schemes);
@@ -181,6 +188,8 @@ class dullahan_impl :
 #ifdef WIN32
         bool mUseAdapterLUID;
         std::string mAdapterLUIDStr;
+        uint32_t mAdapterLUIDLow;
+        int32_t mAdapterLUIDHigh;
 #endif
         bool mFlipPixelsY;
         bool mFlipMouseY;
