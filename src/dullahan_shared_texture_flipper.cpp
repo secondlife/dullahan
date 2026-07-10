@@ -215,7 +215,7 @@ bool dullahan_shared_texture_flipper::ensureDestination(uint32_t width, uint32_t
     desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
     // NT handle so the consumer can DuplicateHandle/OpenSharedResource1; keyed
     // mutex so producer and consumer serialize access to the one frame.
-    desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE | D3D11_RESOURCE_MISC_SHARED_KEYED_MUTEX;
+    desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE | D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
 
     if (FAILED(mDevice->CreateTexture2D(&desc, nullptr, mDestTexture.GetAddressOf())))
     {
