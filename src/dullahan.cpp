@@ -450,6 +450,7 @@ void dullahan::setOnJSBeforeUnloadCallback(std::function<bool()> callback)
 void dullahan::setOnJStoCPPMsgCallback(std::function<std::string(const std::string id, const std::string msg)> callback)
 {
     mImpl->getCallbackManager()->setOnJStoCPPMsgCallback(callback);
+}
 
 void dullahan::setOnAcceleratedPageChangedCallback(std::function<void(void* handle,
                                                     const std::vector<dullahan_rect>& dirty_rects)> callback)
