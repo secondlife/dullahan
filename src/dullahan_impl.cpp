@@ -404,6 +404,8 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
 #ifdef WIN32
     // the adapter LUID to use for GPU rendering - pass through to CEF command line
     mUseAdapterLUID = user_settings.use_adapter_luid;
+    mAdapterLUIDLow = user_settings.adapter_luid.low_part;
+    mAdapterLUIDHigh = user_settings.adapter_luid.high_part;
     if (mUseAdapterLUID)
     {
         std::ostringstream oss;
@@ -553,6 +555,15 @@ bool dullahan_impl::getFlipMouseY()
 {
     return mFlipMouseY;
 }
+
+#ifdef WIN32
+void dullahan_impl::getAdapterLUID(bool& use, uint32_t& low_part, int32_t& high_part)
+{
+    use = mUseAdapterLUID;
+    low_part = mAdapterLUIDLow;
+    high_part = mAdapterLUIDHigh;
+}
+#endif
 
 void dullahan_impl::run()
 {

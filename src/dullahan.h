@@ -207,7 +207,17 @@ class dullahan
             // background color displayed before first page loaded (RRGGBB)
             unsigned int background_color = 0xffffff;
 
-            // flip pixel buffer in Y direction
+            // Flip the emitted page in the Y direction so its origin is
+            // bottom-left (useful when your texture coordinates are upside down
+            // relative to Dullahan's default top-left origin).
+            //
+            // As of Dullahan 1.26 this ALSO applies to the accelerated
+            // (shared-texture) path on Windows: when set, Dullahan performs a
+            // GPU flip and the handle delivered to
+            // setOnAcceleratedPageChangedCallback references a bottom-up
+            // texture. Consumers that previously flipped the accelerated
+            // texture themselves MUST remove that flip when this is enabled or
+            // the image will be flipped twice. See the callback's comment.
             bool flip_pixels_y = false;
 
             // flip mouse input in Y direction
@@ -420,6 +430,17 @@ class dullahan
         // Message from JS to CPP
         void setOnJStoCPPMsgCallback(std::function<std::string(const std::string id, const std::string msg)> callback);
         // accelerated (GPU) page contents change - handle is a duplicated D3D11 shared texture HANDLE on Windows
+
+        // accelerated (GPU) page contents change - handle is a D3D11 shared texture HANDLE on Windows
+        // (an IOSurface on macOS).
+        //
+        // Orientation (Windows): by default the handle references CEF's own
+        // top-down texture (origin top-left). If flip_pixels_y was set at init,
+        // Dullahan instead performs a GPU flip and the handle references a
+        // Dullahan-owned bottom-up texture (origin bottom-left); in that case
+        // the consumer must NOT flip again on its side. This flipped texture is
+        // created with an NT shared handle and a keyed mutex (acquire/release
+        // key 0 around your read). New in Dullahan 1.26.
         void setOnAcceleratedPageChangedCallback(std::function<void(void* handle,
                                                   const std::vector<dullahan_rect>& dirty_rects)> callback);
 

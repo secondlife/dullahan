@@ -209,6 +209,8 @@ add_library(
     src/dullahan_impl_mouse.cpp
     src/dullahan_render_handler.cpp
     src/dullahan_render_handler.h
+    src/dullahan_shared_texture_flipper.cpp
+    src/dullahan_shared_texture_flipper.h
 )
 
 # define which include directories to pull in
@@ -222,6 +224,11 @@ target_include_directories(
 # turn off spurious linker warnings
 if(IS_WINDOWS)
     set_target_properties(dullahan PROPERTIES LINK_FLAGS "/ignore:4099")
+
+    # the accelerated-paint flip (dullahan_shared_texture_flipper) does its GPU
+    # work with D3D11/DXGI and compiles its shaders at runtime with d3dcompiler.
+    # PUBLIC so these propagate to anything linking the (static) dullahan lib.
+    target_link_libraries(dullahan PUBLIC d3d11 dxgi dxguid d3dcompiler)
 endif()
 
 ###############################################################################
