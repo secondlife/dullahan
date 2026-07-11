@@ -138,35 +138,9 @@ int main(int argc, char* argv[])
 
 #include "dullahan_platform_utils.h"
 
-// taken from http://magpcss.org/ceforum/viewtopic.php?f=6&t=15817&start=10#p37820
-// works around a CEF issue (yet to be filed) where the host process is not destroyed
-// after CEF exits in some case on Windows 7
-// Making it switchable for now while I investigate it a bit
-HANDLE GetParentProcess()
-{
-    HANDLE Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-
-    PROCESSENTRY32 ProcessEntry = {};
-    ProcessEntry.dwSize = sizeof(PROCESSENTRY32);
-
-    if (Process32First(Snapshot, &ProcessEntry))
-    {
-        DWORD CurrentProcessId = GetCurrentProcessId();
-
-        do
-        {
-            if (ProcessEntry.th32ProcessID == CurrentProcessId)
-            {
-                break;
-            }
-        }
-        while (Process32Next(Snapshot, &ProcessEntry));
-    }
-
-    CloseHandle(Snapshot);
-
-    return OpenProcess(SYNCHRONIZE, FALSE, ProcessEntry.th32ParentProcessID);
-}
+// GetParentProcess() is provided by dullahan_platform_utils.h (included above).
+// It used to be duplicated here, which made the call in WinMain() ambiguous
+// against the header's version, so the local copy has been removed.
 
 /*
   Nasty hack to stop flash from displaying a popup with "NO SANDBOX"
