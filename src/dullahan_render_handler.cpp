@@ -33,6 +33,11 @@
 #include "dullahan_impl.h"
 #include "dullahan_callback_manager.h"
 
+#ifdef WIN32
+#include "dullahan_shared_texture_flipper.h"
+#endif
+
+
 dullahan_render_handler::dullahan_render_handler(dullahan_impl* parent) :
     mParent(parent)
 {
@@ -52,6 +57,11 @@ dullahan_render_handler::dullahan_render_handler(dullahan_impl* parent) :
 
     // depth is same for all buffer
     mBufferDepth = parent->getDepth();
+
+#ifdef WIN32
+    // created on demand in OnAcceleratedPaint (only when flipping is enabled)
+    mSharedTextureFlipper = nullptr;
+#endif
 }
 
 dullahan_render_handler::~dullahan_render_handler()
@@ -61,6 +71,10 @@ dullahan_render_handler::~dullahan_render_handler()
     delete[] mPopupBuffer;
 
     delete[] mPixelBufferRow;
+
+#ifdef WIN32
+    delete mSharedTextureFlipper;
+#endif
 }
 
 void dullahan_render_handler::resizePixelBuffer(int width, int height)
@@ -199,4 +213,78 @@ bool dullahan_render_handler::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefSc
 
     // indicate we changed the structure
     return true;
+}
+
+// CefRenderHandler override
+void dullahan_render_handler::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
+                                                  PaintElementType type,
+                                                  const RectList& dirtyRects,
+                                                  const CefAcceleratedPaintInfo& info)
+{
+    CEF_REQUIRE_UI_THREAD();
+
+    // convert CEF dirty rects to dullahan rects
+    std::vector<dullahan::dullahan_rect> dullahan_dirty_rects;
+    dullahan_dirty_rects.reserve(dirtyRects.size());
+    for (const auto& rect : dirtyRects)
+    {
+        dullahan::dullahan_rect dr;
+        dr.x = rect.x;
+        dr.y = rect.y;
+        dr.width = rect.width;
+        dr.height = rect.height;
+        dullahan_dirty_rects.push_back(dr);
+    }
+
+    // Dullahan for Linux does not currently support accelerated painting and will fall back to OnPaint
+#ifdef WIN32
+    void* handle = info.shared_texture_handle;
+
+    // When flip_pixels_y is set we hand the consumer a bottom-up texture so it
+    // no longer has to flip on its side (see the header comment on
+    // setOnAcceleratedPageChangedCallback). This is a GPU blit through a device
+    // we own; the device, pipeline and destination texture are created once and
+    // reused across frames.
+    if (mFlipYPixels)
+    {
+        if (!mSharedTextureFlipper)
+        {
+            mSharedTextureFlipper = new dullahan_shared_texture_flipper();
+
+            bool use_luid = false;
+            uint32_t luid_low = 0;
+            int32_t luid_high = 0;
+            mParent->getAdapterLUID(use_luid, luid_low, luid_high);
+
+            if (!mSharedTextureFlipper->init(use_luid, luid_low, luid_high))
+            {
+                // Could not stand up the flip device (a hard failure). Fall back
+                // to forwarding CEF's top-down handle so the consumer still gets
+                // content rather than a black frame.
+                DLNOUT("accelerated flip disabled - could not create flip device");
+                delete mSharedTextureFlipper;
+                mSharedTextureFlipper = nullptr;
+            }
+        }
+
+        if (mSharedTextureFlipper)
+        {
+            void* flipped = mSharedTextureFlipper->flip(info.shared_texture_handle);
+            if (flipped)
+            {
+                handle = flipped;
+            }
+            else
+            {
+                // Transient flip failure (e.g. mutex timeout). Skip this frame
+                // rather than emit an unflipped (upside-down) texture.
+                return;
+            }
+        }
+    }
+
+    mParent->getCallbackManager()->onAcceleratedPageChanged(handle, dullahan_dirty_rects);
+#elif defined(__APPLE__)
+    mParent->getCallbackManager()->onAcceleratedPageChanged(info.shared_texture_io_surface, dullahan_dirty_rects);
+#endif
 }

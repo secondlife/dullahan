@@ -36,8 +36,6 @@
 
 #include "opengl-example.h"
 
-#include "dullahan.h"
-
 void errorCallback(int error, const char* description)
 {
     std::cerr << "GLFW error: (" << error << ") - " << description << std::endl;
@@ -290,8 +288,9 @@ bool openglExample::init()
     resizeCallback(width, height);
 
     // Texture used to display browser output on the quad
+    // Only allocate the name - do not bind, as wglDXRegisterObjectNV
+    // requires the texture object to not have existing storage
     glGenTextures(1, &mTextureId);
-    glBindTexture(GL_TEXTURE_2D, mTextureId);
 
     // Generates the picking texture - each pixel in the texture
     // holds the coordinates of its location for mouse picking
@@ -322,12 +321,99 @@ bool openglExample::init()
     settings.use_mock_keychain = true;
 #endif
 
+#ifdef WIN32
+    settings.shared_texture_enable = true;
+#endif
+
+#ifdef WIN32
+    // Enumerate DXGI adapters to find the default GPU, create a D3D11
+    // device on it, and pass its LUID to dullahan so CEF renders on
+    // the same adapter.
+    IDXGIFactory1* dxgiFactory = nullptr;
+    IDXGIAdapter1* dxgiAdapter = nullptr;
+    CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&dxgiFactory);
+    if (dxgiFactory)
+    {
+        // Use adapter index 1 (secondary GPU)
+        if (dxgiFactory->EnumAdapters1(0, &dxgiAdapter) != DXGI_ERROR_NOT_FOUND)
+        {
+            DXGI_ADAPTER_DESC1 adapterDesc;
+            dxgiAdapter->GetDesc1(&adapterDesc);
+
+            settings.use_adapter_luid = true;
+            settings.adapter_luid.low_part = adapterDesc.AdapterLuid.LowPart;
+            settings.adapter_luid.high_part = adapterDesc.AdapterLuid.HighPart;
+
+            std::cerr << "Using GPU adapter: ";
+            std::wcerr << adapterDesc.Description;
+            std::cerr << " LUID=" << adapterDesc.AdapterLuid.HighPart
+                      << ":" << adapterDesc.AdapterLuid.LowPart << std::endl;
+        }
+    }
+
+    // Create D3D11 device on the selected adapter for shared texture interop
+    ID3D11Device* baseDevice = nullptr;
+    D3D_FEATURE_LEVEL featureLevel;
+    if (dxgiAdapter)
+    {
+        D3D11CreateDevice(dxgiAdapter, D3D_DRIVER_TYPE_UNKNOWN, nullptr, 0,
+                          nullptr, 0, D3D11_SDK_VERSION,
+                          &baseDevice, &featureLevel, &mD3DContext);
+    }
+    else
+    {
+        D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
+                          nullptr, 0, D3D11_SDK_VERSION,
+                          &baseDevice, &featureLevel, &mD3DContext);
+    }
+    if (baseDevice)
+    {
+        baseDevice->QueryInterface(__uuidof(ID3D11Device1), (void**)&mD3DDevice);
+        baseDevice->Release();
+    }
+
+    if (dxgiAdapter)
+    {
+        dxgiAdapter->Release();
+    }
+    if (dxgiFactory)
+    {
+        dxgiFactory->Release();
+    }
+#endif
+
     bool result = mDullahan->init(settings);
     if (result)
     {
         resizeBrowser(mTextureWidth, mTextureHeight);
 
+#ifdef WIN32
+        // Load WGL_NV_DX_interop2 extension functions
+        wglDXOpenDeviceNV = (PFNWGLDXOPENDEVICENVPROC)wglGetProcAddress("wglDXOpenDeviceNV");
+        wglDXCloseDeviceNV = (PFNWGLDXCLOSEDEVICENVPROC)wglGetProcAddress("wglDXCloseDeviceNV");
+        wglDXRegisterObjectNV = (PFNWGLDXREGISTEROBJECTNVPROC)wglGetProcAddress("wglDXRegisterObjectNV");
+        wglDXUnregisterObjectNV = (PFNWGLDXUNREGISTEROBJECTNVPROC)wglGetProcAddress("wglDXUnregisterObjectNV");
+        wglDXLockObjectsNV = (PFNWGLDXLOCKOBJECTSNVPROC)wglGetProcAddress("wglDXLockObjectsNV");
+        wglDXUnlockObjectsNV = (PFNWGLDXUNLOCKOBJECTSNVPROC)wglGetProcAddress("wglDXUnlockObjectsNV");
+
+        // Open D3D11 device for GL interop
+        if (mD3DDevice && wglDXOpenDeviceNV)
+        {
+            mInteropDevice = wglDXOpenDeviceNV(mD3DDevice);
+        }
+
+        std::cerr << "D3D11/GL interop setup: "
+                  << "D3DDevice=" << mD3DDevice
+                  << " wglDXOpenDeviceNV=" << (void*)wglDXOpenDeviceNV
+                  << " InteropDevice=" << mInteropDevice
+                  << std::endl;
+
+        mDullahan->setOnAcceleratedPageChangedCallback(
+            std::bind(&openglExample::onAcceleratedPageChanged, this,
+                      std::placeholders::_1, std::placeholders::_2));
+#else
         mDullahan->setOnPageChangedCallback(std::bind(&openglExample::onPageChanged, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
+#endif
         mDullahan->setOnRequestExitCallback(std::bind(&openglExample::onRequestExitCallback, this));
         mDullahan->setOnJStoCPPMsgCallback(std::bind(&openglExample::onJStoCPPMsgCallback, this, std::placeholders::_1, std::placeholders::_2));
         
@@ -458,7 +544,118 @@ bool openglExample::draw(int* tx, int* ty)
     return hit_browser;
 }
 
-// Triggered when browser page content changes
+#ifdef WIN32
+// Triggered when accelerated (GPU) page content changes
+void openglExample::onAcceleratedPageChanged(void* handle, const std::vector<dullahan::dullahan_rect>& dirty_rects)
+{
+    if (!handle || !mInteropDevice)
+    {
+        return;
+    }
+    HANDLE viewer_handle = 0;
+    DuplicateHandle(
+        GetCurrentProcess(),
+        handle,
+        GetCurrentProcess(),
+        &viewer_handle,
+        0,
+        FALSE,
+        DUPLICATE_SAME_ACCESS);
+    // Open the shared D3D11 texture from the NT handle
+    ID3D11Texture2D* sharedTexture = nullptr;
+    HRESULT hr = mD3DDevice->OpenSharedResource1((HANDLE)viewer_handle, __uuidof(ID3D11Texture2D), (void**)&sharedTexture);
+    if (FAILED(hr))
+    {
+        return;
+    }
+
+    D3D11_TEXTURE2D_DESC desc;
+    sharedTexture->GetDesc(&desc);
+
+    // Acquire keyed mutex if present (CEF shared textures use keyed mutexes)
+    IDXGIKeyedMutex* keyedMutex = nullptr;
+    sharedTexture->QueryInterface(__uuidof(IDXGIKeyedMutex), (void**)&keyedMutex);
+    if (keyedMutex)
+    {
+        hr = keyedMutex->AcquireSync(0, 16);
+        if (FAILED(hr))
+        {
+            keyedMutex->Release();
+            sharedTexture->Release();
+            return;
+        }
+    }
+
+    // Recreate local texture and GL interop if dimensions changed
+    if ((int)desc.Width != mLocalTextureWidth || (int)desc.Height != mLocalTextureHeight)
+    {
+        // Tear down old interop
+        if (mInteropObject)
+        {
+            wglDXUnlockObjectsNV(mInteropDevice, 1, &mInteropObject);
+            wglDXUnregisterObjectNV(mInteropDevice, mInteropObject);
+            mInteropObject = nullptr;
+        }
+        if (mLocalTexture)
+        {
+            mLocalTexture->Release();
+            mLocalTexture = nullptr;
+        }
+
+        // Create a local texture without keyed mutex for GL interop
+        D3D11_TEXTURE2D_DESC localDesc = {};
+        localDesc.Width = desc.Width;
+        localDesc.Height = desc.Height;
+        localDesc.MipLevels = 1;
+        localDesc.ArraySize = 1;
+        localDesc.Format = desc.Format;
+        localDesc.SampleDesc.Count = 1;
+        localDesc.Usage = D3D11_USAGE_DEFAULT;
+        localDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        mD3DDevice->CreateTexture2D(&localDesc, nullptr, &mLocalTexture);
+
+        if (mLocalTexture)
+        {
+            mInteropObject = wglDXRegisterObjectNV(mInteropDevice, mLocalTexture,
+                                                    mTextureId, GL_TEXTURE_2D,
+                                                    WGL_ACCESS_READ_ONLY_NV);
+        }
+
+        mLocalTextureWidth = desc.Width;
+        mLocalTextureHeight = desc.Height;
+        mTextureWidth = desc.Width;
+        mTextureHeight = desc.Height;
+        resizeBrowser(mTextureWidth, mTextureHeight);
+    }
+
+    // Unlock GL access so D3D11 can write to the local texture
+    if (mInteropObject)
+    {
+        wglDXUnlockObjectsNV(mInteropDevice, 1, &mInteropObject);
+    }
+
+    // Copy from shared texture to local texture (GPU-to-GPU)
+    if (mLocalTexture)
+    {
+        mD3DContext->CopyResource(mLocalTexture, sharedTexture);
+    }
+
+    // Release the keyed mutex and shared texture
+    if (keyedMutex)
+    {
+        keyedMutex->ReleaseSync(0);
+        keyedMutex->Release();
+    }
+    sharedTexture->Release();
+
+    // Lock the local texture for GL access
+    if (mInteropObject)
+    {
+        wglDXLockObjectsNV(mInteropDevice, 1, &mInteropObject);
+    }
+}
+#else
+// Triggered when browser page content changes (software path)
 void openglExample::onPageChanged(const unsigned char* pixels, int x, int y, const int width, const int height)
 {
     if (width != mTextureWidth || height != mTextureHeight)
@@ -475,6 +672,7 @@ void openglExample::onPageChanged(const unsigned char* pixels, int x, int y, con
     glBindTexture(GL_TEXTURE_2D, (GLuint)mTextureId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)mTextureWidth, (GLsizei)mTextureHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
 }
+#endif
 
 // Triggered by Dullahan when cleanup is complete and it's okay to exit
 void openglExample::onRequestExitCallback()
@@ -709,6 +907,35 @@ bool openglExample::run()
 
 bool openglExample::reset()
 {
+#ifdef WIN32
+    if (mInteropObject)
+    {
+        wglDXUnlockObjectsNV(mInteropDevice, 1, &mInteropObject);
+        wglDXUnregisterObjectNV(mInteropDevice, mInteropObject);
+        mInteropObject = nullptr;
+    }
+    if (mLocalTexture)
+    {
+        mLocalTexture->Release();
+        mLocalTexture = nullptr;
+    }
+    if (mInteropDevice)
+    {
+        wglDXCloseDeviceNV(mInteropDevice);
+        mInteropDevice = nullptr;
+    }
+    if (mD3DContext)
+    {
+        mD3DContext->Release();
+        mD3DContext = nullptr;
+    }
+    if (mD3DDevice)
+    {
+        mD3DDevice->Release();
+        mD3DDevice = nullptr;
+    }
+#endif
+
     resetUI();
 
     glfwDestroyWindow(mWindow);

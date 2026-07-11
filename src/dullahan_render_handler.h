@@ -29,6 +29,10 @@
 
 #include "cef_render_handler.h"
 
+#ifdef WIN32
+class dullahan_shared_texture_flipper;
+#endif
+
 class dullahan_impl;
 
 class dullahan_render_handler :
@@ -46,6 +50,9 @@ class dullahan_render_handler :
         void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) override;
         void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) override;
         bool GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info) override;
+        void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
+                                const RectList& dirtyRects,
+                                const CefAcceleratedPaintInfo& info) override;
 
         IMPLEMENT_REFCOUNTING(dullahan_render_handler);
 
@@ -62,6 +69,12 @@ class dullahan_render_handler :
         int mBufferDepth;
 
         bool mFlipYPixels;
+
+#ifdef WIN32
+        // GPU-side vertical flip of the accelerated shared texture, created
+        // lazily on the first accelerated paint when mFlipYPixels is set.
+        dullahan_shared_texture_flipper* mSharedTextureFlipper;
+#endif
 
         dullahan_impl* mParent;
 };

@@ -38,6 +38,7 @@
 #include "include/cef_request_context_handler.h"
 #include "include/cef_waitable_event.h"
 #include "include/base/cef_logging.h"
+#include <iomanip> // Required for std::hex, std::setw, std::setfill
 
 #include "dullahan_version.h"
 #ifdef __APPLE__
@@ -157,6 +158,13 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         {
             command_line->AppendSwitchWithValue("--proxy-server", mProxyHostPort);
         }
+
+#ifdef WIN32
+        if (mUseAdapterLUID)
+        {
+            command_line->AppendSwitchWithValue("use-adapter-luid", mAdapterLUIDStr);
+        }
+#endif
 
         // Hardcode the switch to turn off the HTTP Basic Auth dialogs
         // as per this issue: https://github.com/chromiumembedded/cef/issues/3603
@@ -393,6 +401,20 @@ bool dullahan_impl::initCEF(dullahan::dullahan_settings& user_settings)
     // provide their own ("Allow, "Disallow") UI.
     mFakeUIForMediaStream = user_settings.fake_ui_for_media_stream;
 
+#ifdef WIN32
+    // the adapter LUID to use for GPU rendering - pass through to CEF command line
+    mUseAdapterLUID = user_settings.use_adapter_luid;
+    mAdapterLUIDLow = user_settings.adapter_luid.low_part;
+    mAdapterLUIDHigh = user_settings.adapter_luid.high_part;
+    if (mUseAdapterLUID)
+    {
+        std::ostringstream oss;
+        oss << "0x" << std::hex << std::setw(8) << std::setfill('0') << user_settings.adapter_luid.high_part
+            << ":0x" << std::hex << std::setw(8) << std::setfill('0') << user_settings.adapter_luid.low_part;
+        mAdapterLUIDStr = oss.str();
+    }
+#endif
+
     // if true, this setting inverts the pixels in Y direction - useful if your texture
     // coords are upside down compared to default for Dullahan
     mFlipPixelsY = user_settings.flip_pixels_y;
@@ -443,6 +465,7 @@ bool dullahan_impl::init(dullahan::dullahan_settings& user_settings)
     CefWindowInfo window_info;
     window_info.SetAsWindowless(0);
     window_info.windowless_rendering_enabled = true;
+    window_info.shared_texture_enabled = user_settings.shared_texture_enable;
     const int width = user_settings.initial_width;
     const int height = user_settings.initial_height;
     window_info.bounds = { 0, 0, width, height };
@@ -532,6 +555,15 @@ bool dullahan_impl::getFlipMouseY()
 {
     return mFlipMouseY;
 }
+
+#ifdef WIN32
+void dullahan_impl::getAdapterLUID(bool& use, uint32_t& low_part, int32_t& high_part)
+{
+    use = mUseAdapterLUID;
+    low_part = mAdapterLUIDLow;
+    high_part = mAdapterLUIDHigh;
+}
+#endif
 
 void dullahan_impl::run()
 {

@@ -451,3 +451,9 @@ void dullahan::setOnJStoCPPMsgCallback(std::function<std::string(const std::stri
 {
     mImpl->getCallbackManager()->setOnJStoCPPMsgCallback(callback);
 }
+
+void dullahan::setOnAcceleratedPageChangedCallback(std::function<void(void* handle,
+                                                    const std::vector<dullahan_rect>& dirty_rects)> callback)
+{
+    mImpl->getCallbackManager()->setOnAcceleratedPageChangedCallback(callback);
+}
