@@ -25,6 +25,8 @@
 
 // embed:// custom scheme handler implementation
 
+#define NOMINMAX
+
 #include "dullahan_embed_scheme.h"
 #include "dullahan_impl.h"
 
