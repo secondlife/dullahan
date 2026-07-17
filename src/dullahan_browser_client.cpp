@@ -72,8 +72,16 @@ bool dullahan_browser_client::OnProcessMessageReceived(CefRefPtr<CefBrowser> bro
         CefRefPtr<CefListValue> args = message->GetArgumentList();
         if (args)
         {
+            // Args: [0] id, [1] json, [2] frame_url (added for embed:// origin checks).
+            std::string frame_url;
+            if (args->GetSize() >= 3 && args->GetType(2) == VTYPE_STRING)
+            {
+                frame_url = args->GetString(2).ToString();
+            }
             //std::cout << ">>> Received JSONtoCPP_MSG from render process: " << args->GetString(0).ToString() << std::endl;
-            mParent->getCallbackManager()->onJStoCPPMsgCallback(args->GetString(0).ToString(), args->GetString(1).ToString());
+            mParent->getCallbackManager()->onJStoCPPMsgCallback(args->GetString(0).ToString(),
+                                                                 args->GetString(1).ToString(),
+                                                                 frame_url);
         }
 
         // Indicate we processed this message and it should not be sent to other handlers
@@ -304,6 +312,17 @@ bool dullahan_browser_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
     {
         return static_cast<char>(tolower(c));
     });
+
+    // Block any user-initiated navigation or redirect into embed://.
+    // Only the host process may load embed:// URLs directly.
+    static const std::string embed_scheme("embed://");
+    if (url.compare(0, embed_scheme.size(), embed_scheme) == 0)
+    {
+        if (user_gesture || isRedirect)
+        {
+            return true; // cancel navigation
+        }
+    }
 
     std::vector<std::string>::iterator iter = mParent->getCustomSchemes().begin();
     while (iter != mParent->getCustomSchemes().end())

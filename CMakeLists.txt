@@ -197,6 +197,8 @@ add_library(
     src/dullahan_callback_manager.cpp
     src/dullahan_callback_manager.h
     src/dullahan_debug.h
+    src/dullahan_embed_scheme.cpp
+    src/dullahan_embed_scheme.h
     src/dullahan_impl.cpp
     src/dullahan_impl.h
     src/dullahan_version.h

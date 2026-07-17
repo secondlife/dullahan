@@ -47,6 +47,7 @@ class CefRequestContext;
 
 class dullahan_impl :
     public CefApp,
+    public CefBrowserProcessHandler,
     public CefPdfPrintCallback
 {
         void platormInitWidevine(std::string cachePath);
@@ -57,6 +58,11 @@ class dullahan_impl :
 
         // CefApp overrides
         virtual void OnBeforeCommandLineProcessing(const CefString& process_type, CefRefPtr<CefCommandLine> command_line) override;
+        virtual void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) override;
+        virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override { return this; }
+
+        // CefBrowserProcessHandler overrides
+        virtual void OnContextInitialized() override;
 
         bool init(dullahan::dullahan_settings& user_settings);
         void shutdown();
@@ -140,6 +146,11 @@ class dullahan_impl :
         void setCustomSchemes(std::vector<std::string> custom_schemes);
         std::vector<std::string>& getCustomSchemes();
 
+        void setEmbedSchemeRoot(const std::string& root_dir);
+        const std::string& getEmbedSchemeRoot();
+        void setEmbedRegistry(const std::vector<std::string>& allowed_paths);
+        const std::vector<std::string>& getEmbedRegistry();
+
         CefRefPtr<CefBrowser> getBrowser();
         void setBrowser(CefRefPtr<CefBrowser> browser);
 
@@ -183,6 +194,8 @@ class dullahan_impl :
         double mRequestedPageZoom;
         const int mViewDepth = 4;
         std::vector<std::string> mCustomSchemes;
+        std::string mEmbedSchemeRoot;
+        std::vector<std::string> mEmbedRegistry;
 
         IMPLEMENT_REFCOUNTING(dullahan_impl);
 };
