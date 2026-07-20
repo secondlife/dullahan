@@ -178,8 +178,28 @@ CefRefPtr<CefResourceHandler> dullahan_embed_scheme_factory::Create(
         return make_error(400, "invalid path");
     }
 
-    // Registry lookup, relative paths use forward slashes.
-    if (std::find(registry.begin(), registry.end(), relpath) == registry.end())
+    // Registry lookup, relative paths use forward slashes. An entry ending
+    // in '/' is treated as a directory prefix - any relpath under that folder
+    // is allowed. Any other entry must match relpath exactly.
+    bool matched = false;
+    for (const std::string& entry : registry)
+    {
+        if (entry.empty()) continue;
+        if (entry.back() == '/')
+        {
+            if (relpath.compare(0, entry.size(), entry) == 0)
+            {
+                matched = true;
+                break;
+            }
+        }
+        else if (relpath == entry)
+        {
+            matched = true;
+            break;
+        }
+    }
+    if (!matched)
     {
         return make_error(404, "not in registry");
     }
