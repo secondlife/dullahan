@@ -31,12 +31,11 @@
 #include "dullahan_impl.h"
 
 #include "cef_parser.h"
+#include "cef_stream.h"
+#include "wrapper/cef_stream_resource_handler.h"
 
 #include <algorithm>
-#include <cstdio>
 #include <cstring>
-#include <fstream>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -59,20 +58,6 @@ namespace
         if (ext == "jpg" || ext == "jpeg") return "image/jpeg";
         if (ext == "gif")                  return "image/gif";
         return "application/octet-stream";
-    }
-
-    // Read an entire file into a byte vector;
-    bool read_file_bytes(const std::string& disk_path, std::vector<unsigned char>& out)
-    {
-        std::ifstream in(disk_path, std::ios::binary);
-        if (!in) return false;
-        in.seekg(0, std::ios::end);
-        std::streamsize size = in.tellg();
-        if (size < 0) return false;
-        in.seekg(0, std::ios::beg);
-        out.resize(static_cast<size_t>(size));
-        if (size > 0 && !in.read(reinterpret_cast<char*>(out.data()), size)) return false;
-        return true;
     }
 
     // Strip query string / fragment and any leading '/'; also normalise backslashes.
@@ -98,80 +83,58 @@ namespace
         return true;
     }
 
-    // Resource handler that serves a pre-loaded byte buffer with a given MIME type.
-    // Uses CefStreamResourceHandler via an in-memory CefStreamReader, or a simple
-    // hand-rolled CefResourceHandler if we need finer control.
-    class embed_resource_handler : public CefResourceHandler
+    // In-memory CefReadHandler backed by a std::string. Used for the short
+    // canned bodies of error responses so we can serve them through the same
+    // CefStreamResourceHandler that we use for real file bodies.
+    class string_read_handler : public CefReadHandler
     {
         public:
-            embed_resource_handler(std::vector<unsigned char>&& data,
-                                   const std::string& mime,
-                                   int status_code,
-                                   const std::string& status_text) :
-                mData(std::move(data)),
-                mMime(mime),
-                mStatus(status_code),
-                mStatusText(status_text),
+            explicit string_read_handler(std::string body) :
+                mData(std::move(body)),
                 mOffset(0)
             {
             }
 
-            bool Open(CefRefPtr<CefRequest> request, bool& handle_request,
-                      CefRefPtr<CefCallback> callback) override
+            size_t Read(void* ptr, size_t elem_size, size_t n) override
             {
-                handle_request = true;
-                return true;
-            }
-
-            void GetResponseHeaders(CefRefPtr<CefResponse> response,
-                                    int64_t& response_length,
-                                    CefString& redirectUrl) override
-            {
-                response->SetMimeType(mMime);
-                response->SetStatus(mStatus);
-                if (!mStatusText.empty())
-                {
-                    response->SetStatusText(mStatusText);
-                }
-                CefResponse::HeaderMap headers;
-                headers.insert(std::make_pair("Cache-Control", "no-store"));
-                headers.insert(std::make_pair("Access-Control-Allow-Origin", "*"));
-                response->SetHeaderMap(headers);
-                response_length = static_cast<int64_t>(mData.size());
-            }
-
-            bool Read(void* data_out, int bytes_to_read, int& bytes_read,
-                      CefRefPtr<CefResourceReadCallback> callback) override
-            {
-                bytes_read = 0;
-                if (mOffset >= mData.size()) return false;
+                size_t bytes_wanted = elem_size * n;
                 size_t remaining = mData.size() - mOffset;
-                int to_copy = static_cast<int>(std::min<size_t>(remaining,
-                                                                 static_cast<size_t>(bytes_to_read)));
-                std::memcpy(data_out, mData.data() + mOffset, to_copy);
-                mOffset += to_copy;
-                bytes_read = to_copy;
-                return true;
+                size_t to_copy = std::min(bytes_wanted, remaining);
+                if (to_copy > 0)
+                {
+                    std::memcpy(ptr, mData.data() + mOffset, to_copy);
+                    mOffset += to_copy;
+                }
+                return elem_size ? (to_copy / elem_size) : 0;
             }
 
-            void Cancel() override {}
+            int Seek(int64_t /*offset*/, int /*whence*/) override { return -1; }
+            int64_t Tell() override { return static_cast<int64_t>(mOffset); }
+            int Eof() override { return mOffset >= mData.size() ? 1 : 0; }
+            bool MayBlock() override { return false; }
 
         private:
-            std::vector<unsigned char> mData;
-            std::string mMime;
-            int mStatus;
-            std::string mStatusText;
+            std::string mData;
             size_t mOffset;
 
-            IMPLEMENT_REFCOUNTING(embed_resource_handler);
-            DISALLOW_COPY_AND_ASSIGN(embed_resource_handler);
+            IMPLEMENT_REFCOUNTING(string_read_handler);
+            DISALLOW_COPY_AND_ASSIGN(string_read_handler);
     };
+
+    CefResponse::HeaderMap default_headers()
+    {
+        CefResponse::HeaderMap headers;
+        headers.insert(std::make_pair("Cache-Control", "no-store"));
+        headers.insert(std::make_pair("Access-Control-Allow-Origin", "*"));
+        return headers;
+    }
 
     CefRefPtr<CefResourceHandler> make_error(int status, const std::string& reason)
     {
         std::string body = "embed:// " + reason;
-        std::vector<unsigned char> bytes(body.begin(), body.end());
-        return new embed_resource_handler(std::move(bytes), "text/plain", status, reason);
+        CefRefPtr<CefStreamReader> stream =
+            CefStreamReader::CreateForHandler(new string_read_handler(std::move(body)));
+        return new CefStreamResourceHandler(status, reason, "text/plain", default_headers(), stream);
     }
 }
 
@@ -231,11 +194,14 @@ CefRefPtr<CefResourceHandler> dullahan_embed_scheme_factory::Create(
     }
     disk_path += relpath;
 
-    std::vector<unsigned char> bytes;
-    if (!read_file_bytes(disk_path, bytes))
+    // Delegate file I/O to CEF. CefStreamReader::CreateForFile takes a
+    // CefString (UTF-16 internally), so any UTF-8 path works correctly on
+    // Windows - unlike std::ifstream, which silently fails on UTF-8 paths.
+    CefRefPtr<CefStreamReader> stream = CefStreamReader::CreateForFile(disk_path);
+    if (!stream)
     {
         return make_error(404, "file not found");
     }
 
-    return new embed_resource_handler(std::move(bytes), mime_for_path(relpath), 200, "OK");
+    return new CefStreamResourceHandler(200, "OK", mime_for_path(relpath), default_headers(), stream);
 }
