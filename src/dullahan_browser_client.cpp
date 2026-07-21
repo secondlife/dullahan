@@ -324,6 +324,14 @@ bool dullahan_browser_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
         }
     }
 
+    // Track whether the main frame is currently loading embed:// content so
+    // OnBeforeResourceLoad has a reliable trust-context signal that doesn't
+    // depend on the racy frame URL update visible on the IO thread.
+    if (frame && frame->IsMain())
+    {
+        mEmbedScoped = (url.compare(0, embed_scheme.size(), embed_scheme) == 0);
+    }
+
     std::vector<std::string>::iterator iter = mParent->getCustomSchemes().begin();
     while (iter != mParent->getCustomSchemes().end())
     {
@@ -396,7 +404,7 @@ CefRefPtr<CefResourceRequestHandler> dullahan_browser_client::GetResourceRequest
 // Top-level main-frame navigations are excluded here, because those are gated by
 // OnBeforeBrowse, so the initial embed:// document load is not blocked.
 cef_return_value_t dullahan_browser_client::OnBeforeResourceLoad(
-    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefBrowser> /*browser*/,
     CefRefPtr<CefFrame> /*frame*/,
     CefRefPtr<CefRequest> request,
     CefRefPtr<CefCallback> /*callback*/)
@@ -420,19 +428,14 @@ cef_return_value_t dullahan_browser_client::OnBeforeResourceLoad(
         return true;
     };
 
-    // Determine trust context from the browser's top-level document. Any nested
-    // frame within an embed:// document inherits the same rules.
-    std::string main_url;
-    if (browser)
-    {
-        CefRefPtr<CefFrame> main_frame = browser->GetMainFrame();
-        if (main_frame) main_url = main_frame->GetURL();
-    }
-    std::string req_url = request->GetURL();
+    // Trust context is set by OnBeforeBrowse when the main frame navigates.
+    // OnBeforeBrowse is guaranteed to fire before any sub-resource of the new
+    // page, so this is not subject to the IO-thread staleness of frame URLs.
+    const bool embed_context = mEmbedScoped.load(std::memory_order_relaxed);
 
-    const bool embed_context = starts_with(main_url, embed_prefix);
-    const bool req_is_embed  = starts_with(req_url, embed_prefix);
-    const bool req_is_data   = starts_with(req_url, data_prefix);
+    std::string req_url = request->GetURL();
+    const bool req_is_embed = starts_with(req_url, embed_prefix);
+    const bool req_is_data  = starts_with(req_url, data_prefix);
 
     if (embed_context)
     {

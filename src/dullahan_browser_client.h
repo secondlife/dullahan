@@ -27,6 +27,7 @@
 #ifndef _DULLAHAN_BROWSER_CLIENT
 #define _DULLAHAN_BROWSER_CLIENT
 
+#include <atomic>
 #include <list>
 
 #include "cef_client.h"
@@ -187,6 +188,8 @@ class dullahan_browser_client :
         CefRefPtr<CefRenderHandler> mRenderHandler;
         typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
         BrowserList mBrowserList;
+
+        std::atomic<bool> mEmbedScoped{false};
 
     public:
         IMPLEMENT_REFCOUNTING(dullahan_browser_client);
