@@ -374,6 +374,83 @@ bool dullahan_browser_client::GetAuthCredentials(CefRefPtr<CefBrowser> browser, 
     }
 }
 
+// CefRequestHandler override - route resource requests through this same object.
+CefRefPtr<CefResourceRequestHandler> dullahan_browser_client::GetResourceRequestHandler(
+    CefRefPtr<CefBrowser> /*browser*/,
+    CefRefPtr<CefFrame> /*frame*/,
+    CefRefPtr<CefRequest> /*request*/,
+    bool /*is_navigation*/,
+    bool /*is_download*/,
+    const CefString& /*request_initiator*/,
+    bool& /*disable_default_handling*/)
+{
+    return this;
+}
+
+// CefResourceRequestHandler override - recursive inheritance for embed://.
+//
+// A browser whose top-level document is an embed:// page must not make sub-
+// resource requests to any other origin.
+// Conversely, a browser NOT running embed:// content must not fetch embed://
+// resources.
+// Top-level main-frame navigations are excluded here, because those are gated by
+// OnBeforeBrowse, so the initial embed:// document load is not blocked.
+cef_return_value_t dullahan_browser_client::OnBeforeResourceLoad(
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> /*frame*/,
+    CefRefPtr<CefRequest> request,
+    CefRefPtr<CefCallback> /*callback*/)
+{
+    // Skip the main-frame document itself; OnBeforeBrowse governs it.
+    if (request->GetResourceType() == RT_MAIN_FRAME)
+    {
+        return RV_CONTINUE;
+    }
+
+    static const std::string embed_prefix("embed://");
+    static const std::string data_prefix("data:");
+
+    auto starts_with = [](const std::string& s, const std::string& prefix)
+    {
+        if (s.size() < prefix.size()) return false;
+        for (size_t i = 0; i < prefix.size(); ++i)
+        {
+            if (tolower(static_cast<unsigned char>(s[i])) != prefix[i]) return false;
+        }
+        return true;
+    };
+
+    // Determine trust context from the browser's top-level document. Any nested
+    // frame within an embed:// document inherits the same rules.
+    std::string main_url;
+    if (browser)
+    {
+        CefRefPtr<CefFrame> main_frame = browser->GetMainFrame();
+        if (main_frame) main_url = main_frame->GetURL();
+    }
+    std::string req_url = request->GetURL();
+
+    const bool embed_context = starts_with(main_url, embed_prefix);
+    const bool req_is_embed  = starts_with(req_url, embed_prefix);
+    const bool req_is_data   = starts_with(req_url, data_prefix);
+
+    if (embed_context)
+    {
+        // embed:// documents may only load embed:// or data: resources.
+        if (!req_is_embed && !req_is_data)
+        {
+            return RV_CANCEL;
+        }
+    }
+    else if (req_is_embed)
+    {
+        // Non-embed documents may not touch embed:// resources at all.
+        return RV_CANCEL;
+    }
+
+    return RV_CONTINUE;
+}
+
 // CefDownloadHandler overrides
 bool dullahan_browser_client::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefDownloadItem> download_item,

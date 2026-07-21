@@ -40,6 +40,7 @@ class dullahan_browser_client :
     public CefDisplayHandler,
     public CefLoadHandler,
     public CefRequestHandler,
+    public CefResourceRequestHandler,
     public CefDownloadHandler,
     public CefDialogHandler,
     public CefJSDialogHandler
@@ -125,6 +126,16 @@ class dullahan_browser_client :
         bool GetAuthCredentials(CefRefPtr<CefBrowser> browser, const CefString& origin_url, bool isProxy,
                                 const CefString& host, int port, const CefString& realm,
                                 const CefString& scheme, CefRefPtr<CefAuthCallback> callback) override;
+
+        // CefRequestHandler -> CefResourceRequestHandler routing
+        CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                                                       CefRefPtr<CefRequest> request, bool is_navigation,
+                                                                       bool is_download, const CefString& request_initiator,
+                                                                       bool& disable_default_handling) override;
+
+        // CefResourceRequestHandler override - enforces recursive inheritance for the embed:// scheme
+        cef_return_value_t OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                                CefRefPtr<CefRequest> request, CefRefPtr<CefCallback> callback) override;
 
         // CefDownloadHandler overrides
         CefRefPtr<CefDownloadHandler> GetDownloadHandler() override
