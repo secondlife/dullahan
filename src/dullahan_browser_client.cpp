@@ -397,7 +397,7 @@ CefRefPtr<CefResourceRequestHandler> dullahan_browser_client::GetResourceRequest
 // OnBeforeBrowse, so the initial embed:// document load is not blocked.
 cef_return_value_t dullahan_browser_client::OnBeforeResourceLoad(
     CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefFrame> /*frame*/,
+    CefRefPtr<CefFrame> frame,
     CefRefPtr<CefRequest> request,
     CefRefPtr<CefCallback> /*callback*/)
 {
@@ -420,19 +420,26 @@ cef_return_value_t dullahan_browser_client::OnBeforeResourceLoad(
         return true;
     };
 
-    // Determine trust context from the browser's top-level document. Any nested
-    // frame within an embed:// document inherits the same rules.
-    std::string main_url;
-    if (browser)
+    // Determine trust context. A nested frame inherits from its top-level
+    // document. The main-frame URL can be briefly stale on the IO thread
+    // right after a navigation (UI/IO race), so check the initiating frame
+    // first and fall back to the main frame.
+    auto is_embed_frame = [&](CefRefPtr<CefFrame> f) -> bool
     {
-        CefRefPtr<CefFrame> main_frame = browser->GetMainFrame();
-        if (main_frame) main_url = main_frame->GetURL();
-    }
-    std::string req_url = request->GetURL();
+        if (!f) return false;
+        std::string url = f->GetURL();
+        return starts_with(url, embed_prefix);
+    };
 
-    const bool embed_context = starts_with(main_url, embed_prefix);
-    const bool req_is_embed  = starts_with(req_url, embed_prefix);
-    const bool req_is_data   = starts_with(req_url, data_prefix);
+    bool embed_context = is_embed_frame(frame);
+    if (!embed_context && browser)
+    {
+        embed_context = is_embed_frame(browser->GetMainFrame());
+    }
+
+    std::string req_url = request->GetURL();
+    const bool req_is_embed = starts_with(req_url, embed_prefix);
+    const bool req_is_data  = starts_with(req_url, data_prefix);
 
     if (embed_context)
     {
