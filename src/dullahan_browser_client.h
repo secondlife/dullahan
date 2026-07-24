@@ -27,6 +27,7 @@
 #ifndef _DULLAHAN_BROWSER_CLIENT
 #define _DULLAHAN_BROWSER_CLIENT
 
+#include <atomic>
 #include <list>
 
 #include "cef_client.h"
@@ -40,6 +41,7 @@ class dullahan_browser_client :
     public CefDisplayHandler,
     public CefLoadHandler,
     public CefRequestHandler,
+    public CefResourceRequestHandler,
     public CefDownloadHandler,
     public CefDialogHandler,
     public CefJSDialogHandler
@@ -126,6 +128,16 @@ class dullahan_browser_client :
                                 const CefString& host, int port, const CefString& realm,
                                 const CefString& scheme, CefRefPtr<CefAuthCallback> callback) override;
 
+        // CefRequestHandler -> CefResourceRequestHandler routing
+        CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                                                       CefRefPtr<CefRequest> request, bool is_navigation,
+                                                                       bool is_download, const CefString& request_initiator,
+                                                                       bool& disable_default_handling) override;
+
+        // CefResourceRequestHandler override - enforces recursive inheritance for the embed:// scheme
+        cef_return_value_t OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                                CefRefPtr<CefRequest> request, CefRefPtr<CefCallback> callback) override;
+
         // CefDownloadHandler overrides
         CefRefPtr<CefDownloadHandler> GetDownloadHandler() override
         {
@@ -176,6 +188,8 @@ class dullahan_browser_client :
         CefRefPtr<CefRenderHandler> mRenderHandler;
         typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
         BrowserList mBrowserList;
+
+        std::atomic<bool> mEmbedScoped{false};
 
     public:
         IMPLEMENT_REFCOUNTING(dullahan_browser_client);

@@ -33,9 +33,11 @@
 #include "dullahan_render_handler.h"
 #include "dullahan_browser_client.h"
 #include "dullahan_callback_manager.h"
+#include "dullahan_embed_scheme.h"
 
 #include "include/cef_request_context.h"
 #include "include/cef_request_context_handler.h"
+#include "include/cef_scheme.h"
 #include "include/cef_waitable_event.h"
 #include "include/base/cef_logging.h"
 
@@ -1091,6 +1093,47 @@ void dullahan_impl::setCustomSchemes(std::vector<std::string> custom_schemes)
 std::vector<std::string>& dullahan_impl::getCustomSchemes()
 {
     return mCustomSchemes;
+}
+
+void dullahan_impl::setEmbedSchemeRoot(const std::string& root_dir)
+{
+    mEmbedSchemeRoot = root_dir;
+}
+
+const std::string& dullahan_impl::getEmbedSchemeRoot()
+{
+    return mEmbedSchemeRoot;
+}
+
+void dullahan_impl::setEmbedRegistry(const std::vector<std::string>& allowed_paths)
+{
+    mEmbedRegistry = allowed_paths;
+}
+
+const std::vector<std::string>& dullahan_impl::getEmbedRegistry()
+{
+    return mEmbedRegistry;
+}
+
+// CefApp override. Called in every process (browser + all sub-processes) early during initialisation.
+// Registers embed:// with both CEF's network stack (so requests are routed through our scheme handler factory)
+// and Chromium's renderer (so embed:// documents are treated as a proper secure origin).
+void dullahan_impl::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar)
+{
+    registrar->AddCustomScheme("embed",
+                               CEF_SCHEME_OPTION_STANDARD |
+                               CEF_SCHEME_OPTION_SECURE |
+                               CEF_SCHEME_OPTION_CORS_ENABLED |
+                               CEF_SCHEME_OPTION_FETCH_ENABLED |
+                               CEF_SCHEME_OPTION_LOCAL);
+}
+
+// CefBrowserProcessHandler override. Runs in the browser process after the
+// CEF context is initialised. Register the embed:// scheme handler factory
+// here so the factory pointer to dullahan_impl is guaranteed to be valid.
+void dullahan_impl::OnContextInitialized()
+{
+    CefRegisterSchemeHandlerFactory("embed", CefString(), new dullahan_embed_scheme_factory(this));
 }
 
 CefRefPtr<CefBrowser> dullahan_impl::getBrowser()

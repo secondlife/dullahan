@@ -72,8 +72,16 @@ bool dullahan_browser_client::OnProcessMessageReceived(CefRefPtr<CefBrowser> bro
         CefRefPtr<CefListValue> args = message->GetArgumentList();
         if (args)
         {
+            // Args: [0] id, [1] json, [2] frame_url (added for embed:// origin checks).
+            std::string frame_url;
+            if (args->GetSize() >= 3 && args->GetType(2) == VTYPE_STRING)
+            {
+                frame_url = args->GetString(2).ToString();
+            }
             //std::cout << ">>> Received JSONtoCPP_MSG from render process: " << args->GetString(0).ToString() << std::endl;
-            mParent->getCallbackManager()->onJStoCPPMsgCallback(args->GetString(0).ToString(), args->GetString(1).ToString());
+            mParent->getCallbackManager()->onJStoCPPMsgCallback(args->GetString(0).ToString(),
+                                                                 args->GetString(1).ToString(),
+                                                                 frame_url);
         }
 
         // Indicate we processed this message and it should not be sent to other handlers
@@ -305,6 +313,25 @@ bool dullahan_browser_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
         return static_cast<char>(tolower(c));
     });
 
+    // Block any user-initiated navigation or redirect into embed://.
+    // Only the host process may load embed:// URLs directly.
+    static const std::string embed_scheme("embed://");
+    if (url.compare(0, embed_scheme.size(), embed_scheme) == 0)
+    {
+        if (user_gesture || isRedirect)
+        {
+            return true; // cancel navigation
+        }
+    }
+
+    // Track whether the main frame is currently loading embed:// content so
+    // OnBeforeResourceLoad has a reliable trust-context signal that doesn't
+    // depend on the racy frame URL update visible on the IO thread.
+    if (frame && frame->IsMain())
+    {
+        mEmbedScoped = (url.compare(0, embed_scheme.size(), embed_scheme) == 0);
+    }
+
     std::vector<std::string>::iterator iter = mParent->getCustomSchemes().begin();
     while (iter != mParent->getCustomSchemes().end())
     {
@@ -353,6 +380,78 @@ bool dullahan_browser_client::GetAuthCredentials(CefRefPtr<CefBrowser> browser, 
         callback->Cancel();
         return false; // cancel request
     }
+}
+
+// CefRequestHandler override - route resource requests through this same object.
+CefRefPtr<CefResourceRequestHandler> dullahan_browser_client::GetResourceRequestHandler(
+    CefRefPtr<CefBrowser> /*browser*/,
+    CefRefPtr<CefFrame> /*frame*/,
+    CefRefPtr<CefRequest> /*request*/,
+    bool /*is_navigation*/,
+    bool /*is_download*/,
+    const CefString& /*request_initiator*/,
+    bool& /*disable_default_handling*/)
+{
+    return this;
+}
+
+// CefResourceRequestHandler override - recursive inheritance for embed://.
+//
+// A browser whose top-level document is an embed:// page must not make sub-
+// resource requests to any other origin.
+// Conversely, a browser NOT running embed:// content must not fetch embed://
+// resources.
+// Top-level main-frame navigations are excluded here, because those are gated by
+// OnBeforeBrowse, so the initial embed:// document load is not blocked.
+cef_return_value_t dullahan_browser_client::OnBeforeResourceLoad(
+    CefRefPtr<CefBrowser> /*browser*/,
+    CefRefPtr<CefFrame> /*frame*/,
+    CefRefPtr<CefRequest> request,
+    CefRefPtr<CefCallback> /*callback*/)
+{
+    // Skip the main-frame document itself; OnBeforeBrowse governs it.
+    if (request->GetResourceType() == RT_MAIN_FRAME)
+    {
+        return RV_CONTINUE;
+    }
+
+    static const std::string embed_prefix("embed://");
+    static const std::string data_prefix("data:");
+
+    auto starts_with = [](const std::string& s, const std::string& prefix)
+    {
+        if (s.size() < prefix.size()) return false;
+        for (size_t i = 0; i < prefix.size(); ++i)
+        {
+            if (tolower(static_cast<unsigned char>(s[i])) != prefix[i]) return false;
+        }
+        return true;
+    };
+
+    // Trust context is set by OnBeforeBrowse when the main frame navigates.
+    // OnBeforeBrowse is guaranteed to fire before any sub-resource of the new
+    // page, so this is not subject to the IO-thread staleness of frame URLs.
+    const bool embed_context = mEmbedScoped.load(std::memory_order_relaxed);
+
+    std::string req_url = request->GetURL();
+    const bool req_is_embed = starts_with(req_url, embed_prefix);
+    const bool req_is_data  = starts_with(req_url, data_prefix);
+
+    if (embed_context)
+    {
+        // embed:// documents may only load embed:// or data: resources.
+        if (!req_is_embed && !req_is_data)
+        {
+            return RV_CANCEL;
+        }
+    }
+    else if (req_is_embed)
+    {
+        // Non-embed documents may not touch embed:// resources at all.
+        return RV_CANCEL;
+    }
+
+    return RV_CONTINUE;
 }
 
 // CefDownloadHandler overrides
