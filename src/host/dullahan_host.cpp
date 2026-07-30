@@ -29,15 +29,12 @@
 #include "cef_app.h"
 #include "cef_scheme.h"
 
+#include "../dullahan_embed_scheme.h"
+
 #include <string>
 
 namespace
 {
-    // CEF requires the same registration in every process before initialisation.
-    // Must match dullahan_impl::OnRegisterCustomSchemes exactly
-    const char* kEmbedScheme = "embed";
-    const char* kEmbedSchemePrefix = "embed://";
-
     bool url_is_embed(const std::string& url)
     {
         static const std::string prefix(kEmbedSchemePrefix);
@@ -45,7 +42,7 @@ namespace
         // Scheme comparison is case-insensitive.
         for (size_t i = 0; i < prefix.size(); ++i)
         {
-            if (tolower(static_cast<unsigned char>(url[i])) != prefix[i]) return false;
+            if (ascii_tolower(url[i]) != prefix[i]) return false;
         }
         return true;
     }

@@ -32,6 +32,7 @@
 #include "dullahan_render_handler.h"
 #include "dullahan_browser_client.h"
 #include "dullahan_callback_manager.h"
+#include "dullahan_embed_scheme.h"
 
 #include "dullahan_impl.h"
 
@@ -308,14 +309,11 @@ bool dullahan_browser_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
     std::string url = request->GetURL();
 
     // for comparison, use lowercase
-    std::transform(url.begin(), url.end(), url.begin(), [](char c)
-    {
-        return static_cast<char>(tolower(c));
-    });
+    url = ascii_tolower(url);
 
     // Block any user-initiated navigation or redirect into embed://.
     // Only the host process may load embed:// URLs directly.
-    static const std::string embed_scheme("embed://");
+    static const std::string embed_scheme(kEmbedSchemePrefix);
     if (url.compare(0, embed_scheme.size(), embed_scheme) == 0)
     {
         if (user_gesture || isRedirect)
@@ -415,7 +413,7 @@ cef_return_value_t dullahan_browser_client::OnBeforeResourceLoad(
         return RV_CONTINUE;
     }
 
-    static const std::string embed_prefix("embed://");
+    static const std::string embed_prefix(kEmbedSchemePrefix);
     static const std::string data_prefix("data:");
 
     auto starts_with = [](const std::string& s, const std::string& prefix)
@@ -423,7 +421,7 @@ cef_return_value_t dullahan_browser_client::OnBeforeResourceLoad(
         if (s.size() < prefix.size()) return false;
         for (size_t i = 0; i < prefix.size(); ++i)
         {
-            if (tolower(static_cast<unsigned char>(s[i])) != prefix[i]) return false;
+            if (ascii_tolower(s[i]) != prefix[i]) return false;
         }
         return true;
     };

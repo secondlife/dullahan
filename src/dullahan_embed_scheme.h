@@ -38,6 +38,28 @@
 
 #include "cef_scheme.h"
 
+#include <ranges>
+#include <string>
+#include <string_view>
+
+// Canonical scheme name and URL prefix for the embed:// custom scheme.
+#define DULLAHAN_EMBED_SCHEME_NAME "embed"
+constexpr const char* kEmbedScheme = DULLAHAN_EMBED_SCHEME_NAME;
+constexpr const char* kEmbedSchemePrefix = DULLAHAN_EMBED_SCHEME_NAME "://";
+
+// ASCII-only, locale-independent lowercase.
+// Use for protocol / scheme / prefix comparisons, NOT for user-facing text.
+constexpr char ascii_tolower(char c)
+{
+    return (c >= 'A' && c <= 'Z') ? static_cast<char>(c + ('a' - 'A')) : c;
+}
+
+inline std::string ascii_tolower(std::string_view s)
+{
+    auto view = s | std::views::transform([](char c) { return ascii_tolower(c); });
+    return std::string(view.begin(), view.end());
+}
+
 class dullahan_impl;
 
 // Factory returned to CEF via CefRegisterSchemeHandlerFactory.

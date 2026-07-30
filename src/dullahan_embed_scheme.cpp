@@ -46,8 +46,7 @@ namespace
     {
         auto dot = path.find_last_of('.');
         std::string ext = (dot == std::string::npos) ? std::string() : path.substr(dot + 1);
-        std::transform(ext.begin(), ext.end(), ext.begin(),
-                       [](char c) { return static_cast<char>(tolower(c)); });
+        ext = ascii_tolower(ext);
 
         if (ext == "html" || ext == "htm") return "text/html";
         if (ext == "js")                   return "application/javascript";
@@ -169,8 +168,7 @@ CefRefPtr<CefResourceHandler> dullahan_embed_scheme_factory::Create(
     }
     std::string host = CefString(&parts.host).ToString();
     std::string path = CefString(&parts.path).ToString();
-    std::transform(host.begin(), host.end(), host.begin(),
-                   [](char c) { return static_cast<char>(tolower(c)); });
+    host = ascii_tolower(host);
 
     std::string relpath = canonical_relpath(host, path);
     if (!relpath_is_safe(relpath))

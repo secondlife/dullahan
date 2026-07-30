@@ -1120,7 +1120,7 @@ const std::vector<std::string>& dullahan_impl::getEmbedRegistry()
 // and Chromium's renderer (so embed:// documents are treated as a proper secure origin).
 void dullahan_impl::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar)
 {
-    registrar->AddCustomScheme("embed",
+    registrar->AddCustomScheme(kEmbedScheme,
                                CEF_SCHEME_OPTION_STANDARD |
                                CEF_SCHEME_OPTION_SECURE |
                                CEF_SCHEME_OPTION_CORS_ENABLED |
@@ -1133,7 +1133,7 @@ void dullahan_impl::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> regist
 // here so the factory pointer to dullahan_impl is guaranteed to be valid.
 void dullahan_impl::OnContextInitialized()
 {
-    CefRegisterSchemeHandlerFactory("embed", CefString(), new dullahan_embed_scheme_factory(this));
+    CefRegisterSchemeHandlerFactory(kEmbedScheme, CefString(), new dullahan_embed_scheme_factory(this));
 }
 
 CefRefPtr<CefBrowser> dullahan_impl::getBrowser()
