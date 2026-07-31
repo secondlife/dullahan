@@ -329,7 +329,7 @@ bool openglExample::init()
 
         mDullahan->setOnPageChangedCallback(std::bind(&openglExample::onPageChanged, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
         mDullahan->setOnRequestExitCallback(std::bind(&openglExample::onRequestExitCallback, this));
-        mDullahan->setOnJStoCPPMsgCallback(std::bind(&openglExample::onJStoCPPMsgCallback, this, std::placeholders::_1, std::placeholders::_2));
+        mDullahan->setOnJStoCPPMsgCallback(std::bind(&openglExample::onJStoCPPMsgCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
         
         mDullahan->navigate(mHomeUrl);
     }
@@ -482,9 +482,9 @@ void openglExample::onRequestExitCallback()
     glfwSetWindowShouldClose(mWindow, GLFW_TRUE);
 }
 
-std::string openglExample::onJStoCPPMsgCallback(const std::string id, const std::string msg)
+std::string openglExample::onJStoCPPMsgCallback(const std::string id, const std::string msg, const std::string frame_url)
 {
-    std::cout << "Received message with ID: " << id << " from JavaScript: " << msg << std::endl;
+    std::cout << "Received message with ID: " << id << " from JavaScript: " << msg << " (origin: " << frame_url << ")" << std::endl;
     return "Message received loud and clear by C++!";
 }
 

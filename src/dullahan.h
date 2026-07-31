@@ -330,6 +330,14 @@ class dullahan
         void setCustomSchemes(std::vector<std::string> custom_schemes);
         std::vector<std::string>& getCustomSchemes();
 
+        // The embed:// scheme is intended to host trusted local resources bundled by the host application.
+        // Resources are mapped as: embed://<host>/<path> => <root>/<host>/<path>
+        // Only paths that appear in the registry (relative to <root>, using forward slashes) are served.
+        void setEmbedSchemeRoot(const std::string& root_dir);
+        const std::string& getEmbedSchemeRoot();
+        void setEmbedRegistry(const std::vector<std::string>& allowed_paths);
+        const std::vector<std::string>& getEmbedRegistry();
+
         //////////// callback setters ////////////
         // URL changes - e.g. redirect
         void setOnAddressChangeCallback(std::function<void(const std::string url)> callback);
@@ -397,8 +405,10 @@ class dullahan
         // JS before unload callback (alert)
         void setOnJSBeforeUnloadCallback(std::function<bool()> callback);
 
-        // Message from JS to CPP
-        void setOnJStoCPPMsgCallback(std::function<std::string(const std::string id, const std::string msg)> callback);
+        // Message from JS to CPP.
+        // The frame_url argument identifies the origin of the calling frame,
+        // allowing consumers to filter messages by origin if needed.
+        void setOnJStoCPPMsgCallback(std::function<std::string(const std::string id, const std::string msg, const std::string frame_url)> callback);
 
     private:
         std::unique_ptr <dullahan_impl> mImpl;

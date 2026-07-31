@@ -344,6 +344,26 @@ std::vector<std::string>& dullahan::getCustomSchemes()
     return mImpl->getCustomSchemes();
 }
 
+void dullahan::setEmbedSchemeRoot(const std::string& root_dir)
+{
+    mImpl->setEmbedSchemeRoot(root_dir);
+}
+
+const std::string& dullahan::getEmbedSchemeRoot()
+{
+    return mImpl->getEmbedSchemeRoot();
+}
+
+void dullahan::setEmbedRegistry(const std::vector<std::string>& allowed_paths)
+{
+    mImpl->setEmbedRegistry(allowed_paths);
+}
+
+const std::vector<std::string>& dullahan::getEmbedRegistry()
+{
+    return mImpl->getEmbedRegistry();
+}
+
 void dullahan::setOnAddressChangeCallback(std::function<void(const std::string url)> callback)
 {
     mImpl->getCallbackManager()->setOnAddressChangeCallback(callback);
@@ -447,7 +467,7 @@ void dullahan::setOnJSBeforeUnloadCallback(std::function<bool()> callback)
     mImpl->getCallbackManager()->setOnJSBeforeUnloadCallback(callback);
 }
 
-void dullahan::setOnJStoCPPMsgCallback(std::function<std::string(const std::string id, const std::string msg)> callback)
+void dullahan::setOnJStoCPPMsgCallback(std::function<std::string(const std::string id, const std::string msg, const std::string frame_url)> callback)
 {
     mImpl->getCallbackManager()->setOnJStoCPPMsgCallback(callback);
 }
