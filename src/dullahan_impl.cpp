@@ -170,6 +170,12 @@ void dullahan_impl::OnBeforeCommandLineProcessing(const CefString& process_type,
         // Details captured in this GHI: https://github.com/secondlife/viewer-private/issues/489
         command_line->AppendSwitch("disable-chrome-login-prompt");
 
+        // From the docs: "If you need to completely suppress promotional, first-run,
+        // or profile-selection screens inherited from the Chromium base, append
+        // the following switches". This only seems to appear on Linux platforms but
+        // for the moment, we can just add it to all platforms.
+        command_line->AppendSwitch("no-first-run");
+
         platformAddCommandLines(command_line);
     }
 }
