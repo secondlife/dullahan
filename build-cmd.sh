@@ -285,6 +285,8 @@ case "$AUTOBUILD_PLATFORM" in
             -DCMAKE_C_FLAGS="$plainopts" \
             -DCMAKE_CXX_FLAGS="$opts" \
             $(cmake_cxx_standard $opts) \
+            -DCEF_WRAPPER_DIR="$cef_no_wrapper_dir" \
+            -DCEF_WRAPPER_BUILD_DIR="$cef_no_wrapper_build_dir" \
             -DUSE_SPOTIFY_CEF=FALSE -DSPOTIFY_CEF_URL=
 
         cmake --build stage/build
