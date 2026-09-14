@@ -285,7 +285,7 @@ case "$AUTOBUILD_PLATFORM" in
             -DCMAKE_C_FLAGS="$plainopts" \
             -DCMAKE_CXX_FLAGS="$opts" \
             $(cmake_cxx_standard $opts) \
-            -DUSE_SPOTIFY_CEF=TRUE -DSPOTIFY_CEF_URL=https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_binary_152.0.6%2Bg708dc14%2Bchromium-152.0.7977.83_linux64_minimal.tar.bz2
+            -DUSE_SPOTIFY_CEF=FALSE -DSPOTIFY_CEF_URL=
 
         cmake --build stage/build
         cmake --install stage/build
