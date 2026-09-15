@@ -42,6 +42,20 @@
             <key>name</key>
             <string>windows64</string>
           </map>
+          <key>linux64</key>
+          <map>
+            <key>archive</key>
+            <map>
+              <key>hash</key>
+              <string>7f5ed93f96f56e9bd40e745a70c8f40a0b652344</string>
+              <key>hash_algorithm</key>
+              <string>sha1</string>
+              <key>url</key>
+              <string>https://automated-builds-secondlife-com.s3.us-east-1.amazonaws.com/gh/secondlife/cef/cef_bin-152.0.6_g708dc14_chromium-152.0.7977.83-linux64-262571658.tar.zst</string>
+            </map>
+            <key>name</key>
+            <string>linux64</string>
+          </map>
         </map>
         <key>version</key>
         <string>cef_bin-152.0.6_g708dc14_chromium-152.0.7977.83</string>
