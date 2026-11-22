@@ -820,6 +820,17 @@ void dullahan_impl::setPageZoom(const double zoom_val)
     requestPageZoom();
 }
 
+// Change the windowless frame rate of the running browser. Off screen rendering
+// paints at most this often, so a lower rate saves CPU and GPU time for pages
+// the host doesn't need at full speed (e.g. ones it isn't showing prominently).
+void dullahan_impl::setFrameRate(int frame_rate)
+{
+    if (mBrowser.get() && mBrowser->GetHost())
+    {
+        mBrowser->GetHost()->SetWindowlessFrameRate(frame_rate);
+    }
+}
+
 void dullahan_impl::showDevTools()
 {
     if (mBrowser.get() && mBrowser->GetHost())
