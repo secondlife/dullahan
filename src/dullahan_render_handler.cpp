@@ -93,7 +93,8 @@ void dullahan_render_handler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect
 
 void dullahan_render_handler::copyPopupIntoView()
 {
-    int popup_y = (mFlipYPixels ? (mPixelBufferHeight - mPopupBufferRect.y) : mPopupBufferRect.y);
+    // the popup's top row; in a flipped buffer row y of the view is row (height - 1 - y)
+    int popup_y = (mFlipYPixels ? (mPixelBufferHeight - 1 - mPopupBufferRect.y) : mPopupBufferRect.y);
     unsigned char* src = (unsigned char*)mPopupBuffer;
     unsigned char* dst = mPixelBuffer + popup_y * mPixelBufferWidth * mBufferDepth + mPopupBufferRect.x * mBufferDepth;
     while (src < (unsigned char*)mPopupBuffer + mPopupBufferRect.width * mPopupBufferRect.height * mBufferDepth)
