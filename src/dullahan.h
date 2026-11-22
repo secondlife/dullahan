@@ -281,6 +281,11 @@ class dullahan
         // set the page zoom
         void setPageZoom(const double zoom_val);
 
+        // change the rate at which the page is rendered and onPageChanged is called
+        // while the browser is running (frame_rate in dullahan_settings sets it at startup).
+        // CEF clamps the value to 1-60 frames per second.
+        void setFrameRate(int frame_rate);
+
         // indicates if there is something available to be copy/cut/pasted
         // (for UI purposes) and if so, provides methods to do so
         bool editCanUndo();

@@ -104,6 +104,7 @@ class dullahan_impl :
         void setFocus();
 
         void setPageZoom(const double zoom_val);
+        void setFrameRate(int frame_rate);
 
         bool editCanUndo();
         bool editCanRedo();

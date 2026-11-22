@@ -210,6 +210,11 @@ void dullahan::setPageZoom(const double zoom_val)
     mImpl->setPageZoom(zoom_val);
 }
 
+void dullahan::setFrameRate(int frame_rate)
+{
+    mImpl->setFrameRate(frame_rate);
+}
+
 bool dullahan::editCanUndo()
 {
 	return mImpl->editCanUndo();
