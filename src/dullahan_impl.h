@@ -104,6 +104,7 @@ class dullahan_impl :
         void setFocus();
 
         void setPageZoom(const double zoom_val);
+        void setHidden(bool hidden);
 
         bool editCanUndo();
         bool editCanRedo();

@@ -210,6 +210,11 @@ void dullahan::setPageZoom(const double zoom_val)
     mImpl->setPageZoom(zoom_val);
 }
 
+void dullahan::setHidden(bool hidden)
+{
+    mImpl->setHidden(hidden);
+}
+
 bool dullahan::editCanUndo()
 {
 	return mImpl->editCanUndo();
