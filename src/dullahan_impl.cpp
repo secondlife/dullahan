@@ -820,6 +820,22 @@ void dullahan_impl::setPageZoom(const double zoom_val)
     requestPageZoom();
 }
 
+// Tell CEF whether the page is visible. While hidden, off screen rendering stops
+// painting and the page is throttled as a background tab would be. When it is
+// shown again, request a full repaint so the host gets the current page at once
+// rather than at the next change.
+void dullahan_impl::setHidden(bool hidden)
+{
+    if (mBrowser.get() && mBrowser->GetHost())
+    {
+        mBrowser->GetHost()->WasHidden(hidden);
+        if (!hidden)
+        {
+            mBrowser->GetHost()->Invalidate(PET_VIEW);
+        }
+    }
+}
+
 void dullahan_impl::showDevTools()
 {
     if (mBrowser.get() && mBrowser->GetHost())
